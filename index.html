@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>Мей Мей Merge</title>
+<style>
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;
+       background:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#222}
+  h1{font-size:22px;margin:14px 0 4px}
+  .hud{display:flex;gap:8px;margin:6px 0 10px}
+  .box{background:#f0f0f4;border-radius:12px;padding:6px 12px;text-align:center;min-width:80px}
+  .box b{display:block;font-size:19px}
+  .box span{font-size:10px;color:#666;text-transform:uppercase}
+  .box.coin b{color:#c98a00}
+  #board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(92vw,420px);
+         background:#f6f6f9;padding:8px;border-radius:18px}
+  .cell{aspect-ratio:1;border:2px solid transparent;border-radius:14px;background:#fff;padding:0;
+        display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
+        box-shadow:0 1px 3px rgba(0,0,0,.1)}
+  .cell canvas{width:92%;height:92%}
+  .cell.sel{border-color:#ff3fa4;background:#fff0f8;transform:scale(1.04)}
+  .cell.pop canvas{animation:pop .35s ease-out}
+  .cell.new canvas{animation:appear .3s ease-out}
+  .float{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-weight:800;font-size:18px;
+         color:#d99200;pointer-events:none;animation:fl .9s ease-out forwards;text-shadow:0 1px 0 #fff}
+  @keyframes fl{to{transform:translate(-50%,-44px);opacity:0}}
+  @keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
+  @keyframes appear{0%{transform:scale(0)}100%{transform:scale(1)}}
+  .name{font-size:15px;margin:10px 0 2px;min-height:20px;font-weight:600}
+  .hint{font-size:13px;color:#777;margin:0 12px 8px;text-align:center}
+  .btns{display:flex;gap:8px;margin:6px 0;flex-wrap:wrap;justify-content:center}
+  button.main{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;
+              background:#222;color:#fff;cursor:pointer}
+  button.alt{background:#ff3fa4}
+  button.gold{background:#e0a000}
+  button:disabled{opacity:.4}
+  .evo{display:flex;gap:4px;margin:10px 0 24px;flex-wrap:wrap;justify-content:center;width:min(92vw,420px)}
+  .evo canvas{width:calc(12.5% - 4px);aspect-ratio:1;background:#f6f6f9;border-radius:8px;opacity:.9}
+  .evo canvas.lock{filter:brightness(0);opacity:.15}
+  #over{position:fixed;inset:0;background:rgba(255,255,255,.93);display:none;z-index:30;
+        flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+  #over h2{margin:0;font-size:28px}
+  #shop{position:fixed;left:0;right:0;bottom:0;max-height:78vh;background:#fff;z-index:20;
+        border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.3);
+        transform:translateY(105%);transition:transform .25s;display:flex;flex-direction:column}
+  #shop.open{transform:translateY(0)}
+  #shop header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+        border-bottom:1px solid #eee;font-weight:700;font-size:17px}
+  #shop header button{border:0;background:#f0f0f4;border-radius:10px;padding:8px 14px;font-size:15px}
+  #shopNote{font-size:12px;color:#888;padding:6px 16px 0}
+  #shopList{overflow-y:auto;padding:4px 14px 28px}
+  .row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f4}
+  .row canvas{width:54px;height:54px;background:#f6f6f9;border-radius:10px;flex:none}
+  .row canvas.lock{filter:brightness(0);opacity:.2}
+  .row .info{flex:1;min-width:0}
+  .row .info b{display:block;font-size:14px}
+  .row .info small{color:#888;font-size:12px}
+  .row button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:700;
+              background:#e0a000;color:#fff;white-space:nowrap}
+  .row button:disabled{background:#ddd;color:#888}
+  #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-80px);background:#222;color:#fff;
+         padding:10px 16px;border-radius:12px;font-size:14px;z-index:40;transition:transform .25s;max-width:90vw;text-align:center}
+  #toast.show{transform:translateX(-50%) translateY(0)}
+</style>
+</head>
+<body>
+<h1>Мей Мей Merge 🐆</h1>
+<div class="hud">
+  <div class="box coin"><span>Монеты</span><b id="coins">0</b></div>
+  <div class="box"><span>Очки</span><b id="score">0</b></div>
+  <div class="box"><span>Рекорд</span><b id="best">0</b></div>
+</div>
+<div id="board"></div>
+<div class="name" id="name"></div>
+<p class="hint">Нажми на Мей Мей, потом на такого же — получишь нового и монеты!</p>
+<div class="btns">
+  <button class="main alt" id="add">+ Позвать Мей Мей</button>
+  <button class="main gold" id="shopBtn">🛒 Магазин</button>
+  <button class="main" id="restart">Заново</button>
+  <button class="main" id="snd">🔊</button>
+</div>
+<div class="evo" id="evo"></div>
+
+<div id="shop">
+  <header><span>🛒 Магазин · 🪙 <span id="shopCoins">0</span></span><button id="shopClose">Закрыть</button></header>
+  <div id="shopNote">Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.</div>
+  <div id="shopList"></div>
+</div>
+<div id="toast"></div>
+
+<div id="over">
+  <h2>Поле заполнено 😿</h2>
+  <div id="overScore"></div>
+  <button class="main alt" id="again">Играть ещё</button>
+</div>
+
+<script>
+// Свои картинки: PNG с прозрачным фоном в папке img/ с именами 1.png ... 24.png
+const LEVELS = [
+  {n:'Мей Мей',            fur:'#e8e8ec', shade:'#b5b5bf', spot:'#2a2a31'},
+  {n:'Ледяной Мей',        fur:'#d4ecff', shade:'#9cc9ee', spot:'#2c4a78'},
+  {n:'Зелёный пришелец',   fur:'#5dff4a', shade:'#2fb82a', spot:'#0e5a12', a:['antennae']},
+  {n:'Розовый Мей',        fur:'#ffd1e6', shade:'#f59bc4', spot:'#7a2a55'},
+  {n:'Мятный франт',       fur:'#c9ffe6', shade:'#7fe0b5', spot:'#1f6b4d', a:['bow']},
+  {n:'Диджей Мей',         fur:'#ffd9bf', shade:'#f0a97a', spot:'#7a3d1a', a:['phones']},
+  {n:'Золотой Мей',        fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200'},
+  {n:'Король Мей',         fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200', a:['crown']},
+  {n:'Мей-очкарик',        fur:'#cfe0ff', shade:'#8fb0e8', spot:'#27407a', a:['glasses']},
+  {n:'Ангел Мей',          fur:'#fffbe8', shade:'#e6d588', spot:'#8a7a30', a:['halo','wings']},
+  {n:'Чертёнок',           fur:'#ff9a8a', shade:'#d9503c', spot:'#5a0e06', a:['horns']},
+  {n:'Волшебник Мей',      fur:'#d9c6ff', shade:'#9a7be0', spot:'#2a1a5a', a:['wizard','stars']},
+  {n:'Огненный Мей',       fur:'#ffb347', shade:'#e0701a', spot:'#6a2200', glow:'255,140,40'},
+  {n:'Космо Мей',          fur:'#b79cff', shade:'#7a55e0', spot:'#1d1050', a:['stars'], glow:'180,140,255'},
+  {n:'Киберпанк Мей',      fur:'#46587a', shade:'#0b1428', spot:'#2bf0ff', a:['phones','glasses'], eye:'#2bf0ff', dark:1, glow:'43,240,255'},
+  {n:'Радужный Мей',       rainbow:1, shade:'#7a55e0', spot:'#3a2a5a', a:['stars']},
+  {n:'Граф Мей',           fur:'#c9c9d6', shade:'#666677', spot:'#3a0a14', a:['cape'], eye:'#ff2a2a'},
+  {n:'Робот Мей',          fur:'#cfd8dc', shade:'#78909c', spot:'#37474f', a:['antennae','glasses'], ant:'#ff5555'},
+  {n:'Кристальный Мей',    fur:'#e0fbff', shade:'#7fe3f5', spot:'#1a7a8c', a:['stars'], glow:'120,230,255'},
+  {n:'Тёмный лорд',        fur:'#4a3a5a', shade:'#14081f', spot:'#b44cff', a:['horns','cape'], hc:'#b44cff', eye:'#b44cff', dark:1, glow:'180,76,255'},
+  {n:'Император Мей',      fur:'#ffe28a', shade:'#c9920a', spot:'#7a5200', a:['crown','cape','stars']},
+  {n:'Богиня Мей',         fur:'#ffffff', shade:'#ffb7e3', spot:'#c24fa0', a:['halo','wings','stars'], glow:'255,183,227'},
+  {n:'Галактический Мей',  fur:'#1a1a4a', shade:'#050520', spot:'#7ab8ff', a:['crown','stars'], eye:'#7ab8ff', dark:1, glow:'122,184,255'},
+  {n:'Легенда Мей',        fur:'#2a2a33', shade:'#000000', spot:'#ff3fa4', a:['crown','cape','wings','stars'], eye:'#ff3fa4', dark:1, glow:'255,63,164'}
+];
+const MAX = LEVELS.length;
+const price  = k => Math.round(5*Math.pow(1.9,k-2));
+const reward = j => Math.round(2*Math.pow(1.8,j-2));
+const fmt = n => n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':String(n);
+
+const imgs = {};
+LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; render(); buildEvo();}; im.src='img/'+(i+1)+'.png'; });
+
+// ------------------------------ звук ------------------------------
+let AC, muted=false;
+try{ muted = localStorage.getItem('meimei-muted')==='1'; }catch(e){}
+function ac(){ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume(); return AC; }
+function meow(lv, sad){
+  if(muted) return;
+  try{
+    const a=ac(), t=a.currentTime, dur=(sad?0.9:0.42)+Math.random()*0.12;
+    const base=(sad?330:560)-Math.min(lv,24)*7+Math.random()*70;
+    const o=a.createOscillator(); o.type='sawtooth';
+    o.frequency.setValueAtTime(base*0.8,t);
+    o.frequency.linearRampToValueAtTime(base*(sad?1.1:1.55),t+dur*0.35);
+    o.frequency.linearRampToValueAtTime(base*(sad?0.6:0.9),t+dur);
+    const vib=a.createOscillator(), vg=a.createGain(); vib.frequency.value=22; vg.gain.value=base*0.025;
+    vib.connect(vg); vg.connect(o.frequency);
+    const f=a.createBiquadFilter(); f.type='bandpass'; f.Q.value=4.5;
+    f.frequency.setValueAtTime(700,t); f.frequency.linearRampToValueAtTime(1900,t+dur*0.4); f.frequency.linearRampToValueAtTime(850,t+dur);
+    const g=a.createGain(); g.gain.setValueAtTime(0.0001,t);
+    g.gain.exponentialRampToValueAtTime(0.55,t+0.07); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    o.connect(f); f.connect(g); g.connect(a.destination);
+    o.start(t); vib.start(t); o.stop(t+dur+0.05); vib.stop(t+dur+0.05);
+  }catch(e){}
+}
+function coinSound(){
+  if(muted) return;
+  try{ const a=ac(), t=a.currentTime;
+    [880,1320].forEach((fr,i)=>{ const o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=fr;
+      g.gain.setValueAtTime(0.0001,t+i*0.08); g.gain.exponentialRampToValueAtTime(0.15,t+i*0.08+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.08+0.12); o.connect(g); g.connect(a.destination);
+      o.start(t+i*0.08); o.stop(t+i*0.08+0.14); });
+  }catch(e){}
+}
+
+// ---------------------------- рисование ----------------------------
+function ell(x,cx,cy,rx,ry,fill,stroke,rot){x.beginPath();x.ellipse(cx,cy,rx,ry,rot||0,0,Math.PI*2);
+  if(fill){x.fillStyle=fill;x.fill();} if(stroke){x.stroke();}}
+function poly(x,pts,fill,stroke){x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p[0],p[1]):x.moveTo(p[0],p[1]));
+  x.closePath(); if(fill){x.fillStyle=fill;x.fill();} if(stroke)x.stroke();}
+
+function draw(c, lv){
+  const s=c.width, x=c.getContext('2d'); x.clearRect(0,0,s,s);
+  if(imgs[lv]){const im=imgs[lv], r=Math.min(s/im.width,s/im.height);
+    x.drawImage(im,(s-im.width*r)/2,(s-im.height*r)/2,im.width*r,im.height*r); return;}
+  const L=LEVELS[lv-1], A=L.a||[], has=k=>A.indexOf(k)>=0;
+  x.save(); x.scale(s/100,s/100); x.lineJoin='round'; x.lineCap='round'; x.lineWidth=1.6; x.strokeStyle=L.shade;
+  if(L.glow){const g=x.createRadialGradient(50,50,8,50,50,52);
+    g.addColorStop(0,'rgba('+L.glow+',.55)'); g.addColorStop(1,'rgba('+L.glow+',0)'); x.fillStyle=g; x.fillRect(0,0,100,100);}
+  let fur=L.fur;
+  if(L.rainbow){const g=x.createLinearGradient(10,0,90,100);
+    ['#ff6b6b','#ffd93d','#6bff95','#4dc9ff','#c77dff'].forEach((col,i,arr)=>g.addColorStop(i/(arr.length-1),col)); fur=g;}
+  // плащ и крылья (за телом)
+  if(has('cape')) poly(x,[[30,56],[6,100],[94,100],[70,56]],'#c0203a',true);
+  if(has('wings')) [[10,66,-0.45],[90,66,0.45]].forEach(w=>{ell(x,w[0],w[1],11,25,'#ffffff',true,w[2]);});
+  // тело
+  x.fillStyle=fur; x.beginPath(); x.moveTo(20,100); x.quadraticCurveTo(18,62,32,56); x.lineTo(68,56);
+  x.quadraticCurveTo(82,62,80,100); x.closePath(); x.fill(); x.stroke();
+  [[28,70,5,2.4],[34,84,6,2.4],[72,68,5,2.4],[68,84,6,2.4],[26,92,5,2.2],[74,94,5,2.2]].forEach(p=>ell(x,p[0],p[1],p[2],p[3],L.spot));
+  // уши
+  poly(x,[[27,32],[29,8],[46,22]],fur,true); poly(x,[[73,32],[71,8],[54,22]],fur,true);
+  poly(x,[[31,26],[32,15],[40,22]],L.shade); poly(x,[[69,26],[68,15],[60,22]],L.shade);
+  // рожки
+  if(has('horns')){const hc=L.hc||'#d9302a'; poly(x,[[30,16],[24,0],[40,12]],hc,true); poly(x,[[70,16],[76,0],[60,12]],hc,true);}
+  // антенны
+  if(has('antennae')){const ac2=L.ant||'#5dff4a'; x.strokeStyle=L.shade; x.lineWidth=2.2;
+    x.beginPath(); x.moveTo(42,18); x.quadraticCurveTo(34,8,38,0); x.stroke();
+    x.beginPath(); x.moveTo(58,18); x.quadraticCurveTo(66,8,62,0); x.stroke();
+    ell(x,38,1.8,2.6,2.6,ac2); ell(x,62,1.8,2.6,2.6,ac2); x.lineWidth=1.6;}
+  // голова
+  ell(x,50,38,25,22,fur,true);
+  [[42,20],[50,17],[58,20],[36,26],[64,26],[50,24]].forEach(p=>ell(x,p[0],p[1],2.4,1.2,L.spot));
+  ell(x,50,48,10,7,(L.shade||'#999')+'55');
+  // глаза
+  [40,60].forEach(cx=>{ ell(x,cx,38,7,7.5,'#0b0b0e');
+    if(L.eye){x.strokeStyle=L.eye;x.lineWidth=1.5;ell(x,cx,38,6,6.5,null,true);x.strokeStyle=L.shade;x.lineWidth=1.6;}
+    ell(x,cx-2,35.5,2.2,2.2,'#fff'); ell(x,cx+2,41,1,1,'#ffffffaa'); });
+  // очки
+  if(has('glasses')){x.strokeStyle='#000'; x.lineWidth=1.6;
+    ell(x,40,38,9.5,8,'#111d',true); ell(x,60,38,9.5,8,'#111d',true);
+    x.beginPath(); x.moveTo(49.5,37); x.lineTo(50.5,37); x.stroke();
+    x.strokeStyle=L.eye||'#fff'; x.lineWidth=1.2; x.beginPath(); x.moveTo(35,34); x.lineTo(39,32); x.moveTo(55,34); x.lineTo(59,32); x.stroke();
+    x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  // нос и рот
+  poly(x,[[46.5,46],[53.5,46],[50,50.5]],'#d98aa0');
+  x.strokeStyle='#555'; x.lineWidth=.9;
+  x.beginPath(); x.moveTo(50,50.5); x.lineTo(50,53); x.moveTo(50,53); x.quadraticCurveTo(47,56,44,54);
+  x.moveTo(50,53); x.quadraticCurveTo(53,56,56,54); x.stroke();
+  // усы
+  x.strokeStyle=L.dark?'#dddde6':'#8a8a96'; x.lineWidth=.8;
+  [[-1,0],[-1,3],[1,0],[1,3]].forEach(([d,o])=>{x.beginPath();x.moveTo(50+d*8,50+o*.6);x.lineTo(50+d*22,49+o*2.2);x.stroke();});
+  // лапка
+  x.strokeStyle=L.shade; x.lineWidth=1.6;
+  ell(x,50,84,14,15,fur,true); ell(x,50,88,7,6,L.spot);
+  [[40,77],[50,74],[60,77]].forEach(p=>ell(x,p[0],p[1],3.2,4,L.spot));
+  // бантик
+  if(has('bow')){poly(x,[[50,58],[37,51],[37,65]],'#e8334f',true); poly(x,[[50,58],[63,51],[63,65]],'#e8334f',true); ell(x,50,58,3.2,3.2,'#b01230');}
+  // наушники
+  if(has('phones')){x.strokeStyle='#222'; x.lineWidth=3.4; x.beginPath(); x.arc(50,38,27,Math.PI,0); x.stroke();
+    x.lineWidth=1.2; ell(x,23,40,5,9,'#222'); ell(x,77,40,5,9,'#222'); x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  // нимб
+  if(has('halo')){x.strokeStyle='#ffd23a'; x.lineWidth=2.6; ell(x,50,5,14,3.8,null,true); x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  // шляпа волшебника
+  if(has('wizard')){poly(x,[[34,17],[50,-4],[66,17]],'#6a3fd0',true); ell(x,50,17,21,4,'#5632b0',true);
+    ell(x,50,10,1.6,1.6,'#ffd23a'); ell(x,45,14,1.2,1.2,'#ffd23a');}
+  // корона
+  if(has('crown')){poly(x,[[34,16],[38,2],[44,11],[50,0],[56,11],[62,2],[66,16]],'#ffd23a',true);
+    ell(x,50,6,1.8,1.8,'#ff3a5a'); ell(x,38,8,1.3,1.3,'#3aa0ff'); ell(x,62,8,1.3,1.3,'#3aa0ff');}
+  // звёзды
+  if(has('stars')){[[10,20],[90,28],[12,56],[90,64],[84,8]].forEach(p=>{
+    poly(x,[[p[0],p[1]-4],[p[0]+1.2,p[1]-1.2],[p[0]+4,p[1]],[p[0]+1.2,p[1]+1.2],[p[0],p[1]+4],[p[0]-1.2,p[1]+1.2],[p[0]-4,p[1]],[p[0]-1.2,p[1]-1.2]],'#ffd23a');});}
+  x.restore();
+}
+
+// ------------------------------ игра ------------------------------
+let board, score, sel=null, over=false, maxLv=1, popIdx=-1, newIdx=-1, floatQ=null;
+let coins=0, best=0, maxEver=1;
+try{ const d=JSON.parse(localStorage.getItem('meimei-save')||'{}'); coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; }catch(e){}
+function save(){ try{ localStorage.setItem('meimei-save',JSON.stringify({coins,best,maxEver})); }catch(e){} }
+const $=id=>document.getElementById(id);
+const boardEl=$('board');
+
+function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2000); }
+function emptyCells(){ const e=[]; board.forEach((v,i)=>{if(!v)e.push(i);}); return e; }
+function place(level){ const e=emptyCells(); if(!e.length) return false; newIdx=e[Math.random()*e.length|0]; board[newIdx]=level; return true; }
+
+function newGame(){
+  board=Array(9).fill(0); score=0; sel=null; over=false; maxLv=1; popIdx=-1; newIdx=-1; floatQ=null;
+  $('over').style.display='none';
+  place(1); place(1); place(1); render(); buildEvo();
+}
+function hasMoves(){
+  for(let i=0;i<9;i++)for(let j=i+1;j<9;j++) if(board[i]&&board[i]===board[j]&&board[i]<MAX) return true;
+  return false;
+}
+function checkOver(){
+  if(board.every(v=>v) && !hasMoves()){
+    over=true; meow(1,true);
+    $('overScore').textContent='Очки: '+score+'  •  Лучший Мей: '+LEVELS[maxLv-1].n;
+    $('over').style.display='flex';
+  }
+}
+function tap(i){
+  if(over) return; popIdx=-1; newIdx=-1; floatQ=null;
+  if(!board[i]){ sel=null; }
+  else if(sel===null){ sel=i; }
+  else if(sel===i){ sel=null; }
+  else if(board[sel]===board[i] && board[i]<MAX){
+    const nl=board[i]+1; board[i]=nl; board[sel]=0; popIdx=i; sel=null;
+    const gain=reward(nl); coins+=gain; score+=nl*10;
+    if(nl>maxLv)maxLv=nl; if(nl>maxEver)maxEver=nl; if(score>best)best=score;
+    floatQ=[i,'+'+fmt(gain)+' 🪙']; meow(nl); place(1); save();
+  } else { sel=i; }
+  render(); buildEvo(); checkOver(); if($('shop').classList.contains('open')) buildShop();
+}
+function render(){
+  if(!board) return;
+  boardEl.innerHTML='';
+  board.forEach((v,i)=>{
+    const b=document.createElement('button'); b.className='cell'+(sel===i?' sel':'')+(popIdx===i?' pop':'')+(newIdx===i?' new':'');
+    if(v){const c=document.createElement('canvas'); c.width=c.height=200; draw(c,v); b.appendChild(c);}
+    b.onclick=()=>tap(i); boardEl.appendChild(b);
+  });
+  if(floatQ){const el=boardEl.children[floatQ[0]]; if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);} floatQ=null;}
+  $('score').textContent=fmt(score); $('best').textContent=fmt(best); $('coins').textContent=fmt(coins);
+  $('name').textContent = sel!==null&&board[sel] ? LEVELS[board[sel]-1].n+' (ур. '+board[sel]+')' : '';
+}
+function buildEvo(){
+  const e=$('evo'); e.innerHTML='';
+  LEVELS.forEach((_,i)=>{const c=document.createElement('canvas'); c.width=c.height=80; draw(c,i+1);
+    if(i+1>maxEver)c.className='lock'; e.appendChild(c);});
+}
+
+// ------------------------------ магазин ------------------------------
+function buildShop(){
+  $('shopCoins').textContent=fmt(coins);
+  const list=$('shopList'); list.innerHTML='';
+  for(let k=2;k<=MAX;k++){
+    const open=k<=maxEver+2, p=price(k);
+    const row=document.createElement('div'); row.className='row';
+    const c=document.createElement('canvas'); c.width=c.height=108; draw(c,k); if(!open)c.className='lock'; row.appendChild(c);
+    const info=document.createElement('div'); info.className='info';
+    info.innerHTML='<b>'+(open?LEVELS[k-1].n:'???')+'</b><small>'+(open?'Уровень '+k+' · при слиянии +'+fmt(reward(k))+' 🪙':'Открывается, когда дойдёшь до уровня '+(k-2))+'</small>';
+    row.appendChild(info);
+    const b=document.createElement('button'); b.textContent=open?('🪙 '+fmt(p)):'🔒';
+    b.disabled=!open||coins<p||over; b.onclick=()=>buy(k); row.appendChild(b);
+    list.appendChild(row);
+  }
+}
+function buy(k){
+  if(over) return;
+  const p=price(k);
+  if(k>maxEver+2){ toast('Этот Мей Мей пока закрыт'); return; }
+  if(coins<p){ toast('Не хватает монет 🪙'); return; }
+  if(!emptyCells().length){ toast('На поле нет места!'); return; }
+  coins-=p; popIdx=-1; floatQ=null; place(k);
+  if(k>maxLv)maxLv=k; save(); coinSound(); setTimeout(()=>meow(k),120);
+  render(); buildEvo(); buildShop(); checkOver();
+}
+$('shopBtn').onclick=()=>{ buildShop(); $('shop').classList.add('open'); };
+$('shopClose').onclick=()=>$('shop').classList.remove('open');
+
+$('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(place(1)){render();checkOver();} else toast('Поле заполнено'); };
+$('restart').onclick=newGame; $('again').onclick=newGame;
+$('snd').textContent=muted?'🔇':'🔊';
+$('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'🔇':'🔊'; try{localStorage.setItem('meimei-muted',muted?'1':'0');}catch(e){} if(!muted)meow(1); };
+newGame();
+</script>
+</body>
+</html>
