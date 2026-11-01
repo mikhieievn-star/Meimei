@@ -5,17 +5,23 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
 <title>Мей Мей Merge</title>
 <style>
+  :root{--fg:#222;--sub:#777;--box:#f0f0f4;--panel:#f6f6f9}
+  body.dark{--fg:#fff;--sub:#b8bce0;--box:rgba(255,255,255,.14);--panel:rgba(255,255,255,.1)}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-  body{margin:0;min-height:100vh;display:flex;flex-direction:column;align-items:center;
-       background:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#222}
+  body{margin:0;min-height:100vh;background:#fff;color:var(--fg);
+       font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  .screen{display:flex;flex-direction:column;align-items:center;width:100%}
   h1{font-size:22px;margin:14px 0 4px}
-  .hud{display:flex;gap:8px;margin:6px 0 10px}
-  .box{background:#f0f0f4;border-radius:12px;padding:6px 12px;text-align:center;min-width:80px}
+  .hud{display:flex;gap:8px;margin:6px 0 6px}
+  .box{background:var(--box);border-radius:12px;padding:6px 12px;text-align:center;min-width:80px}
   .box b{display:block;font-size:19px}
-  .box span{font-size:10px;color:#666;text-transform:uppercase}
-  .box.coin b{color:#c98a00}
+  .box span{font-size:10px;color:var(--sub);text-transform:uppercase}
+  .box.coin b{color:#e0a000}
+  .xptxt{font-size:12px;color:var(--sub);margin:2px 0}
+  .bar{width:min(70vw,260px);height:9px;background:var(--box);border-radius:6px;overflow:hidden;margin-bottom:8px}
+  .bar i{display:block;height:100%;background:#ff3fa4;width:0;transition:width .3s}
   #board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(92vw,420px);
-         background:#f6f6f9;padding:8px;border-radius:18px}
+         background:var(--panel);padding:8px;border-radius:18px}
   .cell{aspect-ratio:1;border:2px solid transparent;border-radius:14px;background:#fff;padding:0;
         display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
         box-shadow:0 1px 3px rgba(0,0,0,.1)}
@@ -28,72 +34,122 @@
   @keyframes fl{to{transform:translate(-50%,-44px);opacity:0}}
   @keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
   @keyframes appear{0%{transform:scale(0)}100%{transform:scale(1)}}
+  @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
   .name{font-size:15px;margin:10px 0 2px;min-height:20px;font-weight:600}
-  .hint{font-size:13px;color:#777;margin:0 12px 8px;text-align:center}
+  .hint{font-size:13px;color:var(--sub);margin:0 12px 8px;text-align:center}
   .btns{display:flex;gap:8px;margin:6px 0;flex-wrap:wrap;justify-content:center}
   button.main{border:0;border-radius:12px;padding:12px 16px;font-size:15px;font-weight:600;
               background:#222;color:#fff;cursor:pointer}
-  button.alt{background:#ff3fa4}
-  button.gold{background:#e0a000}
+  body.dark button.main{background:rgba(255,255,255,.2)}
+  button.alt,body.dark button.alt{background:#ff3fa4}
+  button.gold,body.dark button.gold{background:#e0a000}
   button:disabled{opacity:.4}
   .evo{display:flex;gap:4px;margin:10px 0 24px;flex-wrap:wrap;justify-content:center;width:min(92vw,420px)}
-  .evo canvas{width:calc(12.5% - 4px);aspect-ratio:1;background:#f6f6f9;border-radius:8px;opacity:.9}
+  .evo canvas{width:calc(12.5% - 4px);aspect-ratio:1;background:#f6f6f9;border-radius:8px}
   .evo canvas.lock{filter:brightness(0);opacity:.15}
-  #over{position:fixed;inset:0;background:rgba(255,255,255,.93);display:none;z-index:30;
+
+  #lobby{min-height:100vh;justify-content:center;gap:10px;padding:20px 20px 30px}
+  #lobby h1{font-size:30px;margin:0}
+  #mascot{width:190px;height:190px;animation:bob 2.4s ease-in-out infinite;cursor:pointer}
+  .big{width:min(80vw,300px);padding:16px;font-size:18px;border-radius:16px}
+  .lstats{display:flex;gap:8px;margin-top:6px}
+
+  #over{position:fixed;inset:0;background:rgba(255,255,255,.94);color:#222;display:none;z-index:30;
         flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
   #over h2{margin:0;font-size:28px}
-  #shop{position:fixed;left:0;right:0;bottom:0;max-height:78vh;background:#fff;z-index:20;
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:78vh;background:#fff;color:#222;z-index:20;
         border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.3);
         transform:translateY(105%);transition:transform .25s;display:flex;flex-direction:column}
-  #shop.open{transform:translateY(0)}
-  #shop header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
+  .sheet.open{transform:translateY(0)}
+  .sheet header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
         border-bottom:1px solid #eee;font-weight:700;font-size:17px}
-  #shop header button{border:0;background:#f0f0f4;border-radius:10px;padding:8px 14px;font-size:15px}
-  #shopNote{font-size:12px;color:#888;padding:6px 16px 0}
-  #shopList{overflow-y:auto;padding:4px 14px 28px}
+  .sheet header button{border:0;background:#f0f0f4;border-radius:10px;padding:8px 14px;font-size:15px;color:#222}
+  .tabs{display:flex;gap:8px;padding:10px 14px 0}
+  .tab{flex:1;border:0;border-radius:10px;padding:9px;background:#f0f0f4;font-weight:700;font-size:14px;color:#222}
+  .tab.on{background:#222;color:#fff}
+  .note{font-size:12px;color:#888;padding:8px 16px 0}
+  .list{overflow-y:auto;padding:4px 14px 28px}
   .row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f4}
-  .row canvas{width:54px;height:54px;background:#f6f6f9;border-radius:10px;flex:none}
+  .row canvas,.row .sw{width:54px;height:54px;background:#f6f6f9;border-radius:10px;flex:none;border:1px solid #e4e4ea}
   .row canvas.lock{filter:brightness(0);opacity:.2}
   .row .info{flex:1;min-width:0}
   .row .info b{display:block;font-size:14px}
   .row .info small{color:#888;font-size:12px}
   .row button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:700;
               background:#e0a000;color:#fff;white-space:nowrap}
+  .row button.eq{background:#ff3fa4}
   .row button:disabled{background:#ddd;color:#888}
-  #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-80px);background:#222;color:#fff;
+  .set{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #f0f0f4;font-size:16px}
+  .set button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;background:#222;color:#fff;font-size:14px}
+  .set button.red{background:#e5484d}
+  #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-90px);background:#222;color:#fff;
          padding:10px 16px;border-radius:12px;font-size:14px;z-index:40;transition:transform .25s;max-width:90vw;text-align:center}
   #toast.show{transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 <body>
-<h1>Мей Мей Merge 🐆</h1>
-<div class="hud">
-  <div class="box coin"><span>Монеты</span><b id="coins">0</b></div>
-  <div class="box"><span>Очки</span><b id="score">0</b></div>
-  <div class="box"><span>Рекорд</span><b id="best">0</b></div>
-</div>
-<div id="board"></div>
-<div class="name" id="name"></div>
-<p class="hint">Нажми на Мей Мей, потом на такого же — получишь нового и монеты!</p>
-<div class="btns">
-  <button class="main alt" id="add">+ Позвать Мей Мей</button>
-  <button class="main gold" id="shopBtn">🛒 Магазин</button>
-  <button class="main" id="restart">Заново</button>
-  <button class="main" id="snd">🔊</button>
-</div>
-<div class="evo" id="evo"></div>
 
-<div id="shop">
+<!-- ============ ЛОББИ ============ -->
+<div id="lobby" class="screen">
+  <h1>Мей Мей Merge</h1>
+  <canvas id="mascot" width="380" height="380"></canvas>
+  <div class="xptxt" id="mascotName"></div>
+  <div class="xptxt xpl"></div>
+  <div class="bar"><i class="xpfill"></i></div>
+  <div class="lstats">
+    <div class="box coin"><span>Монеты</span><b id="lCoins">0</b></div>
+    <div class="box"><span>Рекорд</span><b id="lBest">0</b></div>
+  </div>
+  <button class="main alt big" id="play">▶ Играть</button>
+  <button class="main gold big" id="lShop">🛒 Магазин</button>
+  <button class="main big" id="lSet">⚙️ Настройки</button>
+</div>
+
+<!-- ============ ИГРА ============ -->
+<div id="game" class="screen" style="display:none">
+  <h1>Мей Мей Merge 🐆</h1>
+  <div class="hud">
+    <div class="box coin"><span>Монеты</span><b id="coins">0</b></div>
+    <div class="box"><span>Очки</span><b id="score">0</b></div>
+    <div class="box"><span>Рекорд</span><b id="best">0</b></div>
+  </div>
+  <div class="xptxt xpl"></div>
+  <div class="bar"><i class="xpfill"></i></div>
+  <div id="board"></div>
+  <div class="name" id="name"></div>
+  <p class="hint">Нажми на Мей Мей, потом на такого же — получишь нового, монеты и опыт!</p>
+  <div class="btns">
+    <button class="main alt" id="add">+ Позвать Мей Мей</button>
+    <button class="main gold" id="shopBtn">🛒 Магазин</button>
+    <button class="main" id="restart">Заново</button>
+    <button class="main" id="menu">🏠 Меню</button>
+    <button class="main" id="snd">🔊</button>
+  </div>
+  <div class="evo" id="evo"></div>
+</div>
+
+<!-- ============ МАГАЗИН ============ -->
+<div id="shop" class="sheet">
   <header><span>🛒 Магазин · 🪙 <span id="shopCoins">0</span></span><button id="shopClose">Закрыть</button></header>
-  <div id="shopNote">Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.</div>
-  <div id="shopList"></div>
+  <div class="tabs"><button class="tab" id="tabMei">Мей Мей</button><button class="tab" id="tabBg">Фоны</button></div>
+  <div class="note" id="shopNote"></div>
+  <div class="list" id="shopList"></div>
 </div>
-<div id="toast"></div>
 
+<!-- ============ НАСТРОЙКИ ============ -->
+<div id="settings" class="sheet">
+  <header><span>⚙️ Настройки</span><button id="setClose">Закрыть</button></header>
+  <div class="set"><span>Звук мяуканья</span><button id="setSnd">Вкл</button></div>
+  <div class="set"><span>Сбросить весь прогресс</span><button class="red" id="setReset">Сброс</button></div>
+  <div class="note" style="padding-bottom:24px">Сброс удалит монеты, уровень, открытые фоны и рекорд.</div>
+</div>
+
+<div id="toast"></div>
 <div id="over">
   <h2>Поле заполнено 😿</h2>
   <div id="overScore"></div>
   <button class="main alt" id="again">Играть ещё</button>
+  <button class="main" id="toLobby" style="background:#222">В меню</button>
 </div>
 
 <script>
@@ -125,16 +181,33 @@ const LEVELS = [
   {n:'Легенда Мей',        fur:'#2a2a33', shade:'#000000', spot:'#ff3fa4', a:['crown','cape','wings','stars'], eye:'#ff3fa4', dark:1, glow:'255,63,164'}
 ];
 const MAX = LEVELS.length;
+
+// Фоны: need — уровень игрока, price — цена в монетах
+const STARS = 'radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 12%,#fff,transparent),'+
+  'radial-gradient(1px 1px at 40% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 88% 46%,#fff,transparent),'+
+  'radial-gradient(1px 1px at 22% 62%,#fff,transparent),radial-gradient(1.5px 1.5px at 60% 74%,#fff,transparent),'+
+  'radial-gradient(1px 1px at 92% 86%,#fff,transparent),radial-gradient(1px 1px at 8% 90%,#fff,transparent)';
+const BGS = [
+  {id:1, n:'Белый',  need:1,  price:0,    css:'#ffffff'},
+  {id:2, n:'Небо',   need:2,  price:60,   css:'linear-gradient(#9fd3ff,#eaf6ff)'},
+  {id:3, n:'Мята',   need:3,  price:120,  css:'linear-gradient(#bff7dc,#f0fff8)'},
+  {id:4, n:'Сакура', need:5,  price:250,  css:'linear-gradient(#ffc2de,#fff0f7)'},
+  {id:5, n:'Закат',  need:7,  price:500,  css:'linear-gradient(#ff8f6a,#ffd86b)'},
+  {id:6, n:'Ночь',   need:10, price:1000, dark:1, css:STARS+',linear-gradient(#0b1030,#1d2a5a)'},
+  {id:7, n:'Космос', need:14, price:2500, dark:1, css:STARS+',radial-gradient(circle at 25% 20%,#6a2a9a,transparent 55%),radial-gradient(circle at 75% 85%,#1a4a9a,transparent 55%),#07061a'},
+  {id:8, n:'Золото', need:18, price:6000, css:'linear-gradient(135deg,#fff3b0,#ffd23a,#f0a800)'}
+];
+
 const price  = k => Math.round(5*Math.pow(1.9,k-2));
 const reward = j => Math.round(2*Math.pow(1.8,j-2));
+const xpNeed = l => Math.round(30*Math.pow(1.35,l-1));
 const fmt = n => n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':String(n);
 
 const imgs = {};
-LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; render(); buildEvo();}; im.src='img/'+(i+1)+'.png'; });
+LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; render(); buildEvo(); updateLobby();}; im.src='img/'+(i+1)+'.png'; });
 
 // ------------------------------ звук ------------------------------
 let AC, muted=false;
-try{ muted = localStorage.getItem('meimei-muted')==='1'; }catch(e){}
 function ac(){ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume(); return AC; }
 function meow(lv, sad){
   if(muted) return;
@@ -182,77 +255,89 @@ function draw(c, lv){
   let fur=L.fur;
   if(L.rainbow){const g=x.createLinearGradient(10,0,90,100);
     ['#ff6b6b','#ffd93d','#6bff95','#4dc9ff','#c77dff'].forEach((col,i,arr)=>g.addColorStop(i/(arr.length-1),col)); fur=g;}
-  // плащ и крылья (за телом)
   if(has('cape')) poly(x,[[30,56],[6,100],[94,100],[70,56]],'#c0203a',true);
   if(has('wings')) [[10,66,-0.45],[90,66,0.45]].forEach(w=>{ell(x,w[0],w[1],11,25,'#ffffff',true,w[2]);});
-  // тело
   x.fillStyle=fur; x.beginPath(); x.moveTo(20,100); x.quadraticCurveTo(18,62,32,56); x.lineTo(68,56);
   x.quadraticCurveTo(82,62,80,100); x.closePath(); x.fill(); x.stroke();
   [[28,70,5,2.4],[34,84,6,2.4],[72,68,5,2.4],[68,84,6,2.4],[26,92,5,2.2],[74,94,5,2.2]].forEach(p=>ell(x,p[0],p[1],p[2],p[3],L.spot));
-  // уши
   poly(x,[[27,32],[29,8],[46,22]],fur,true); poly(x,[[73,32],[71,8],[54,22]],fur,true);
   poly(x,[[31,26],[32,15],[40,22]],L.shade); poly(x,[[69,26],[68,15],[60,22]],L.shade);
-  // рожки
   if(has('horns')){const hc=L.hc||'#d9302a'; poly(x,[[30,16],[24,0],[40,12]],hc,true); poly(x,[[70,16],[76,0],[60,12]],hc,true);}
-  // антенны
   if(has('antennae')){const ac2=L.ant||'#5dff4a'; x.strokeStyle=L.shade; x.lineWidth=2.2;
     x.beginPath(); x.moveTo(42,18); x.quadraticCurveTo(34,8,38,0); x.stroke();
     x.beginPath(); x.moveTo(58,18); x.quadraticCurveTo(66,8,62,0); x.stroke();
     ell(x,38,1.8,2.6,2.6,ac2); ell(x,62,1.8,2.6,2.6,ac2); x.lineWidth=1.6;}
-  // голова
   ell(x,50,38,25,22,fur,true);
   [[42,20],[50,17],[58,20],[36,26],[64,26],[50,24]].forEach(p=>ell(x,p[0],p[1],2.4,1.2,L.spot));
   ell(x,50,48,10,7,(L.shade||'#999')+'55');
-  // глаза
   [40,60].forEach(cx=>{ ell(x,cx,38,7,7.5,'#0b0b0e');
     if(L.eye){x.strokeStyle=L.eye;x.lineWidth=1.5;ell(x,cx,38,6,6.5,null,true);x.strokeStyle=L.shade;x.lineWidth=1.6;}
     ell(x,cx-2,35.5,2.2,2.2,'#fff'); ell(x,cx+2,41,1,1,'#ffffffaa'); });
-  // очки
   if(has('glasses')){x.strokeStyle='#000'; x.lineWidth=1.6;
     ell(x,40,38,9.5,8,'#111d',true); ell(x,60,38,9.5,8,'#111d',true);
     x.beginPath(); x.moveTo(49.5,37); x.lineTo(50.5,37); x.stroke();
     x.strokeStyle=L.eye||'#fff'; x.lineWidth=1.2; x.beginPath(); x.moveTo(35,34); x.lineTo(39,32); x.moveTo(55,34); x.lineTo(59,32); x.stroke();
     x.strokeStyle=L.shade; x.lineWidth=1.6;}
-  // нос и рот
   poly(x,[[46.5,46],[53.5,46],[50,50.5]],'#d98aa0');
   x.strokeStyle='#555'; x.lineWidth=.9;
   x.beginPath(); x.moveTo(50,50.5); x.lineTo(50,53); x.moveTo(50,53); x.quadraticCurveTo(47,56,44,54);
   x.moveTo(50,53); x.quadraticCurveTo(53,56,56,54); x.stroke();
-  // усы
   x.strokeStyle=L.dark?'#dddde6':'#8a8a96'; x.lineWidth=.8;
   [[-1,0],[-1,3],[1,0],[1,3]].forEach(([d,o])=>{x.beginPath();x.moveTo(50+d*8,50+o*.6);x.lineTo(50+d*22,49+o*2.2);x.stroke();});
-  // лапка
   x.strokeStyle=L.shade; x.lineWidth=1.6;
   ell(x,50,84,14,15,fur,true); ell(x,50,88,7,6,L.spot);
   [[40,77],[50,74],[60,77]].forEach(p=>ell(x,p[0],p[1],3.2,4,L.spot));
-  // бантик
   if(has('bow')){poly(x,[[50,58],[37,51],[37,65]],'#e8334f',true); poly(x,[[50,58],[63,51],[63,65]],'#e8334f',true); ell(x,50,58,3.2,3.2,'#b01230');}
-  // наушники
   if(has('phones')){x.strokeStyle='#222'; x.lineWidth=3.4; x.beginPath(); x.arc(50,38,27,Math.PI,0); x.stroke();
     x.lineWidth=1.2; ell(x,23,40,5,9,'#222'); ell(x,77,40,5,9,'#222'); x.strokeStyle=L.shade; x.lineWidth=1.6;}
-  // нимб
   if(has('halo')){x.strokeStyle='#ffd23a'; x.lineWidth=2.6; ell(x,50,5,14,3.8,null,true); x.strokeStyle=L.shade; x.lineWidth=1.6;}
-  // шляпа волшебника
   if(has('wizard')){poly(x,[[34,17],[50,-4],[66,17]],'#6a3fd0',true); ell(x,50,17,21,4,'#5632b0',true);
     ell(x,50,10,1.6,1.6,'#ffd23a'); ell(x,45,14,1.2,1.2,'#ffd23a');}
-  // корона
   if(has('crown')){poly(x,[[34,16],[38,2],[44,11],[50,0],[56,11],[62,2],[66,16]],'#ffd23a',true);
     ell(x,50,6,1.8,1.8,'#ff3a5a'); ell(x,38,8,1.3,1.3,'#3aa0ff'); ell(x,62,8,1.3,1.3,'#3aa0ff');}
-  // звёзды
   if(has('stars')){[[10,20],[90,28],[12,56],[90,64],[84,8]].forEach(p=>{
     poly(x,[[p[0],p[1]-4],[p[0]+1.2,p[1]-1.2],[p[0]+4,p[1]],[p[0]+1.2,p[1]+1.2],[p[0],p[1]+4],[p[0]-1.2,p[1]+1.2],[p[0]-4,p[1]],[p[0]-1.2,p[1]-1.2]],'#ffd23a');});}
   x.restore();
 }
 
-// ------------------------------ игра ------------------------------
-let board, score, sel=null, over=false, maxLv=1, popIdx=-1, newIdx=-1, floatQ=null;
-let coins=0, best=0, maxEver=1;
-try{ const d=JSON.parse(localStorage.getItem('meimei-save')||'{}'); coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; }catch(e){}
-function save(){ try{ localStorage.setItem('meimei-save',JSON.stringify({coins,best,maxEver})); }catch(e){} }
+// ------------------------- сохранение / прогресс -------------------------
+let coins=0, best=0, maxEver=1, xp=0, plv=1, owned=[1], bgId=1;
+try{
+  const d=JSON.parse(localStorage.getItem('meimei-save3')||localStorage.getItem('meimei-save')||'{}');
+  coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; xp=d.xp||0; plv=d.plv||1;
+  owned=d.owned||[1]; bgId=d.bg||1; muted=!!d.muted || localStorage.getItem('meimei-muted')==='1';
+}catch(e){}
+function save(){ try{ localStorage.setItem('meimei-save3',JSON.stringify({coins,best,maxEver,xp,plv,owned,bg:bgId,muted})); }catch(e){} }
 const $=id=>document.getElementById(id);
+
+function applyBg(){
+  const b=BGS.find(z=>z.id===bgId)||BGS[0];
+  document.body.style.background=b.css;
+  document.body.style.backgroundAttachment='fixed';
+  document.body.classList.toggle('dark',!!b.dark);
+}
+function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2200); }
+function addXp(n){
+  xp+=n; let up=0, bonus=0;
+  while(xp>=xpNeed(plv)){ xp-=xpNeed(plv); plv++; up++; bonus+=20*plv; }
+  if(up){ coins+=bonus; toast('🎉 Уровень '+plv+'! Бонус +'+fmt(bonus)+' 🪙'); }
+}
+function updateXpUI(){
+  const need=xpNeed(plv);
+  document.querySelectorAll('.xpl').forEach(e=>e.textContent='Уровень игрока '+plv+' · '+xp+'/'+need+' опыта');
+  document.querySelectorAll('.xpfill').forEach(e=>e.style.width=Math.min(100,xp/need*100)+'%');
+}
+function updateLobby(){
+  draw($('mascot'),maxEver);
+  $('mascotName').textContent=LEVELS[maxEver-1].n;
+  $('lCoins').textContent=fmt(coins); $('lBest').textContent=fmt(best);
+  updateXpUI();
+}
+
+// ------------------------------ игра ------------------------------
+let board, score=0, sel=null, over=false, maxLv=1, popIdx=-1, newIdx=-1, floatQ=null, cur='lobby';
 const boardEl=$('board');
 
-function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2000); }
 function emptyCells(){ const e=[]; board.forEach((v,i)=>{if(!v)e.push(i);}); return e; }
 function place(level){ const e=emptyCells(); if(!e.length) return false; newIdx=e[Math.random()*e.length|0]; board[newIdx]=level; return true; }
 
@@ -281,7 +366,7 @@ function tap(i){
     const nl=board[i]+1; board[i]=nl; board[sel]=0; popIdx=i; sel=null;
     const gain=reward(nl); coins+=gain; score+=nl*10;
     if(nl>maxLv)maxLv=nl; if(nl>maxEver)maxEver=nl; if(score>best)best=score;
-    floatQ=[i,'+'+fmt(gain)+' 🪙']; meow(nl); place(1); save();
+    floatQ=[i,'+'+fmt(gain)+' 🪙']; meow(nl); place(1); addXp(nl*2); save();
   } else { sel=i; }
   render(); buildEvo(); checkOver(); if($('shop').classList.contains('open')) buildShop();
 }
@@ -296,6 +381,7 @@ function render(){
   if(floatQ){const el=boardEl.children[floatQ[0]]; if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);} floatQ=null;}
   $('score').textContent=fmt(score); $('best').textContent=fmt(best); $('coins').textContent=fmt(coins);
   $('name').textContent = sel!==null&&board[sel] ? LEVELS[board[sel]-1].n+' (ур. '+board[sel]+')' : '';
+  updateXpUI();
 }
 function buildEvo(){
   const e=$('evo'); e.innerHTML='';
@@ -304,19 +390,46 @@ function buildEvo(){
 }
 
 // ------------------------------ магазин ------------------------------
+let shopTab='bg';
+function openShop(){
+  shopTab = cur==='game' ? 'mei' : 'bg';
+  $('tabMei').style.display = cur==='game' ? '' : 'none';
+  buildShop(); $('shop').classList.add('open');
+}
 function buildShop(){
   $('shopCoins').textContent=fmt(coins);
+  $('tabMei').className='tab'+(shopTab==='mei'?' on':'');
+  $('tabBg').className='tab'+(shopTab==='bg'?' on':'');
   const list=$('shopList'); list.innerHTML='';
-  for(let k=2;k<=MAX;k++){
-    const open=k<=maxEver+2, p=price(k);
-    const row=document.createElement('div'); row.className='row';
-    const c=document.createElement('canvas'); c.width=c.height=108; draw(c,k); if(!open)c.className='lock'; row.appendChild(c);
-    const info=document.createElement('div'); info.className='info';
-    info.innerHTML='<b>'+(open?LEVELS[k-1].n:'???')+'</b><small>'+(open?'Уровень '+k+' · при слиянии +'+fmt(reward(k))+' 🪙':'Открывается, когда дойдёшь до уровня '+(k-2))+'</small>';
-    row.appendChild(info);
-    const b=document.createElement('button'); b.textContent=open?('🪙 '+fmt(p)):'🔒';
-    b.disabled=!open||coins<p||over; b.onclick=()=>buy(k); row.appendChild(b);
-    list.appendChild(row);
+  if(shopTab==='mei'){
+    $('shopNote').textContent='Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.';
+    for(let k=2;k<=MAX;k++){
+      const open=k<=maxEver+2, p=price(k);
+      const row=document.createElement('div'); row.className='row';
+      const c=document.createElement('canvas'); c.width=c.height=108; draw(c,k); if(!open)c.className='lock'; row.appendChild(c);
+      const info=document.createElement('div'); info.className='info';
+      info.innerHTML='<b>'+(open?LEVELS[k-1].n:'???')+'</b><small>'+(open?'Уровень '+k+' · при слиянии +'+fmt(reward(k))+' 🪙':'Открывается, когда дойдёшь до уровня '+(k-2))+'</small>';
+      row.appendChild(info);
+      const b=document.createElement('button'); b.textContent=open?('🪙 '+fmt(p)):'🔒';
+      b.disabled=!open||coins<p||over; b.onclick=()=>buy(k); row.appendChild(b);
+      list.appendChild(row);
+    }
+  } else {
+    $('shopNote').textContent='Фоны открываются с уровнем игрока. Опыт даёт каждое слияние.';
+    BGS.forEach(bg=>{
+      const has=owned.indexOf(bg.id)>=0, locked=plv<bg.need;
+      const row=document.createElement('div'); row.className='row';
+      const sw=document.createElement('div'); sw.className='sw'; sw.style.background=bg.css; sw.style.backgroundSize='cover'; row.appendChild(sw);
+      const info=document.createElement('div'); info.className='info';
+      info.innerHTML='<b>'+bg.n+'</b><small>'+(has?'Куплено':locked?'Нужен уровень игрока '+bg.need:'Цена '+fmt(bg.price)+' 🪙')+'</small>';
+      row.appendChild(info);
+      const b=document.createElement('button');
+      if(bgId===bg.id){ b.textContent='✔ Выбран'; b.disabled=true; b.className='eq'; }
+      else if(has){ b.textContent='Выбрать'; b.className='eq'; b.onclick=()=>equipBg(bg.id); }
+      else if(locked){ b.textContent='🔒 ур. '+bg.need; b.disabled=true; }
+      else { b.textContent='🪙 '+fmt(bg.price); b.disabled=coins<bg.price; b.onclick=()=>buyBg(bg.id); }
+      row.appendChild(b); list.appendChild(row);
+    });
   }
 }
 function buy(k){
@@ -329,14 +442,48 @@ function buy(k){
   if(k>maxLv)maxLv=k; save(); coinSound(); setTimeout(()=>meow(k),120);
   render(); buildEvo(); buildShop(); checkOver();
 }
-$('shopBtn').onclick=()=>{ buildShop(); $('shop').classList.add('open'); };
-$('shopClose').onclick=()=>$('shop').classList.remove('open');
+function buyBg(id){
+  const bg=BGS.find(z=>z.id===id);
+  if(plv<bg.need){ toast('Нужен уровень игрока '+bg.need); return; }
+  if(coins<bg.price){ toast('Не хватает монет 🪙'); return; }
+  coins-=bg.price; owned.push(id); bgId=id; save(); coinSound(); applyBg(); buildShop(); updateLobby(); if(board)render();
+}
+function equipBg(id){ bgId=id; save(); applyBg(); buildShop(); }
 
+// ------------------------------ экраны ------------------------------
+function show(name){
+  cur=name;
+  $('lobby').style.display = name==='lobby' ? 'flex' : 'none';
+  $('game').style.display  = name==='game'  ? 'flex' : 'none';
+  $('shop').classList.remove('open'); $('settings').classList.remove('open');
+  $('over').style.display='none';
+  window.scrollTo(0,0);
+  if(name==='lobby') updateLobby();
+}
+function setSndUI(){ $('snd').textContent=muted?'🔇':'🔊'; $('setSnd').textContent=muted?'Выкл':'Вкл'; }
+
+$('play').onclick=()=>{ show('game'); newGame(); };
+$('menu').onclick=()=>show('lobby');
+$('toLobby').onclick=()=>show('lobby');
+$('again').onclick=newGame;
+$('restart').onclick=newGame;
+$('lShop').onclick=openShop; $('shopBtn').onclick=openShop;
+$('shopClose').onclick=()=>$('shop').classList.remove('open');
+$('tabMei').onclick=()=>{ shopTab='mei'; buildShop(); };
+$('tabBg').onclick=()=>{ shopTab='bg'; buildShop(); };
+$('lSet').onclick=()=>$('settings').classList.add('open');
+$('setClose').onclick=()=>$('settings').classList.remove('open');
 $('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(place(1)){render();checkOver();} else toast('Поле заполнено'); };
-$('restart').onclick=newGame; $('again').onclick=newGame;
-$('snd').textContent=muted?'🔇':'🔊';
-$('snd').onclick=()=>{ muted=!muted; $('snd').textContent=muted?'🔇':'🔊'; try{localStorage.setItem('meimei-muted',muted?'1':'0');}catch(e){} if(!muted)meow(1); };
-newGame();
+$('mascot').onclick=()=>meow(maxEver);
+const toggleSnd=()=>{ muted=!muted; save(); setSndUI(); if(!muted)meow(1); };
+$('snd').onclick=toggleSnd; $('setSnd').onclick=toggleSnd;
+$('setReset').onclick=()=>{
+  if(!confirm('Точно сбросить весь прогресс?')) return;
+  coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;
+  save(); applyBg(); updateLobby(); $('settings').classList.remove('open'); toast('Прогресс сброшен');
+};
+
+applyBg(); setSndUI(); show('lobby');
 </script>
 </body>
 </html>
