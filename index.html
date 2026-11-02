@@ -20,8 +20,11 @@
   .xptxt{font-size:12px;color:var(--sub);margin:2px 0}
   .bar{width:min(70vw,260px);height:9px;background:var(--box);border-radius:6px;overflow:hidden;margin-bottom:8px}
   .bar i{display:block;height:100%;background:#ff3fa4;width:0;transition:width .3s}
-  #board{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;width:min(92vw,420px);
+  #boostTag{font-size:12px;color:#e0a000;font-weight:700;min-height:16px;text-align:center}
+  #board{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:8px;width:min(92vw,420px);
          background:var(--panel);padding:8px;border-radius:18px}
+  #board[style*="--n: 4"],#board[style*="--n:4"]{gap:6px}
+  #board[style*="--n: 5"],#board[style*="--n:5"]{gap:4px}
   .cell{aspect-ratio:1;border:2px solid transparent;border-radius:14px;background:#fff;padding:0;
         display:flex;align-items:center;justify-content:center;cursor:pointer;position:relative;
         box-shadow:0 1px 3px rgba(0,0,0,.1)}
@@ -29,12 +32,15 @@
   .cell.sel{border-color:#ff3fa4;background:#fff0f8;transform:scale(1.04)}
   .cell.pop canvas{animation:pop .35s ease-out}
   .cell.new canvas{animation:appear .3s ease-out}
-  .float{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-weight:800;font-size:18px;
-         color:#d99200;pointer-events:none;animation:fl .9s ease-out forwards;text-shadow:0 1px 0 #fff}
+  .float{position:absolute;top:10px;left:50%;transform:translateX(-50%);font-weight:800;font-size:16px;
+         color:#d99200;pointer-events:none;animation:fl .9s ease-out forwards;text-shadow:0 1px 0 #fff;white-space:nowrap;z-index:3}
+  .bp{position:absolute;left:50%;top:50%;font-size:18px;pointer-events:none;z-index:3;animation:burst .85s ease-out forwards}
+  @keyframes burst{0%{transform:translate(-50%,-50%) scale(.5);opacity:1}100%{transform:translate(calc(-50% + var(--dx)),calc(-50% + var(--dy))) scale(1.3);opacity:0}}
   @keyframes fl{to{transform:translate(-50%,-44px);opacity:0}}
   @keyframes pop{0%{transform:scale(.4)}60%{transform:scale(1.25)}100%{transform:scale(1)}}
   @keyframes appear{0%{transform:scale(0)}100%{transform:scale(1)}}
   @keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-10px)}}
+  @keyframes hop{0%{transform:translateY(0) scale(1)}30%{transform:translateY(-34px) scale(1.12,.92)}60%{transform:translateY(0) scale(.92,1.1)}100%{transform:translateY(0) scale(1)}}
   .name{font-size:15px;margin:10px 0 2px;min-height:20px;font-weight:600}
   .hint{font-size:13px;color:var(--sub);margin:0 12px 8px;text-align:center}
   .btns{display:flex;gap:8px;margin:6px 0;flex-wrap:wrap;justify-content:center}
@@ -43,45 +49,89 @@
   body.dark button.main{background:rgba(255,255,255,.2)}
   button.alt,body.dark button.alt{background:#ff3fa4}
   button.gold,body.dark button.gold{background:#e0a000}
+  button.purple,body.dark button.purple{background:#7a55e0}
   button:disabled{opacity:.4}
-  .evo{display:flex;gap:4px;margin:10px 0 24px;flex-wrap:wrap;justify-content:center;width:min(92vw,420px)}
-  .evo canvas{width:calc(12.5% - 4px);aspect-ratio:1;background:#f6f6f9;border-radius:8px}
+  .evo{display:flex;gap:3px;margin:10px 0 24px;flex-wrap:wrap;justify-content:center;width:min(92vw,420px)}
+  .evo canvas{width:calc(100%/11 - 3px);aspect-ratio:1;background:#f6f6f9;border-radius:6px}
   .evo canvas.lock{filter:brightness(0);opacity:.15}
 
-  #lobby{min-height:100vh;justify-content:center;gap:10px;padding:20px 20px 30px}
+  #lobby{min-height:100vh;justify-content:center;gap:8px;padding:16px 20px 28px}
   #lobby h1{font-size:30px;margin:0}
-  #mascot{width:190px;height:190px;animation:bob 2.4s ease-in-out infinite;cursor:pointer}
-  .big{width:min(80vw,300px);padding:16px;font-size:18px;border-radius:16px}
-  .lstats{display:flex;gap:8px;margin-top:6px}
+  #mascotWrap{position:relative;width:160px;height:160px;animation:bob 2.4s ease-in-out infinite;cursor:pointer}
+  #mascotWrap.hop{animation:hop .55s ease-out}
+  #mascot{width:100%;height:100%}
+  .big{width:min(80vw,300px);padding:14px;font-size:17px;border-radius:16px}
+  .lstats{display:flex;gap:8px;margin-top:2px}
+  .iconrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:center;margin:4px 0}
+  .ib{position:relative;width:62px;border:0;border-radius:14px;background:var(--box);color:var(--fg);padding:8px 2px 6px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:2px}
+  .ib .em{font-size:24px;line-height:1}
+  .ib small{font-size:10px;font-weight:600;max-width:60px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .dot{display:none;position:absolute;top:-4px;right:-3px;min-width:18px;height:18px;border-radius:9px;background:#e5484d;color:#fff;
+       font-size:11px;font-style:normal;line-height:18px;text-align:center;padding:0 4px;font-weight:700}
+  .dot.on{display:block}
 
   #over{position:fixed;inset:0;background:rgba(255,255,255,.94);color:#222;display:none;z-index:30;
         flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
   #over h2{margin:0;font-size:28px}
-  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:78vh;background:#fff;color:#222;z-index:20;
+  #backdrop{position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:15;display:none}
+  #backdrop.on{display:block}
+  .sheet{position:fixed;left:0;right:0;bottom:0;max-height:84vh;background:#fff;color:#222;z-index:20;
         border-radius:20px 20px 0 0;box-shadow:0 -4px 24px rgba(0,0,0,.3);
-        transform:translateY(105%);transition:transform .25s;display:flex;flex-direction:column}
+        transform:translateY(105%);transition:transform .25s;display:flex;flex-direction:column;touch-action:pan-y}
   .sheet.open{transform:translateY(0)}
-  .sheet header{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;
-        border-bottom:1px solid #eee;font-weight:700;font-size:17px}
+  .grab{width:42px;height:5px;border-radius:3px;background:#d8d8e0;margin:8px auto 0;flex:none}
+  .sheet header{display:flex;justify-content:space-between;align-items:center;padding:10px 16px 12px;
+        border-bottom:1px solid #eee;font-weight:700;font-size:17px;flex:none}
   .sheet header button{border:0;background:#f0f0f4;border-radius:10px;padding:8px 14px;font-size:15px;color:#222}
-  .tabs{display:flex;gap:8px;padding:10px 14px 0}
-  .tab{flex:1;border:0;border-radius:10px;padding:9px;background:#f0f0f4;font-weight:700;font-size:14px;color:#222}
+  .tabs{display:flex;gap:6px;padding:10px 14px 0;flex:none}
+  .tab{flex:1;border:0;border-radius:10px;padding:9px 2px;background:#f0f0f4;font-weight:700;font-size:13px;color:#222;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
   .tab.on{background:#222;color:#fff}
-  .note{font-size:12px;color:#888;padding:8px 16px 0}
-  .list{overflow-y:auto;padding:4px 14px 28px}
+  .note{font-size:12px;color:#888;padding:8px 16px 0;flex:none}
+  .list{overflow-y:auto;padding:4px 14px 28px;overscroll-behavior:contain}
   .row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #f0f0f4}
   .row canvas,.row .sw{width:54px;height:54px;background:#f6f6f9;border-radius:10px;flex:none;border:1px solid #e4e4ea}
+  .row .sw.em{display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800}
   .row canvas.lock{filter:brightness(0);opacity:.2}
   .row .info{flex:1;min-width:0}
   .row .info b{display:block;font-size:14px}
   .row .info small{color:#888;font-size:12px}
+  .row.hl{background:#fff8e0}
   .row button{border:0;border-radius:10px;padding:9px 12px;font-size:14px;font-weight:700;
               background:#e0a000;color:#fff;white-space:nowrap}
   .row button.eq{background:#ff3fa4}
+  .row button.ok{background:#e6f6e6;color:#3a8a3a}
   .row button:disabled{background:#ddd;color:#888}
-  .set{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid #f0f0f4;font-size:16px}
+  .row button.ok:disabled{background:#e6f6e6;color:#3a8a3a}
+  .set{display:flex;justify-content:space-between;align-items:center;padding:13px 16px;border-bottom:1px solid #f0f0f4;font-size:16px;gap:10px}
   .set button{border:0;border-radius:10px;padding:9px 14px;font-weight:700;background:#222;color:#fff;font-size:14px}
   .set button.red{background:#e5484d}
+  .set input[type=range]{width:46%}
+  .langs{display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+  .langs button{background:#f0f0f4;color:#222;padding:8px 10px}
+  .langs button.on{background:#ff3fa4;color:#fff}
+  #setBody{overflow-y:auto;padding-bottom:20px;overscroll-behavior:contain}
+
+  .pbox{padding:10px 16px 4px;flex:none}
+  .pbar{height:12px;background:#f0f0f4;border-radius:7px;overflow:hidden;margin:6px 0}
+  .pbar i{display:block;height:100%;background:linear-gradient(90deg,#7a55e0,#ff3fa4);width:0}
+  .prow{display:grid;grid-template-columns:34px 1fr 1fr;gap:6px;align-items:center;padding:6px 0;border-bottom:1px solid #f0f0f4}
+  .prow .tn{font-weight:800;color:#7a55e0;text-align:center}
+  .prow.cur{background:#f7f2ff}
+  .prow button{border:0;border-radius:9px;padding:8px 4px;font-size:12px;font-weight:700;background:#f0f0f4;color:#888}
+  .prow button.cl{background:#e0a000;color:#fff}
+  .prow button.cl.g{background:#7a55e0}
+  .prow button.dn{background:#e6f6e6;color:#3a8a3a}
+  .phead{display:grid;grid-template-columns:34px 1fr 1fr;gap:6px;padding:4px 0;font-size:11px;font-weight:800;color:#888;text-align:center;text-transform:uppercase}
+
+  .cgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;padding:8px 0}
+  .cc{background:#f6f6f9;border-radius:10px;text-align:center;font-size:11px;color:#888;padding:4px;cursor:pointer}
+  .cc canvas{width:100%;aspect-ratio:1;display:block}
+  .cc.lock canvas{filter:brightness(0);opacity:.2}
+  .wheelwrap{position:relative;width:min(72vw,280px);margin:14px auto 8px}
+  .wheelwrap canvas{width:100%;display:block;border-radius:50%;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+  .ptr{position:absolute;top:-14px;left:50%;transform:translateX(-50%);font-size:28px;color:#e5484d;z-index:2;line-height:1}
+  .spinbtn{display:block;margin:10px auto 4px;border:0;border-radius:14px;padding:14px 22px;font-size:17px;font-weight:700;background:#ff3fa4;color:#fff}
+  .spinbtn:disabled{opacity:.5}
   #toast{position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-90px);background:#222;color:#fff;
          padding:10px 16px;border-radius:12px;font-size:14px;z-index:40;transition:transform .25s;max-width:90vw;text-align:center}
   #toast.show{transform:translateX(-50%) translateY(0)}
@@ -92,151 +142,459 @@
 <!-- ============ ЛОББИ ============ -->
 <div id="lobby" class="screen">
   <h1>Мей Мей Merge</h1>
-  <canvas id="mascot" width="380" height="380"></canvas>
+  <div id="mascotWrap"><canvas id="mascot" width="320" height="320"></canvas></div>
   <div class="xptxt" id="mascotName"></div>
   <div class="xptxt xpl"></div>
   <div class="bar"><i class="xpfill"></i></div>
   <div class="lstats">
-    <div class="box coin"><span>Монеты</span><b id="lCoins">0</b></div>
-    <div class="box"><span>Рекорд</span><b id="lBest">0</b></div>
+    <div class="box coin"><span data-i="coins"></span><b id="lCoins">0</b></div>
+    <div class="box"><span data-i="best"></span><b id="lBest">0</b></div>
   </div>
-  <button class="main alt big" id="play">▶ Играть</button>
-  <button class="main gold big" id="lShop">🛒 Магазин</button>
-  <button class="main big" id="lSet">⚙️ Настройки</button>
+  <div class="iconrow">
+    <button class="ib" data-panel="daily"><span class="em">🎁</span><small data-i="daily"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="quests"><span class="em">📋</span><small data-i="quests"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="ach"><span class="em">🏆</span><small data-i="ach"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="coll"><span class="em">📖</span><small data-i="coll"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="wheel"><span class="em">🎡</span><small data-i="wheel"></small><i class="dot"></i></button>
+  </div>
+  <button class="main alt big" id="play" data-i="play"></button>
+  <button class="main purple big" id="lPass"></button>
+  <button class="main gold big" id="lShop" data-i="shop"></button>
+  <button class="main big" id="lSet" data-i="settings"></button>
 </div>
 
 <!-- ============ ИГРА ============ -->
 <div id="game" class="screen" style="display:none">
   <h1>Мей Мей Merge 🐆</h1>
   <div class="hud">
-    <div class="box coin"><span>Монеты</span><b id="coins">0</b></div>
-    <div class="box"><span>Очки</span><b id="score">0</b></div>
-    <div class="box"><span>Рекорд</span><b id="best">0</b></div>
+    <div class="box coin"><span data-i="coins"></span><b id="coins">0</b></div>
+    <div class="box"><span data-i="score"></span><b id="score">0</b></div>
+    <div class="box"><span data-i="best"></span><b id="best">0</b></div>
   </div>
   <div class="xptxt xpl"></div>
   <div class="bar"><i class="xpfill"></i></div>
+  <div id="boostTag"></div>
   <div id="board"></div>
   <div class="name" id="name"></div>
-  <p class="hint">Нажми на Мей Мей, потом на такого же — получишь нового, монеты и опыт!</p>
+  <p class="hint" id="hint" data-i="hint"></p>
   <div class="btns">
-    <button class="main alt" id="add">+ Позвать Мей Мей</button>
-    <button class="main gold" id="shopBtn">🛒 Магазин</button>
-    <button class="main" id="restart">Заново</button>
-    <button class="main" id="menu">🏠 Меню</button>
+    <button class="main alt" id="add"></button>
+    <button class="main gold" id="shopBtn" data-i="shop"></button>
+    <button class="main purple" id="passBtn" data-i="pass"></button>
+    <button class="main" id="restart" data-i="restart"></button>
+    <button class="main" id="menu" data-i="menu"></button>
     <button class="main" id="snd">🔊</button>
+    <button class="main" id="mus">🎵</button>
   </div>
   <div class="evo" id="evo"></div>
 </div>
 
+<div id="backdrop"></div>
+
 <!-- ============ МАГАЗИН ============ -->
 <div id="shop" class="sheet">
-  <header><span>🛒 Магазин · 🪙 <span id="shopCoins">0</span></span><button id="shopClose">Закрыть</button></header>
-  <div class="tabs"><button class="tab" id="tabMei">Мей Мей</button><button class="tab" id="tabBg">Фоны</button></div>
+  <header><span><span data-i="shop"></span> · 🪙 <span id="shopCoins">0</span></span><button class="closeBtn" data-i="close"></button></header>
+  <div class="tabs"><button class="tab" id="tabMei" data-i="tab_mei"></button><button class="tab" id="tabBoost" data-i="tab_boost"></button><button class="tab" id="tabField" data-i="tab_field"></button><button class="tab" id="tabBg" data-i="tab_bg"></button></div>
   <div class="note" id="shopNote"></div>
   <div class="list" id="shopList"></div>
 </div>
 
+<!-- ============ БАТЛ ПАСС ============ -->
+<div id="pass" class="sheet">
+  <header><span data-i="bp_t"></span><button class="closeBtn" data-i="close"></button></header>
+  <div class="pbox">
+    <div style="display:flex;justify-content:space-between;font-weight:700"><span id="pTier"></span><span id="pPts"></span></div>
+    <div class="pbar"><i id="pFill"></i></div>
+    <div class="xptxt" id="pNext"></div>
+    <button class="main purple" id="pBuy" style="width:100%;margin-top:6px"></button>
+  </div>
+  <div class="note" data-i="bp_note"></div>
+  <div class="list">
+    <div class="phead"><span>#</span><span data-i="bp_free"></span><span data-i="bp_gold"></span></div>
+    <div id="pList"></div>
+  </div>
+</div>
+
+<!-- ============ ПАНЕЛЬ (бонус, задания, достижения, коллекция, колесо) ============ -->
+<div id="panel" class="sheet">
+  <header><span id="panelTitle"></span><button class="closeBtn" data-i="close"></button></header>
+  <div class="note" id="panelNote"></div>
+  <div class="list" id="panelList"></div>
+</div>
+
 <!-- ============ НАСТРОЙКИ ============ -->
 <div id="settings" class="sheet">
-  <header><span>⚙️ Настройки</span><button id="setClose">Закрыть</button></header>
-  <div class="set"><span>Звук мяуканья</span><button id="setSnd">Вкл</button></div>
-  <div class="set"><span>Сбросить весь прогресс</span><button class="red" id="setReset">Сброс</button></div>
-  <div class="note" style="padding-bottom:24px">Сброс удалит монеты, уровень, открытые фоны и рекорд.</div>
+  <header><span data-i="set_t"></span><button class="closeBtn" data-i="close"></button></header>
+  <div id="setBody">
+    <div class="set"><span data-i="set_lang"></span>
+      <div class="langs"><button data-lang="uk">🇺🇦 UA</button><button data-lang="en">🇬🇧 EN</button><button data-lang="ru">🇷🇺 RU</button></div></div>
+    <div class="set"><span data-i="set_music"></span><button id="setMus"></button></div>
+    <div class="set"><span data-i="set_mvol"></span><input type="range" id="setMVol" min="0" max="100"></div>
+    <div class="set"><span data-i="set_sound"></span><button id="setSnd"></button></div>
+    <div class="set"><span data-i="set_vol"></span><input type="range" id="setVol" min="0" max="100"></div>
+    <div class="set"><span data-i="set_vibe"></span><button id="setVibe"></button></div>
+    <div class="set"><span data-i="set_hints"></span><button id="setHints"></button></div>
+    <div class="set"><span data-i="set_reset"></span><button class="red" id="setReset" data-i="reset_btn"></button></div>
+    <div class="note" data-i="reset_note"></div>
+  </div>
 </div>
 
 <div id="toast"></div>
 <div id="over">
-  <h2>Поле заполнено 😿</h2>
+  <h2 data-i="over_t"></h2>
   <div id="overScore"></div>
-  <button class="main alt" id="again">Играть ещё</button>
-  <button class="main" id="toLobby" style="background:#222">В меню</button>
+  <button class="main alt" id="again" data-i="again"></button>
+  <button class="main" id="toLobby" data-i="to_lobby" style="background:#222"></button>
 </div>
 
 <script>
-// Свои картинки: PNG с прозрачным фоном в папке img/ с именами 1.png ... 24.png
+// ------------------------------ языки ------------------------------
+const I18N = {
+ru:{play:'▶ Играть',pass:'🎟 Батл пасс',shop:'🛒 Магазин',settings:'⚙️ Настройки',coins:'Монеты',best:'Рекорд',score:'Очки',
+ plvl:'Уровень игрока {0} · {1}/{2} опыта',hint:'Нажми на Мей Мей, потом на такого же — получишь нового, монеты и опыт!',
+ add:'+ Позвать Мей Мей (ур. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрыть',tab_mei:'Мей Мей',tab_bg:'Фоны',tab_boost:'Бусты',tab_field:'Поле',
+ note_mei:'Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.',
+ note_bg:'Фоны открываются с уровнем игрока. Опыт даёт каждое слияние. Некоторые фоны — только в Батл пассе.',
+ note_boost:'Бусты работают во время игры. Открой магазин из игры, чтобы их купить.',
+ note_field:'Больше поле — больше места для Мей Мей. Увеличивать можно в любой момент, уменьшать только из меню.',
+ lvl_n:'Уровень {0}',merge_plus:'при слиянии +{0} 🪙',opens:'Открывается, когда дойдёшь до уровня {0}',
+ bought:'Куплено',need_pl:'Нужен уровень игрока {0}',price_n:'Цена {0} 🪙',pass_only:'Только в Батл пассе',
+ selected:'✔ Выбран',choose:'Выбрать',lock_lvl:'🔒 ур. {0}',no_coins:'Не хватает монет 🪙',closed_mei:'Этот Мей Мей пока закрыт',
+ no_room:'На поле нет места!',full:'Поле заполнено',levelup:'🎉 Уровень {0}! Бонус +{1} 🪙',
+ fld_n:'Поле {0}×{0}',fld_shrink_game:'Уменьшать размер можно только из меню',
+ spawn_up:'🎉 Теперь бесплатные Мей Мей появляются уровнем выше!',
+ set_t:'⚙️ Настройки',set_lang:'Язык',set_music:'Фоновая музыка',set_mvol:'Громкость музыки',set_sound:'Звук мяуканья',set_vol:'Громкость звуков',
+ set_vibe:'Вибрация',set_hints:'Подсказки',set_reset:'Сбросить прогресс',reset_btn:'Сброс',
+ reset_note:'Сброс удалит монеты, уровень, фоны, Батл пасс, задания и рекорд.',
+ on:'Вкл',off:'Выкл',confirm_reset:'Точно сбросить весь прогресс?',reset_done:'Прогресс сброшен',
+ over_t:'Поле заполнено 😿',over_s:'Очки: {0}  •  Лучший Мей: {1}',again:'Играть ещё',to_lobby:'В меню',
+ bp_t:'🎟 Батл пасс',bp_tier:'Тир {0}/{1}',bp_pts:'Очки: {0}',bp_next:'До следующего тира: {0}',bp_max:'Все тиры пройдены!',
+ bp_buy:'💎 Золотой трек · 🪙 {0}',bp_on:'💎 Золотой трек активен',bp_free:'Бесплатно',bp_gold:'Золотой',
+ bp_note:'Очки даёт каждое слияние. Награды: монеты, подарочные Мей Мей (появятся в начале игры) и эксклюзивные фоны.',
+ bp_tierup:'🎟 Тир {0} Батл пасса!',bp_gift:'🎁 ур. {0}',bp_bg:'🖼 {0}',bp_need_prem:'Нужен золотой трек',bp_noreach:'Тир ещё не достигнут',bp_got:'Получено: {0}',
+ bst_sweep:'🧹 Уборка',bst_sweep_d:'Убирает с поля всех Мей Мей 1 уровня',bst_up:'⬆️ Апгрейд',bst_up_d:'Случайный Мей Мей становится уровнем выше',
+ bst_x2:'✨ Двойные монеты',bst_x2_d:'×2 монеты за следующие 20 слияний',bst_hammer:'🔨 Молот',bst_hammer_d:'Убирает одного Мей Мей, которого выберешь',
+ bst_magic:'🪄 Магическое слияние',bst_magic_d:'Следующее слияние сработает для двух РАЗНЫХ Мей Мей',bst_shuffle:'🔀 Перемешать',bst_shuffle_d:'Перемешивает всех Мей Мей на поле',
+ bst_box:'🎁 Коробка',bst_box_d:'Случайный сильный Мей Мей сразу на поле',
+ bst_none:'Нечего убирать',bst_empty:'На поле никого нет',bst_need_game:'Бусты доступны только во время игры',
+ x2_tag:'✨ ×2 монеты: осталось {0}',tag_hammer:'🔨 Нажми на Мей Мей, чтобы убрать',tag_magic:'🪄 Магия готова: слей двух разных!',
+ daily:'Бонус дня',quests:'Задания',ach:'Достижения',coll:'Коллекция',wheel:'Колесо',claim:'Забрать',
+ d_note:'Заходи каждый день, чтобы не потерять серию. На 7-й день — подарок!',d_day:'День {0}',d_done:'Сегодня уже получено ✔',d_today:'Сегодня',
+ q_note:'Новые задания каждый день.',q_merge:'Сделай слияний: {0}',q_earn:'Заработай {0} 🪙 на слияниях',q_play:'Сыграй партий: {0}',q_boost:'Используй бустов: {0}',q_reach:'Получи Мей Мей уровня {0}',
+ a_note:'Выполняй цели и получай монеты.',a_merges:'Сделать слияний: {0}',a_earned:'Заработать {0} 🪙',a_level:'Дойти до Мей Мей уровня {0}',a_games:'Сыграть партий: {0}',a_bgs:'Собрать фонов: {0}',a_tier:'Дойти до тира {0} Батл пасса',
+ c_note:'Нажми на открытого Мей Мей, чтобы он мяукнул. Награды за 10, 20, 30 и 44 открытых.',c_count:'Открыто: {0}/{1}',c_ms:'Открыть {0} Мей Мей',
+ w_note:'Одно бесплатное вращение в день. Дополнительное стоит 🪙 {0}.',w_free:'🎡 Крутить бесплатно',w_paid:'🎡 Крутить · 🪙 {0}',w_prize:'Выигрыш: {0}',w_xp:'⭐ {0} опыта',w_x2:'✨ ×2 монеты'},
+uk:{play:'▶ Грати',pass:'🎟 Батл пас',shop:'🛒 Магазин',settings:'⚙️ Налаштування',coins:'Монети',best:'Рекорд',score:'Очки',
+ plvl:'Рівень гравця {0} · {1}/{2} досвіду',hint:'Натисни на Мей Мей, потім на такого ж — отримаєш нового, монети й досвід!',
+ add:'+ Покликати Мей Мей (рів. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрити',tab_mei:'Мей Мей',tab_bg:'Фони',tab_boost:'Бусти',tab_field:'Поле',
+ note_mei:'Мей Мей з магазину одразу з’являється на полі. Нові рівні відкриваються, коли ти сам дійдеш до попередніх.',
+ note_bg:'Фони відкриваються з рівнем гравця. Досвід дає кожне злиття. Деякі фони — лише в Батл пасі.',
+ note_boost:'Бусти працюють під час гри. Відкрий магазин із гри, щоб їх купити.',
+ note_field:'Більше поле — більше місця для Мей Мей. Збільшувати можна будь-коли, зменшувати лише з меню.',
+ lvl_n:'Рівень {0}',merge_plus:'при злитті +{0} 🪙',opens:'Відкривається, коли дійдеш до рівня {0}',
+ bought:'Куплено',need_pl:'Потрібен рівень гравця {0}',price_n:'Ціна {0} 🪙',pass_only:'Тільки в Батл пасі',
+ selected:'✔ Обрано',choose:'Обрати',lock_lvl:'🔒 рів. {0}',no_coins:'Не вистачає монет 🪙',closed_mei:'Цей Мей Мей поки закритий',
+ no_room:'На полі немає місця!',full:'Поле заповнене',levelup:'🎉 Рівень {0}! Бонус +{1} 🪙',
+ fld_n:'Поле {0}×{0}',fld_shrink_game:'Зменшувати розмір можна лише з меню',
+ spawn_up:'🎉 Тепер безкоштовні Мей Мей з’являються рівнем вище!',
+ set_t:'⚙️ Налаштування',set_lang:'Мова',set_music:'Фонова музика',set_mvol:'Гучність музики',set_sound:'Звук нявкання',set_vol:'Гучність звуків',
+ set_vibe:'Вібрація',set_hints:'Підказки',set_reset:'Скинути прогрес',reset_btn:'Скинути',
+ reset_note:'Скидання видалить монети, рівень, фони, Батл пас, завдання і рекорд.',
+ on:'Вкл',off:'Викл',confirm_reset:'Точно скинути весь прогрес?',reset_done:'Прогрес скинуто',
+ over_t:'Поле заповнене 😿',over_s:'Очки: {0}  •  Найкращий Мей: {1}',again:'Грати ще',to_lobby:'В меню',
+ bp_t:'🎟 Батл пас',bp_tier:'Тір {0}/{1}',bp_pts:'Очки: {0}',bp_next:'До наступного тіру: {0}',bp_max:'Усі тіри пройдено!',
+ bp_buy:'💎 Золота колія · 🪙 {0}',bp_on:'💎 Золота колія активна',bp_free:'Безкоштовно',bp_gold:'Золота',
+ bp_note:'Очки дає кожне злиття. Нагороди: монети, подарункові Мей Мей (з’являться на початку гри) та ексклюзивні фони.',
+ bp_tierup:'🎟 Тір {0} Батл пасу!',bp_gift:'🎁 рів. {0}',bp_bg:'🖼 {0}',bp_need_prem:'Потрібна золота колія',bp_noreach:'Тір ще не досягнуто',bp_got:'Отримано: {0}',
+ bst_sweep:'🧹 Прибирання',bst_sweep_d:'Прибирає з поля всіх Мей Мей 1 рівня',bst_up:'⬆️ Апгрейд',bst_up_d:'Випадковий Мей Мей стає рівнем вище',
+ bst_x2:'✨ Подвійні монети',bst_x2_d:'×2 монети за наступні 20 злиттів',bst_hammer:'🔨 Молот',bst_hammer_d:'Прибирає одного Мей Мей, якого оберeш',
+ bst_magic:'🪄 Магічне злиття',bst_magic_d:'Наступне злиття спрацює для двох РІЗНИХ Мей Мей',bst_shuffle:'🔀 Перемішати',bst_shuffle_d:'Перемішує всіх Мей Мей на полі',
+ bst_box:'🎁 Коробка',bst_box_d:'Випадковий сильний Мей Мей одразу на полі',
+ bst_none:'Нічого прибирати',bst_empty:'На полі нікого немає',bst_need_game:'Бусти доступні лише під час гри',
+ x2_tag:'✨ ×2 монети: залишилось {0}',tag_hammer:'🔨 Натисни на Мей Мей, щоб прибрати',tag_magic:'🪄 Магія готова: злий двох різних!',
+ daily:'Бонус дня',quests:'Завдання',ach:'Досягнення',coll:'Колекція',wheel:'Колесо',claim:'Забрати',
+ d_note:'Заходь щодня, щоб не втратити серію. На 7-й день — подарунок!',d_day:'День {0}',d_done:'Сьогодні вже отримано ✔',d_today:'Сьогодні',
+ q_note:'Нові завдання щодня.',q_merge:'Зроби злиттів: {0}',q_earn:'Заробі {0} 🪙 на злиттях',q_play:'Зіграй партій: {0}',q_boost:'Використай бустів: {0}',q_reach:'Отримай Мей Мей рівня {0}',
+ a_note:'Виконуй цілі й отримуй монети.',a_merges:'Зробити злиттів: {0}',a_earned:'Заробити {0} 🪙',a_level:'Дійти до Мей Мей рівня {0}',a_games:'Зіграти партій: {0}',a_bgs:'Зібрати фонів: {0}',a_tier:'Дійти до тіру {0} Батл пасу',
+ c_note:'Натисни на відкритого Мей Мей, щоб він нявкнув. Нагороди за 10, 20, 30 і 44 відкритих.',c_count:'Відкрито: {0}/{1}',c_ms:'Відкрити {0} Мей Мей',
+ w_note:'Одне безкоштовне обертання на день. Додаткове коштує 🪙 {0}.',w_free:'🎡 Крутити безкоштовно',w_paid:'🎡 Крутити · 🪙 {0}',w_prize:'Виграш: {0}',w_xp:'⭐ {0} досвіду',w_x2:'✨ ×2 монети'},
+en:{play:'▶ Play',pass:'🎟 Battle Pass',shop:'🛒 Shop',settings:'⚙️ Settings',coins:'Coins',best:'Best',score:'Score',
+ plvl:'Player level {0} · {1}/{2} XP',hint:'Tap a Mei Mei, then an identical one — get a new Mei, coins and XP!',
+ add:'+ Call a Mei Mei (lv. {0})',restart:'Restart',menu:'🏠 Menu',close:'Close',tab_mei:'Mei Mei',tab_bg:'Themes',tab_boost:'Boosts',tab_field:'Field',
+ note_mei:'A Mei Mei from the shop appears on the board right away. New levels unlock once you reach the previous ones yourself.',
+ note_bg:'Backgrounds unlock with your player level. Every merge gives XP. Some backgrounds come only from the Battle Pass.',
+ note_boost:'Boosts work during a game. Open the shop from the game to buy them.',
+ note_field:'A bigger field means more room for Mei Meis. You can grow it any time, but shrinking is only possible from the menu.',
+ lvl_n:'Level {0}',merge_plus:'on merge +{0} 🪙',opens:'Unlocks when you reach level {0}',
+ bought:'Owned',need_pl:'Player level {0} required',price_n:'Price {0} 🪙',pass_only:'Battle Pass only',
+ selected:'✔ Selected',choose:'Select',lock_lvl:'🔒 lv. {0}',no_coins:'Not enough coins 🪙',closed_mei:'This Mei Mei is still locked',
+ no_room:'No room on the board!',full:'Board is full',levelup:'🎉 Level {0}! Bonus +{1} 🪙',
+ fld_n:'Field {0}×{0}',fld_shrink_game:'You can shrink the field only from the menu',
+ spawn_up:'🎉 Free Mei Meis now appear one level higher!',
+ set_t:'⚙️ Settings',set_lang:'Language',set_music:'Background music',set_mvol:'Music volume',set_sound:'Meow sound',set_vol:'Sound volume',
+ set_vibe:'Vibration',set_hints:'Hints',set_reset:'Reset progress',reset_btn:'Reset',
+ reset_note:'Reset deletes coins, level, backgrounds, Battle Pass, quests and your best score.',
+ on:'On',off:'Off',confirm_reset:'Really reset all progress?',reset_done:'Progress reset',
+ over_t:'Board is full 😿',over_s:'Score: {0}  •  Best Mei: {1}',again:'Play again',to_lobby:'To menu',
+ bp_t:'🎟 Battle Pass',bp_tier:'Tier {0}/{1}',bp_pts:'Points: {0}',bp_next:'To next tier: {0}',bp_max:'All tiers done!',
+ bp_buy:'💎 Gold track · 🪙 {0}',bp_on:'💎 Gold track active',bp_free:'Free',bp_gold:'Gold',
+ bp_note:'Every merge gives points. Rewards: coins, gift Mei Meis (they appear at the start of a game) and exclusive backgrounds.',
+ bp_tierup:'🎟 Battle Pass tier {0}!',bp_gift:'🎁 lv. {0}',bp_bg:'🖼 {0}',bp_need_prem:'Gold track required',bp_noreach:'Tier not reached yet',bp_got:'Received: {0}',
+ bst_sweep:'🧹 Sweep',bst_sweep_d:'Removes all level 1 Mei Meis from the board',bst_up:'⬆️ Upgrade',bst_up_d:'A random Mei Mei goes up one level',
+ bst_x2:'✨ Double coins',bst_x2_d:'×2 coins for the next 20 merges',bst_hammer:'🔨 Hammer',bst_hammer_d:'Removes one Mei Mei of your choice',
+ bst_magic:'🪄 Magic merge',bst_magic_d:'Your next merge works for two DIFFERENT Mei Meis',bst_shuffle:'🔀 Shuffle',bst_shuffle_d:'Shuffles all Mei Meis on the board',
+ bst_box:'🎁 Mystery box',bst_box_d:'A random strong Mei Mei straight onto the board',
+ bst_none:'Nothing to sweep',bst_empty:'The board is empty',bst_need_game:'Boosts are available only during a game',
+ x2_tag:'✨ ×2 coins: {0} left',tag_hammer:'🔨 Tap a Mei Mei to remove it',tag_magic:'🪄 Magic ready: merge two different ones!',
+ daily:'Daily bonus',quests:'Quests',ach:'Awards',coll:'Collection',wheel:'Wheel',claim:'Claim',
+ d_note:'Come back every day to keep your streak. Day 7 gives a gift!',d_day:'Day {0}',d_done:'Already claimed today ✔',d_today:'Today',
+ q_note:'New quests every day.',q_merge:'Make {0} merges',q_earn:'Earn {0} 🪙 from merges',q_play:'Play {0} games',q_boost:'Use {0} boost',q_reach:'Make a Mei Mei of level {0}',
+ a_note:'Complete goals and get coins.',a_merges:'Make {0} merges',a_earned:'Earn {0} 🪙',a_level:'Reach Mei Mei level {0}',a_games:'Play {0} games',a_bgs:'Collect {0} backgrounds',a_tier:'Reach Battle Pass tier {0}',
+ c_note:'Tap an unlocked Mei Mei to hear it meow. Rewards at 10, 20, 30 and 44 unlocked.',c_count:'Unlocked: {0}/{1}',c_ms:'Unlock {0} Mei Meis',
+ w_note:'One free spin per day. Extra spins cost 🪙 {0}.',w_free:'🎡 Spin for free',w_paid:'🎡 Spin · 🪙 {0}',w_prize:'You won: {0}',w_xp:'⭐ {0} XP',w_x2:'✨ ×2 coins'}
+};
+const LI={ru:0,uk:1,en:2};
+let lang=(navigator.language||'ru').slice(0,2); if(!I18N[lang]) lang='en';
+const t=(k,...a)=>{ let s=(I18N[lang][k]!==undefined?I18N[lang][k]:(I18N.ru[k]!==undefined?I18N.ru[k]:k)); a.forEach((v,i)=>{s=s.split('{'+i+'}').join(v);}); return s; };
+
+// ------------------------- Мей Мей (внешний вид) -------------------------
+// Свои картинки: PNG с прозрачным фоном в папке img/ с именами 1.png ... 44.png
 const LEVELS = [
-  {n:'Мей Мей',            fur:'#e8e8ec', shade:'#b5b5bf', spot:'#2a2a31'},
-  {n:'Ледяной Мей',        fur:'#d4ecff', shade:'#9cc9ee', spot:'#2c4a78'},
-  {n:'Зелёный пришелец',   fur:'#5dff4a', shade:'#2fb82a', spot:'#0e5a12', a:['antennae']},
-  {n:'Розовый Мей',        fur:'#ffd1e6', shade:'#f59bc4', spot:'#7a2a55'},
-  {n:'Мятный франт',       fur:'#c9ffe6', shade:'#7fe0b5', spot:'#1f6b4d', a:['bow']},
-  {n:'Диджей Мей',         fur:'#ffd9bf', shade:'#f0a97a', spot:'#7a3d1a', a:['phones']},
-  {n:'Золотой Мей',        fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200'},
-  {n:'Король Мей',         fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200', a:['crown']},
-  {n:'Мей-очкарик',        fur:'#cfe0ff', shade:'#8fb0e8', spot:'#27407a', a:['glasses']},
-  {n:'Ангел Мей',          fur:'#fffbe8', shade:'#e6d588', spot:'#8a7a30', a:['halo','wings']},
-  {n:'Чертёнок',           fur:'#ff9a8a', shade:'#d9503c', spot:'#5a0e06', a:['horns']},
-  {n:'Волшебник Мей',      fur:'#d9c6ff', shade:'#9a7be0', spot:'#2a1a5a', a:['wizard','stars']},
-  {n:'Огненный Мей',       fur:'#ffb347', shade:'#e0701a', spot:'#6a2200', glow:'255,140,40'},
-  {n:'Космо Мей',          fur:'#b79cff', shade:'#7a55e0', spot:'#1d1050', a:['stars'], glow:'180,140,255'},
-  {n:'Киберпанк Мей',      fur:'#46587a', shade:'#0b1428', spot:'#2bf0ff', a:['phones','glasses'], eye:'#2bf0ff', dark:1, glow:'43,240,255'},
-  {n:'Радужный Мей',       rainbow:1, shade:'#7a55e0', spot:'#3a2a5a', a:['stars']},
-  {n:'Граф Мей',           fur:'#c9c9d6', shade:'#666677', spot:'#3a0a14', a:['cape'], eye:'#ff2a2a'},
-  {n:'Робот Мей',          fur:'#cfd8dc', shade:'#78909c', spot:'#37474f', a:['antennae','glasses'], ant:'#ff5555'},
-  {n:'Кристальный Мей',    fur:'#e0fbff', shade:'#7fe3f5', spot:'#1a7a8c', a:['stars'], glow:'120,230,255'},
-  {n:'Тёмный лорд',        fur:'#4a3a5a', shade:'#14081f', spot:'#b44cff', a:['horns','cape'], hc:'#b44cff', eye:'#b44cff', dark:1, glow:'180,76,255'},
-  {n:'Император Мей',      fur:'#ffe28a', shade:'#c9920a', spot:'#7a5200', a:['crown','cape','stars']},
-  {n:'Богиня Мей',         fur:'#ffffff', shade:'#ffb7e3', spot:'#c24fa0', a:['halo','wings','stars'], glow:'255,183,227'},
-  {n:'Галактический Мей',  fur:'#1a1a4a', shade:'#050520', spot:'#7ab8ff', a:['crown','stars'], eye:'#7ab8ff', dark:1, glow:'122,184,255'},
-  {n:'Легенда Мей',        fur:'#2a2a33', shade:'#000000', spot:'#ff3fa4', a:['crown','cape','wings','stars'], eye:'#ff3fa4', dark:1, glow:'255,63,164'}
+  {fur:'#e8e8ec', shade:'#b5b5bf', spot:'#2a2a31'},
+  {fur:'#d4ecff', shade:'#9cc9ee', spot:'#2c4a78'},
+  {fur:'#5dff4a', shade:'#2fb82a', spot:'#0e5a12', a:['antennae']},
+  {fur:'#ffd1e6', shade:'#f59bc4', spot:'#7a2a55'},
+  {fur:'#c9ffe6', shade:'#7fe0b5', spot:'#1f6b4d', a:['bow']},
+  {fur:'#ffd9bf', shade:'#f0a97a', spot:'#7a3d1a', a:['phones']},
+  {fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200'},
+  {fur:'#ffe28a', shade:'#e0b030', spot:'#7a5200', a:['crown']},
+  {fur:'#cfe0ff', shade:'#8fb0e8', spot:'#27407a', a:['glasses']},
+  {fur:'#fffbe8', shade:'#e6d588', spot:'#8a7a30', a:['halo','wings']},
+  {fur:'#ff9a8a', shade:'#d9503c', spot:'#5a0e06', a:['horns']},
+  {fur:'#d9c6ff', shade:'#9a7be0', spot:'#2a1a5a', a:['wizard','stars']},
+  {fur:'#ffb347', shade:'#e0701a', spot:'#6a2200', glow:'255,140,40'},
+  {fur:'#b79cff', shade:'#7a55e0', spot:'#1d1050', a:['stars'], glow:'180,140,255'},
+  {fur:'#46587a', shade:'#0b1428', spot:'#2bf0ff', a:['phones','glasses'], eye:'#2bf0ff', dark:1, glow:'43,240,255'},
+  {rainbow:1, shade:'#7a55e0', spot:'#3a2a5a', a:['stars']},
+  {fur:'#c9c9d6', shade:'#666677', spot:'#3a0a14', a:['cape'], eye:'#ff2a2a'},
+  {fur:'#cfd8dc', shade:'#78909c', spot:'#37474f', a:['antennae','glasses'], ant:'#ff5555'},
+  {fur:'#e0fbff', shade:'#7fe3f5', spot:'#1a7a8c', a:['stars'], glow:'120,230,255'},
+  {fur:'#4a3a5a', shade:'#14081f', spot:'#b44cff', a:['horns','cape'], hc:'#b44cff', eye:'#b44cff', dark:1, glow:'180,76,255'},
+  {fur:'#ffe28a', shade:'#c9920a', spot:'#7a5200', a:['crown','cape','stars']},
+  {fur:'#ffffff', shade:'#ffb7e3', spot:'#c24fa0', a:['halo','wings','stars'], glow:'255,183,227'},
+  {fur:'#1a1a4a', shade:'#050520', spot:'#7ab8ff', a:['crown','stars'], eye:'#7ab8ff', dark:1, glow:'122,184,255'},
+  {fur:'#2a2a33', shade:'#000000', spot:'#ff3fa4', a:['crown','cape','wings','stars'], eye:'#ff3fa4', dark:1, glow:'255,63,164'},
+  {fur:'#ffe9f3', shade:'#f2a6c8', spot:'#8a2a5a', a:['party','stars']},
+  {fur:'#ffffff', shade:'#c9d3e0', spot:'#4a5a78', a:['santa','scarf'], scarf:'#d62839'},
+  {fur:'#d9c7a8', shade:'#a8895c', spot:'#4a3216', a:['pirate']},
+  {fur:'#3a3a48', shade:'#14141c', spot:'#ff5a5a', a:['headband'], dark:1, eye:'#ff5a5a'},
+  {fur:'#fff7e6', shade:'#e6cfa3', spot:'#7a5a2a', a:['chef','bow']},
+  {fur:'#ffd6e7', shade:'#f59bc4', spot:'#7a2a55', a:['flowers']},
+  {fur:'#9ad9a0', shade:'#4fa85a', spot:'#1f5a2a', a:['antlers']},
+  {fur:'#8fdcff', shade:'#3fb0e8', spot:'#0a4a7a', a:['scarf'], scarf:'#0a7ac9'},
+  {fur:'#ff6a4d', shade:'#c23a20', spot:'#3a0a04', a:['horns'], hc:'#ffd23a', glow:'255,90,40'},
+  {fur:'#ffb6e6', shade:'#e06ab8', spot:'#7a1a5a', a:['bow','stars'], glow:'255,150,220'},
+  {fur:'#7a7a9a', shade:'#2a2a48', spot:'#ffe650', a:['stars'], eye:'#ffe650', glow:'255,230,80', dark:1},
+  {fur:'#ffcf4d', shade:'#d99a00', spot:'#3a2400', a:['antennae','wings'], ant:'#222'},
+  {fur:'#a07bd0', shade:'#6a3fa0', spot:'#2a0a50', a:['flowers']},
+  {fur:'#22222c', shade:'#000000', spot:'#8a5aff', a:['cape'], dark:1, eye:'#8a5aff', glow:'138,90,255'},
+  {fur:'#eaf7ff', shade:'#8fcfee', spot:'#2a6a9a', a:['crown','stars'], glow:'160,220,255'},
+  {fur:'#ffe0f0', shade:'#f5a0d0', spot:'#8a2a6a', a:['tiara','stars']},
+  {fur:'#2a3a4a', shade:'#06101a', spot:'#2bf0ff', a:['headband','glasses'], dark:1, eye:'#2bf0ff', glow:'43,240,255'},
+  {fur:'#ff9a3c', shade:'#d9601a', spot:'#6a1a00', a:['wings','crown'], glow:'255,160,60'},
+  {rainbow:1, shade:'#7a55e0', spot:'#3a2a5a', a:['halo','wings','stars'], glow:'200,180,255'},
+  {rainbow:1, shade:'#8a5a00', spot:'#3a2a5a', a:['crown','halo','wings','cape','stars'], glow:'255,220,120', eye:'#ffcc00'}
+];
+const NAMES = [
+ ['Мей Мей','Мей Мей','Mei Mei'],['Ледяной Мей','Крижаний Мей','Icy Mei'],['Зелёный пришелец','Зелений прибулець','Green Alien'],
+ ['Розовый Мей','Рожевий Мей','Pink Mei'],['Мятный франт',"М'ятний франт",'Mint Dandy'],['Диджей Мей','Діджей Мей','DJ Mei'],
+ ['Золотой Мей','Золотий Мей','Golden Mei'],['Король Мей','Король Мей','King Mei'],['Мей-очкарик','Мей-окулярник','Nerd Mei'],
+ ['Ангел Мей','Ангел Мей','Angel Mei'],['Чертёнок','Чортеня','Little Devil'],['Волшебник Мей','Чарівник Мей','Wizard Mei'],
+ ['Огненный Мей','Вогняний Мей','Blazing Mei'],['Космо Мей','Космо Мей','Cosmo Mei'],['Киберпанк Мей','Кіберпанк Мей','Cyberpunk Mei'],
+ ['Радужный Мей','Райдужний Мей','Rainbow Mei'],['Граф Мей','Граф Мей','Count Mei'],['Робот Мей','Робот Мей','Robot Mei'],
+ ['Кристальный Мей','Кришталевий Мей','Crystal Mei'],['Тёмный лорд','Темний лорд','Dark Lord'],['Император Мей','Імператор Мей','Emperor Mei'],
+ ['Богиня Мей','Богиня Мей','Goddess Mei'],['Галактический Мей','Галактичний Мей','Galactic Mei'],['Легенда Мей','Легенда Мей','Legend Mei'],
+ ['Праздничный Мей','Святковий Мей','Party Mei'],['Дед Мороз Мей','Дід Мороз Мей','Santa Mei'],['Пират Мей','Пірат Мей','Pirate Mei'],
+ ['Ниндзя Мей','Ніндзя Мей','Ninja Mei'],['Шеф Мей','Шеф Мей','Chef Mei'],['Цветочный Мей','Квітковий Мей','Flower Mei'],
+ ['Лесной Мей','Лісовий Мей','Forest Mei'],['Океанский Мей','Океанський Мей','Ocean Mei'],['Лавовый Мей','Лавовий Мей','Lava Mei'],
+ ['Сладкий Мей','Солодкий Мей','Candy Mei'],['Грозовой Мей','Грозовий Мей','Storm Mei'],['Пчёлка Мей','Бджілка Мей','Bee Mei'],
+ ['Виноградный Мей','Виноградний Мей','Grape Mei'],['Теневой Мей','Тіньовий Мей','Shadow Mei'],['Снежный король','Сніговий король','Snow King'],
+ ['Принцесса Мей','Принцеса Мей','Princess Mei'],['Кибер-самурай','Кібер-самурай','Cyber Samurai'],['Феникс Мей','Фенікс Мей','Phoenix Mei'],
+ ['Звёздный Мей','Зоряний Мей','Star Mei'],['Абсолютный Мей','Абсолютний Мей','Absolute Mei']
 ];
 const MAX = LEVELS.length;
+const nm = lv => NAMES[lv-1][LI[lang]];
 
-// Фоны: need — уровень игрока, price — цена в монетах
 const STARS = 'radial-gradient(1.5px 1.5px at 12% 18%,#fff,transparent),radial-gradient(1.5px 1.5px at 78% 12%,#fff,transparent),'+
   'radial-gradient(1px 1px at 40% 30%,#fff,transparent),radial-gradient(1.5px 1.5px at 88% 46%,#fff,transparent),'+
   'radial-gradient(1px 1px at 22% 62%,#fff,transparent),radial-gradient(1.5px 1.5px at 60% 74%,#fff,transparent),'+
   'radial-gradient(1px 1px at 92% 86%,#fff,transparent),radial-gradient(1px 1px at 8% 90%,#fff,transparent)';
 const BGS = [
-  {id:1, n:'Белый',  need:1,  price:0,    css:'#ffffff'},
-  {id:2, n:'Небо',   need:2,  price:60,   css:'linear-gradient(#9fd3ff,#eaf6ff)'},
-  {id:3, n:'Мята',   need:3,  price:120,  css:'linear-gradient(#bff7dc,#f0fff8)'},
-  {id:4, n:'Сакура', need:5,  price:250,  css:'linear-gradient(#ffc2de,#fff0f7)'},
-  {id:5, n:'Закат',  need:7,  price:500,  css:'linear-gradient(#ff8f6a,#ffd86b)'},
-  {id:6, n:'Ночь',   need:10, price:1000, dark:1, css:STARS+',linear-gradient(#0b1030,#1d2a5a)'},
-  {id:7, n:'Космос', need:14, price:2500, dark:1, css:STARS+',radial-gradient(circle at 25% 20%,#6a2a9a,transparent 55%),radial-gradient(circle at 75% 85%,#1a4a9a,transparent 55%),#07061a'},
-  {id:8, n:'Золото', need:18, price:6000, css:'linear-gradient(135deg,#fff3b0,#ffd23a,#f0a800)'}
+  {id:1, n:['Белый','Білий','White'],     need:1,  price:0,    css:'#ffffff'},
+  {id:2, n:['Небо','Небо','Sky'],         need:2,  price:60,   css:'linear-gradient(#9fd3ff,#eaf6ff)'},
+  {id:3, n:['Мята',"М'ята",'Mint'],       need:3,  price:120,  css:'linear-gradient(#bff7dc,#f0fff8)'},
+  {id:4, n:['Сакура','Сакура','Sakura'],  need:5,  price:250,  css:'linear-gradient(#ffc2de,#fff0f7)'},
+  {id:5, n:['Закат','Захід','Sunset'],    need:7,  price:500,  css:'linear-gradient(#ff8f6a,#ffd86b)'},
+  {id:6, n:['Ночь','Ніч','Night'],        need:10, price:1000, dark:1, css:STARS+',linear-gradient(#0b1030,#1d2a5a)'},
+  {id:7, n:['Космос','Космос','Space'],   need:14, price:2500, dark:1, css:STARS+',radial-gradient(circle at 25% 20%,#6a2a9a,transparent 55%),radial-gradient(circle at 75% 85%,#1a4a9a,transparent 55%),#07061a'},
+  {id:8, n:['Золото','Золото','Gold'],    need:18, price:6000, css:'linear-gradient(135deg,#fff3b0,#ffd23a,#f0a800)'},
+  {id:9, n:['Океан','Океан','Ocean'],     pass:1, css:'linear-gradient(#0a4a7a,#1fb5c9,#bff3ff)', dark:1},
+  {id:10,n:['Лаванда','Лаванда','Lavender'], pass:1, css:'linear-gradient(#cdb6ff,#f4ecff)'},
+  {id:11,n:['Неон','Неон','Neon'],        pass:1, dark:1, css:'radial-gradient(circle at 20% 20%,#ff2bd6,transparent 45%),radial-gradient(circle at 80% 80%,#2bf0ff,transparent 45%),#0a0420'}
 ];
+const bgName = b => b.n[LI[lang]];
+const FIELD = {4:{price:800,need:4},5:{price:4000,need:10}};
 
 const price  = k => Math.round(5*Math.pow(1.9,k-2));
 const reward = j => Math.round(2*Math.pow(1.8,j-2));
 const xpNeed = l => Math.round(30*Math.pow(1.35,l-1));
-const fmt = n => n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':String(n);
+const fmt = n => n>=1e12?(n/1e12).toFixed(1)+'T':n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':String(n);
+
+// Батл пасс
+const TIERS=30, PASS_PRICE=1200;
+const tierCum = tr => 25*tr+4*tr*(tr+1);
+function passRew(tr,track){
+  if(track==='free'){
+    if(tr===10) return {k:'bg',v:9};
+    if(tr===20) return {k:'bg',v:10};
+    if(tr%5===0) return {k:'gift',v:3+tr/5};
+    return {k:'coins',v:20+tr*8};
+  }
+  if(tr===25) return {k:'bg',v:11};
+  if(tr%5===0) return {k:'gift',v:5+tr/5*2};
+  return {k:'coins',v:50+tr*20};
+}
+function rewLabel(r){
+  if(r.k==='coins') return '🪙 '+fmt(r.v);
+  if(r.k==='gift') return t('bp_gift',r.v);
+  return t('bp_bg',bgName(BGS.find(b=>b.id===r.v)));
+}
+
+// Достижения и коллекция
+const ACH=[
+ {k:'merges',n:50,r:60},{k:'merges',n:300,r:300},{k:'merges',n:1500,r:2000},
+ {k:'earned',n:1000,r:100},{k:'earned',n:20000,r:800},{k:'earned',n:500000,r:10000},
+ {k:'level',n:6,r:100},{k:'level',n:12,r:500},{k:'level',n:24,r:3000},{k:'level',n:36,r:20000},{k:'level',n:44,r:100000},
+ {k:'games',n:10,r:100},{k:'games',n:50,r:600},
+ {k:'bgs',n:4,r:300},{k:'bgs',n:8,r:3000},
+ {k:'tier',n:10,r:500},{k:'tier',n:30,r:5000}
+];
+const COLL=[{n:10,r:200},{n:20,r:800},{n:30,r:3000},{n:44,r:20000}];
+
+// Колесо
+const WHEEL_COST=100;
+const WHEEL=[{k:'coins',v:50,w:22,c:'#ffd23a'},{k:'xp',v:60,w:12,c:'#ff9ec4'},{k:'coins',v:150,w:16,c:'#8ad8ff'},{k:'x2',v:20,w:12,c:'#c8b4ff'},
+ {k:'coins',v:100,w:18,c:'#8dffb0'},{k:'gift',v:0,w:12,c:'#ffb48a'},{k:'coins',v:400,w:6,c:'#ffd23a'},{k:'coins',v:1000,w:2,c:'#ff6fb8'}];
+const wheelLabel=p=>p.k==='coins'?'🪙'+p.v:p.k==='xp'?'⭐'+p.v:p.k==='x2'?'✨×2':'🎁';
 
 const imgs = {};
 LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; render(); buildEvo(); updateLobby();}; im.src='img/'+(i+1)+'.png'; });
 
+// ------------------------------ состояние ------------------------------
+let coins=0,best=0,maxEver=1,xp=0,plv=1,owned=[1],bgId=1;
+let muted=false, vol=0.8, vibe=true, hints=true, musicOn=true, mvol=0.5;
+let bpPts=0, bpFree=[], bpPrem=[], bpGold=false, gifts=[], boost=0;
+let size=3, sizeMax=3, stats={merges:0,earned:0,games:0};
+let dailyLast='', dailyStreak=0, quest={date:'',list:[]}, achClaimed=[], collClaimed=[], wheelDate='';
+try{
+  const d=JSON.parse(localStorage.getItem('meimei-save5')||localStorage.getItem('meimei-save4')||localStorage.getItem('meimei-save3')||localStorage.getItem('meimei-save')||'{}');
+  coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; xp=d.xp||0; plv=d.plv||1; owned=d.owned||[1]; bgId=d.bg||1;
+  muted=!!d.muted; if(d.vol!==undefined) vol=d.vol; if(d.vibe!==undefined) vibe=d.vibe; if(d.hints!==undefined) hints=d.hints;
+  if(d.musicOn!==undefined) musicOn=d.musicOn; if(d.mvol!==undefined) mvol=d.mvol;
+  if(d.lang&&I18N[d.lang]) lang=d.lang;
+  bpPts=d.bpPts||0; bpFree=d.bpFree||[]; bpPrem=d.bpPrem||[]; bpGold=!!d.bpGold; gifts=d.gifts||[]; boost=d.boost||0;
+  size=d.size||3; sizeMax=d.sizeMax||size; if(d.stats) stats=d.stats;
+  dailyLast=d.dailyLast||''; dailyStreak=d.dailyStreak||0; if(d.quest) quest=d.quest; achClaimed=d.achClaimed||[]; collClaimed=d.collClaimed||[]; wheelDate=d.wheelDate||'';
+}catch(e){}
+function save(){ try{ localStorage.setItem('meimei-save5',JSON.stringify({coins,best,maxEver,xp,plv,owned,bg:bgId,muted,vol,vibe,hints,musicOn,mvol,lang,
+  bpPts,bpFree,bpPrem,bpGold,gifts,boost,size,sizeMax,stats,dailyLast,dailyStreak,quest,achClaimed,collClaimed,wheelDate})); }catch(e){} }
+const $=id=>document.getElementById(id);
+const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+const today=()=>dstr(new Date());
+const yesterday=()=>dstr(new Date(Date.now()-864e5));
+function seedRand(str){ let h=2166136261; for(let i=0;i<str.length;i++){h^=str.charCodeAt(i);h=Math.imul(h,16777619);} if(!h)h=1;
+  return ()=>{ h^=h<<13; h^=h>>>17; h^=h<<5; return ((h>>>0)%10000)/10000; }; }
+
 // ------------------------------ звук ------------------------------
-let AC, muted=false;
+let AC;
 function ac(){ AC = AC || new (window.AudioContext||window.webkitAudioContext)(); if(AC.state==='suspended')AC.resume(); return AC; }
 function meow(lv, sad){
-  if(muted) return;
+  if(muted||vol<=0) return;
   try{
-    const a=ac(), t=a.currentTime, dur=(sad?0.9:0.42)+Math.random()*0.12;
-    const base=(sad?330:560)-Math.min(lv,24)*7+Math.random()*70;
+    const a=ac(), tm=a.currentTime, dur=(sad?0.9:0.42)+Math.random()*0.12;
+    const base=(sad?330:560)-Math.min(lv,40)*5+Math.random()*70;
     const o=a.createOscillator(); o.type='sawtooth';
-    o.frequency.setValueAtTime(base*0.8,t);
-    o.frequency.linearRampToValueAtTime(base*(sad?1.1:1.55),t+dur*0.35);
-    o.frequency.linearRampToValueAtTime(base*(sad?0.6:0.9),t+dur);
+    o.frequency.setValueAtTime(base*0.8,tm);
+    o.frequency.linearRampToValueAtTime(base*(sad?1.1:1.55),tm+dur*0.35);
+    o.frequency.linearRampToValueAtTime(base*(sad?0.6:0.9),tm+dur);
     const vib=a.createOscillator(), vg=a.createGain(); vib.frequency.value=22; vg.gain.value=base*0.025;
     vib.connect(vg); vg.connect(o.frequency);
     const f=a.createBiquadFilter(); f.type='bandpass'; f.Q.value=4.5;
-    f.frequency.setValueAtTime(700,t); f.frequency.linearRampToValueAtTime(1900,t+dur*0.4); f.frequency.linearRampToValueAtTime(850,t+dur);
-    const g=a.createGain(); g.gain.setValueAtTime(0.0001,t);
-    g.gain.exponentialRampToValueAtTime(0.55,t+0.07); g.gain.exponentialRampToValueAtTime(0.0001,t+dur);
+    f.frequency.setValueAtTime(700,tm); f.frequency.linearRampToValueAtTime(1900,tm+dur*0.4); f.frequency.linearRampToValueAtTime(850,tm+dur);
+    const g=a.createGain(); g.gain.setValueAtTime(0.0001,tm);
+    g.gain.exponentialRampToValueAtTime(Math.max(0.001,0.55*vol),tm+0.07); g.gain.exponentialRampToValueAtTime(0.0001,tm+dur);
     o.connect(f); f.connect(g); g.connect(a.destination);
-    o.start(t); vib.start(t); o.stop(t+dur+0.05); vib.stop(t+dur+0.05);
+    o.start(tm); vib.start(tm); o.stop(tm+dur+0.05); vib.stop(tm+dur+0.05);
   }catch(e){}
 }
 function coinSound(){
-  if(muted) return;
-  try{ const a=ac(), t=a.currentTime;
+  if(muted||vol<=0) return;
+  try{ const a=ac(), tm=a.currentTime;
     [880,1320].forEach((fr,i)=>{ const o=a.createOscillator(), g=a.createGain(); o.type='square'; o.frequency.value=fr;
-      g.gain.setValueAtTime(0.0001,t+i*0.08); g.gain.exponentialRampToValueAtTime(0.15,t+i*0.08+0.01);
-      g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.08+0.12); o.connect(g); g.connect(a.destination);
-      o.start(t+i*0.08); o.stop(t+i*0.08+0.14); });
+      g.gain.setValueAtTime(0.0001,tm+i*0.08); g.gain.exponentialRampToValueAtTime(Math.max(0.001,0.15*vol),tm+i*0.08+0.01);
+      g.gain.exponentialRampToValueAtTime(0.0001,tm+i*0.08+0.12); o.connect(g); g.connect(a.destination);
+      o.start(tm+i*0.08); o.stop(tm+i*0.08+0.14); });
   }catch(e){}
 }
+function buzz(){ try{ if(vibe && navigator.vibrate) navigator.vibrate(25); }catch(e){} }
+
+// ---------------------- спокойная фоновая музыка ----------------------
+const CHORDS=[[48,55,59,64],[45,52,57,60],[41,48,52,57],[43,50,55,59]];
+const PENT=[72,74,76,79,81,84,67,69];
+const mf=m=>440*Math.pow(2,(m-69)/12);
+let mTimer=null, mNext=0, mStep=0, mMaster=null, mDelay=null, mLp=null;
+function musicStart(){
+  if(!musicOn||mvol<=0||mTimer) return;
+  try{
+    const a=ac();
+    mMaster=a.createGain(); mMaster.gain.value=0; mMaster.connect(a.destination);
+    mLp=a.createBiquadFilter(); mLp.type='lowpass'; mLp.frequency.value=1400; mLp.connect(mMaster);
+    mDelay=a.createDelay(1.5); mDelay.delayTime.value=0.52;
+    const fb=a.createGain(); fb.gain.value=0.38; mDelay.connect(fb); fb.connect(mDelay); mDelay.connect(mLp);
+    mMaster.gain.setTargetAtTime(mvol*0.45,a.currentTime,0.8);
+    mNext=a.currentTime+0.2; mStep=0;
+    mTimer=setInterval(musicTick,600); musicTick();
+  }catch(e){}
+}
+function musicTick(){
+  try{ const a=ac(); while(mNext<a.currentTime+3){ schedChord(a,mNext,CHORDS[mStep%4]); mNext+=6; mStep++; } }catch(e){}
+}
+function schedChord(a,t0,chord){
+  chord.forEach((m,i)=>{
+    const o=a.createOscillator(), g=a.createGain(); o.type=i===0?'sine':'triangle'; o.frequency.value=mf(m);
+    o.detune.value=(Math.random()-.5)*8;
+    g.gain.setValueAtTime(0.0001,t0); g.gain.linearRampToValueAtTime(i===0?0.16:0.07,t0+1.8); g.gain.linearRampToValueAtTime(0.0001,t0+6.4);
+    o.connect(g); g.connect(mLp); const s=a.createGain(); s.gain.value=0.5; g.connect(s); s.connect(mDelay);
+    o.start(t0); o.stop(t0+6.5);
+  });
+  const n=3+Math.floor(Math.random()*3);
+  for(let k=0;k<n;k++){
+    const tt=t0+0.8+k*1.1+Math.random()*0.4, m=PENT[Math.floor(Math.random()*PENT.length)];
+    const o=a.createOscillator(), g=a.createGain(); o.type='sine'; o.frequency.value=mf(m);
+    g.gain.setValueAtTime(0.0001,tt); g.gain.linearRampToValueAtTime(0.09,tt+0.03); g.gain.exponentialRampToValueAtTime(0.0001,tt+1.6);
+    o.connect(g); g.connect(mLp); const s=a.createGain(); s.gain.value=0.7; g.connect(s); s.connect(mDelay);
+    o.start(tt); o.stop(tt+1.7);
+  }
+}
+function musicStop(){
+  if(mTimer){ clearInterval(mTimer); mTimer=null; }
+  if(mMaster){
+    try{ const a=ac(); mMaster.gain.cancelScheduledValues(a.currentTime); mMaster.gain.setTargetAtTime(0,a.currentTime,0.15);
+      const mm=mMaster; setTimeout(()=>{try{mm.disconnect();}catch(e){}},900); }catch(e){}
+    mMaster=null;
+  }
+}
+function musicVol(){ if(mMaster){ try{ mMaster.gain.setTargetAtTime(mvol*0.45,ac().currentTime,0.1); }catch(e){} } }
 
 // ---------------------------- рисование ----------------------------
 function ell(x,cx,cy,rx,ry,fill,stroke,rot){x.beginPath();x.ellipse(cx,cy,rx,ry,rot||0,0,Math.PI*2);
@@ -288,11 +646,24 @@ function draw(c, lv){
   ell(x,50,84,14,15,fur,true); ell(x,50,88,7,6,L.spot);
   [[40,77],[50,74],[60,77]].forEach(p=>ell(x,p[0],p[1],3.2,4,L.spot));
   if(has('bow')){poly(x,[[50,58],[37,51],[37,65]],'#e8334f',true); poly(x,[[50,58],[63,51],[63,65]],'#e8334f',true); ell(x,50,58,3.2,3.2,'#b01230');}
+  if(has('scarf')){const sc=L.scarf||'#e8334f'; poly(x,[[31,55],[69,55],[71,62],[29,62]],sc,true); poly(x,[[60,60],[69,60],[67,78],[59,76]],sc,true);}
   if(has('phones')){x.strokeStyle='#222'; x.lineWidth=3.4; x.beginPath(); x.arc(50,38,27,Math.PI,0); x.stroke();
     x.lineWidth=1.2; ell(x,23,40,5,9,'#222'); ell(x,77,40,5,9,'#222'); x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  if(has('headband')){poly(x,[[28,27],[72,27],[73,32],[27,32]],'#e8334f',true); poly(x,[[72,28],[85,33],[82,38],[71,31]],'#e8334f',true);}
   if(has('halo')){x.strokeStyle='#ffd23a'; x.lineWidth=2.6; ell(x,50,5,14,3.8,null,true); x.strokeStyle=L.shade; x.lineWidth=1.6;}
   if(has('wizard')){poly(x,[[34,17],[50,-4],[66,17]],'#6a3fd0',true); ell(x,50,17,21,4,'#5632b0',true);
     ell(x,50,10,1.6,1.6,'#ffd23a'); ell(x,45,14,1.2,1.2,'#ffd23a');}
+  if(has('party')){poly(x,[[38,19],[50,-3],[62,19]],'#ff5fa8',true); poly(x,[[43,11],[57,11],[59,15],[41,15]],'#ffd23a'); ell(x,50,-1,3,3,'#3aa0ff');}
+  if(has('santa')){poly(x,[[32,20],[48,3],[69,20]],'#d62839',true); ell(x,50,20,22,4,'#ffffff',true); ell(x,48,3,4,4,'#ffffff',true);}
+  if(has('chef')){ell(x,40,10,9,8,'#fff',true); ell(x,60,10,9,8,'#fff',true); ell(x,50,6,10,8,'#fff',true); poly(x,[[34,17],[66,17],[66,23],[34,23]],'#fff',true);}
+  if(has('pirate')){poly(x,[[27,21],[50,3],[73,21],[50,15]],'#222',true); ell(x,50,13,2.2,2.2,'#fff');
+    ell(x,60,38,8.5,7.5,'#111'); x.strokeStyle='#111'; x.lineWidth=1.4; x.beginPath(); x.moveTo(53,32); x.lineTo(74,28); x.moveTo(52,40); x.lineTo(30,26); x.stroke();
+    x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  if(has('flowers')){[[32,19,'#ff7aa8'],[41,12,'#ffd23a'],[50,9,'#ff7aa8'],[59,12,'#ffd23a'],[68,19,'#ff7aa8']].forEach(f=>{ell(x,f[0],f[1],4.6,4.6,f[2]);ell(x,f[0],f[1],1.6,1.6,'#fff');});}
+  if(has('antlers')){x.strokeStyle='#8b5a2b'; x.lineWidth=2.2; x.beginPath();
+    x.moveTo(37,16); x.lineTo(31,3); x.moveTo(34,9); x.lineTo(26,7); x.moveTo(63,16); x.lineTo(69,3); x.moveTo(66,9); x.lineTo(74,7); x.stroke();
+    x.strokeStyle=L.shade; x.lineWidth=1.6;}
+  if(has('tiara')){poly(x,[[38,17],[41,6],[46,13],[50,3],[54,13],[59,6],[62,17]],'#ffe6fa',true); ell(x,50,9,1.8,1.8,'#ff3fa4');}
   if(has('crown')){poly(x,[[34,16],[38,2],[44,11],[50,0],[56,11],[62,2],[66,16]],'#ffd23a',true);
     ell(x,50,6,1.8,1.8,'#ff3a5a'); ell(x,38,8,1.3,1.3,'#3aa0ff'); ell(x,62,8,1.3,1.3,'#3aa0ff');}
   if(has('stars')){[[10,20],[90,28],[12,56],[90,64],[84,8]].forEach(p=>{
@@ -300,75 +671,176 @@ function draw(c, lv){
   x.restore();
 }
 
-// ------------------------- сохранение / прогресс -------------------------
-let coins=0, best=0, maxEver=1, xp=0, plv=1, owned=[1], bgId=1;
-try{
-  const d=JSON.parse(localStorage.getItem('meimei-save3')||localStorage.getItem('meimei-save')||'{}');
-  coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; xp=d.xp||0; plv=d.plv||1;
-  owned=d.owned||[1]; bgId=d.bg||1; muted=!!d.muted || localStorage.getItem('meimei-muted')==='1';
-}catch(e){}
-function save(){ try{ localStorage.setItem('meimei-save3',JSON.stringify({coins,best,maxEver,xp,plv,owned,bg:bgId,muted})); }catch(e){} }
-const $=id=>document.getElementById(id);
-
+// ------------------------- общие функции интерфейса -------------------------
 function applyBg(){
   const b=BGS.find(z=>z.id===bgId)||BGS[0];
   document.body.style.background=b.css;
   document.body.style.backgroundAttachment='fixed';
   document.body.classList.toggle('dark',!!b.dark);
 }
-function toast(t){ const e=$('toast'); e.textContent=t; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2200); }
+function toast(s){ const e=$('toast'); e.textContent=s; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2200); }
+function burst(parent,list,n){
+  for(let i=0;i<n;i++){
+    const s=document.createElement('span'); s.className='bp'; s.textContent=list[i%list.length];
+    const a=Math.random()*Math.PI*2, d=40+Math.random()*50;
+    s.style.setProperty('--dx',Math.cos(a)*d+'px'); s.style.setProperty('--dy',Math.sin(a)*d+'px');
+    parent.appendChild(s); setTimeout(()=>s.remove(),900);
+  }
+}
 function addXp(n){
   xp+=n; let up=0, bonus=0;
   while(xp>=xpNeed(plv)){ xp-=xpNeed(plv); plv++; up++; bonus+=20*plv; }
-  if(up){ coins+=bonus; toast('🎉 Уровень '+plv+'! Бонус +'+fmt(bonus)+' 🪙'); }
+  if(up){ coins+=bonus; toast(t('levelup',plv,fmt(bonus))); }
+}
+function bpTier(){ let n=0; while(n<TIERS && bpPts>=tierCum(n+1)) n++; return n; }
+function addBp(n){ const before=bpTier(); bpPts+=n; const after=bpTier(); if(after>before) setTimeout(()=>toast(t('bp_tierup',after)),900); }
+function claimable(){ const tr=bpTier(); let c=0; for(let i=1;i<=tr;i++){ if(bpFree.indexOf(i)<0)c++; if(bpGold&&bpPrem.indexOf(i)<0)c++; } return c; }
+
+// ежедневные задания
+function ensureQuests(){
+  const td=today(); if(quest.date===td && quest.list && quest.list.length) return;
+  const r=seedRand(td+plv);
+  const pick=['merge', r()<0.5?'earn':'play', r()<0.5?'boost':'reach'];
+  quest={date:td,list:pick.map(ty=>{
+    if(ty==='merge') return {t:ty,need:12+plv,prog:0,done:false,rw:40+plv*5};
+    if(ty==='earn')  return {t:ty,need:120+plv*40,prog:0,done:false,rw:60+plv*8};
+    if(ty==='play')  return {t:ty,need:2,prog:0,done:false,rw:30+plv*3};
+    if(ty==='boost') return {t:ty,need:1,prog:0,done:false,rw:50+plv*4};
+    return {t:ty,need:Math.min(MAX,maxEver+1),prog:0,done:false,rw:100+maxEver*10};
+  })}; save();
+}
+function qAdd(ty,n){ ensureQuests(); quest.list.forEach(q=>{ if(q.t===ty&&q.prog<q.need) q.prog=Math.min(q.need,q.prog+n); }); }
+function qMax(ty,v){ ensureQuests(); quest.list.forEach(q=>{ if(q.t===ty&&v>q.prog) q.prog=Math.min(q.need,v); }); }
+const achVal=k=>k==='merges'?stats.merges:k==='earned'?stats.earned:k==='level'?maxEver:k==='games'?stats.games:k==='bgs'?owned.length:bpTier();
+function dailyInfo(){
+  if(dailyLast===today()) return {claimed:true,day:dailyStreak};
+  return {claimed:false,day:(dailyLast===yesterday()&&dailyStreak<7)?dailyStreak+1:1};
+}
+function dailyRew(day){
+  const m=1+Math.floor(plv/5);
+  if(day<7) return {k:'coins',v:[50,80,120,180,260,400][day-1]*m};
+  return {k:'combo',coins:600*m,gift:8};
+}
+const dailyLabel=r=>r.k==='coins'?'🪙 '+fmt(r.v):'🪙 '+fmt(r.coins)+' + '+t('bp_gift',r.gift);
+
+function badge(btn,n){ const d=btn.querySelector('.dot'); d.textContent=n; d.classList.toggle('on',n>0); }
+function updateBadges(){
+  ensureQuests();
+  const b={};
+  b.daily=dailyInfo().claimed?0:1;
+  b.quests=quest.list.filter(q=>q.prog>=q.need&&!q.done).length;
+  b.ach=ACH.filter((a,i)=>achVal(a.k)>=a.n&&achClaimed.indexOf(i)<0).length;
+  b.coll=COLL.filter(c=>maxEver>=c.n&&collClaimed.indexOf(c.n)<0).length;
+  b.wheel=wheelDate!==today()?1:0;
+  document.querySelectorAll('.ib').forEach(btn=>badge(btn,b[btn.dataset.panel]||0));
 }
 function updateXpUI(){
   const need=xpNeed(plv);
-  document.querySelectorAll('.xpl').forEach(e=>e.textContent='Уровень игрока '+plv+' · '+xp+'/'+need+' опыта');
+  document.querySelectorAll('.xpl').forEach(e=>e.textContent=t('plvl',plv,xp,need));
   document.querySelectorAll('.xpfill').forEach(e=>e.style.width=Math.min(100,xp/need*100)+'%');
 }
 function updateLobby(){
   draw($('mascot'),maxEver);
-  $('mascotName').textContent=LEVELS[maxEver-1].n;
+  $('mascotName').textContent=nm(maxEver);
   $('lCoins').textContent=fmt(coins); $('lBest').textContent=fmt(best);
-  updateXpUI();
+  const c=claimable(); $('lPass').textContent=t('pass')+(c?' ('+c+')':'');
+  updateXpUI(); updateBadges();
+}
+function setSndUI(){
+  $('snd').textContent=muted?'🔇':'🔊';
+  $('mus').textContent=musicOn?'🎵':'🚫';
+  $('setSnd').textContent=muted?t('off'):t('on');
+  $('setMus').textContent=musicOn?t('on'):t('off');
+  $('setVibe').textContent=vibe?t('on'):t('off');
+  $('setHints').textContent=hints?t('on'):t('off');
+  $('setVol').value=Math.round(vol*100); $('setMVol').value=Math.round(mvol*100);
+  $('hint').style.display=hints?'':'none';
+  document.querySelectorAll('[data-lang]').forEach(b=>b.classList.toggle('on',b.dataset.lang===lang));
+}
+function applyLang(){
+  document.documentElement.lang=lang;
+  document.querySelectorAll('[data-i]').forEach(e=>e.textContent=t(e.dataset.i));
+  setSndUI(); updateLobby(); updateAdd(); updateTag();
+  if(board){ render(); buildEvo(); }
+  if($('shop').classList.contains('open')) buildShop();
+  if($('pass').classList.contains('open')) buildPass();
+  if($('panel').classList.contains('open')) buildPanel();
 }
 
 // ------------------------------ игра ------------------------------
-let board, score=0, sel=null, over=false, maxLv=1, popIdx=-1, newIdx=-1, floatQ=null, cur='lobby';
+let board, score=0, sel=null, over=false, maxLv=1, popIdx=-1, newIdx=-1, floatQ=null, cur='lobby', mode=null, magic=false;
 const boardEl=$('board');
-
+const N=()=>size*size;
+const spawnLvl=()=>Math.min(8,1+Math.floor(maxEver/6));
+function applySize(){ boardEl.style.setProperty('--n',size); }
 function emptyCells(){ const e=[]; board.forEach((v,i)=>{if(!v)e.push(i);}); return e; }
 function place(level){ const e=emptyCells(); if(!e.length) return false; newIdx=e[Math.random()*e.length|0]; board[newIdx]=level; return true; }
+function updateAdd(){ $('add').textContent=t('add',spawnLvl()); }
+function updateTag(){
+  const p=[]; if(boost>0)p.push(t('x2_tag',boost)); if(magic)p.push(t('tag_magic')); if(mode==='hammer')p.push(t('tag_hammer'));
+  $('boostTag').textContent=p.join('   ');
+}
+function setSize(n){
+  if(n===size) return true;
+  if(cur==='game' && board && n<size){ toast(t('fld_shrink_game')); return false; }
+  if(cur==='game' && board){
+    const nb=Array(n*n).fill(0);
+    for(let r=0;r<size;r++)for(let c=0;c<size;c++) nb[r*n+c]=board[r*size+c];
+    board=nb; sel=null;
+  }
+  size=n; save(); applySize(); if(cur==='game'&&board){ render(); } return true;
+}
 
 function newGame(){
-  board=Array(9).fill(0); score=0; sel=null; over=false; maxLv=1; popIdx=-1; newIdx=-1; floatQ=null;
+  applySize();
+  board=Array(N()).fill(0); score=0; sel=null; over=false; maxLv=1; popIdx=-1; newIdx=-1; floatQ=null; mode=null; magic=false;
   $('over').style.display='none';
-  place(1); place(1); place(1); render(); buildEvo();
+  const g=gifts.slice(); gifts=[];
+  g.forEach(l=>{ if(place(l)){ if(l>maxLv)maxLv=l; } else gifts.push(l); });
+  const need=Math.max(0,3-board.filter(v=>v).length); for(let i=0;i<need;i++) place(spawnLvl());
+  stats.games++; qAdd('play',1); save();
+  render(); buildEvo(); updateTag(); updateAdd();
 }
 function hasMoves(){
-  for(let i=0;i<9;i++)for(let j=i+1;j<9;j++) if(board[i]&&board[i]===board[j]&&board[i]<MAX) return true;
+  const n=N();
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++) if(board[i]&&board[i]===board[j]&&board[i]<MAX) return true;
   return false;
 }
 function checkOver(){
-  if(board.every(v=>v) && !hasMoves()){
+  if(board.every(v=>v) && !hasMoves() && !magic){
     over=true; meow(1,true);
-    $('overScore').textContent='Очки: '+score+'  •  Лучший Мей: '+LEVELS[maxLv-1].n;
+    $('overScore').textContent=t('over_s',score,nm(maxLv));
     $('over').style.display='flex';
   }
 }
 function tap(i){
   if(over) return; popIdx=-1; newIdx=-1; floatQ=null;
+  if(mode==='hammer'){
+    if(board[i]){ board[i]=0; mode=null; sel=null; save(); updateTag(); render(); }
+    return;
+  }
   if(!board[i]){ sel=null; }
   else if(sel===null){ sel=i; }
   else if(sel===i){ sel=null; }
-  else if(board[sel]===board[i] && board[i]<MAX){
-    const nl=board[i]+1; board[i]=nl; board[sel]=0; popIdx=i; sel=null;
-    const gain=reward(nl); coins+=gain; score+=nl*10;
-    if(nl>maxLv)maxLv=nl; if(nl>maxEver)maxEver=nl; if(score>best)best=score;
-    floatQ=[i,'+'+fmt(gain)+' 🪙']; meow(nl); place(1); addXp(nl*2); save();
-  } else { sel=i; }
-  render(); buildEvo(); checkOver(); if($('shop').classList.contains('open')) buildShop();
+  else {
+    const a=board[sel], b=board[i];
+    const same=a===b&&b<MAX, magicOk=magic&&a!==b&&Math.max(a,b)<MAX;
+    if(same||magicOk){
+      const sb=spawnLvl(), nl=Math.max(a,b)+1; if(magicOk) magic=false;
+      board[i]=nl; board[sel]=0; popIdx=i; sel=null;
+      let gain=reward(nl), dbl=false; if(boost>0){ gain*=2; boost--; dbl=true; }
+      coins+=gain; score+=nl*10; stats.merges++; stats.earned+=gain;
+      if(nl>maxLv)maxLv=nl; if(nl>maxEver)maxEver=nl; if(score>best)best=score;
+      qAdd('merge',1); qAdd('earn',gain); qMax('reach',nl);
+      floatQ=[i,'+'+fmt(gain)+' 🪙'+(dbl?' ×2':''),nl];
+      meow(nl); buzz(); place(spawnLvl()); addXp(nl*2); addBp(nl); save(); updateTag(); updateAdd();
+      if(spawnLvl()>sb) setTimeout(()=>toast(t('spawn_up')),1100);
+    } else { sel=i; }
+  }
+  render(); buildEvo(); checkOver();
+  if($('shop').classList.contains('open')) buildShop();
+  if($('pass').classList.contains('open')) buildPass();
+  if($('panel').classList.contains('open')) buildPanel();
 }
 function render(){
   if(!board) return;
@@ -378,112 +850,372 @@ function render(){
     if(v){const c=document.createElement('canvas'); c.width=c.height=200; draw(c,v); b.appendChild(c);}
     b.onclick=()=>tap(i); boardEl.appendChild(b);
   });
-  if(floatQ){const el=boardEl.children[floatQ[0]]; if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);} floatQ=null;}
+  if(floatQ){const el=boardEl.children[floatQ[0]];
+    if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);
+      burst(el, floatQ[2]>=10?['❤️','✨','💖']:['🪙','✨','⭐'], 9);}
+    floatQ=null;}
   $('score').textContent=fmt(score); $('best').textContent=fmt(best); $('coins').textContent=fmt(coins);
-  $('name').textContent = sel!==null&&board[sel] ? LEVELS[board[sel]-1].n+' (ур. '+board[sel]+')' : '';
+  $('name').textContent = sel!==null&&board[sel] ? nm(board[sel])+' ('+t('lvl_n',board[sel])+')' : '';
   updateXpUI();
 }
 function buildEvo(){
   const e=$('evo'); e.innerHTML='';
-  LEVELS.forEach((_,i)=>{const c=document.createElement('canvas'); c.width=c.height=80; draw(c,i+1);
+  LEVELS.forEach((_,i)=>{const c=document.createElement('canvas'); c.width=c.height=64; draw(c,i+1);
     if(i+1>maxEver)c.className='lock'; e.appendChild(c);});
 }
 
+// ------------------------------ окна ------------------------------
+function closeSheets(){ document.querySelectorAll('.sheet').forEach(s=>s.classList.remove('open')); $('backdrop').classList.remove('on'); }
+function openSheet(id){ closeSheets(); $(id).classList.add('open'); $('backdrop').classList.add('on'); }
+$('backdrop').onclick=closeSheets;
+document.querySelectorAll('.sheet').forEach(sh=>{
+  sh.insertAdjacentHTML('afterbegin','<div class="grab"></div>');
+  let y0=0, dy=0, drag=false;
+  sh.addEventListener('touchstart',e=>{
+    y0=e.touches[0].clientY; dy=0;
+    const sc=e.target.closest('.list,#setBody'); drag=!sc||sc.scrollTop<=0;
+  },{passive:true});
+  sh.addEventListener('touchmove',e=>{
+    if(!drag) return; dy=e.touches[0].clientY-y0;
+    if(dy>0){ sh.style.transition='none'; sh.style.transform='translateY('+dy+'px)'; }
+  },{passive:true});
+  sh.addEventListener('touchend',()=>{
+    sh.style.transition=''; sh.style.transform='';
+    if(drag&&dy>90) closeSheets(); dy=0;
+  });
+});
+
 // ------------------------------ магазин ------------------------------
 let shopTab='bg';
+const BOOSTS=[{id:'sweep',price:40,e:'🧹'},{id:'up',price:60,e:'⬆️'},{id:'x2',price:90,e:'✨'},{id:'hammer',price:30,e:'🔨'},
+  {id:'magic',price:70,e:'🪄'},{id:'shuffle',price:25,e:'🔀'},{id:'box',price:80,e:'🎁'}];
+function mkRow(left,title,small,btn){
+  const row=document.createElement('div'); row.className='row';
+  if(left) row.appendChild(left);
+  const info=document.createElement('div'); info.className='info'; info.innerHTML='<b>'+title+'</b><small>'+small+'</small>'; row.appendChild(info);
+  if(btn) row.appendChild(btn);
+  return row;
+}
+function mkBtn(text,cls,fn,disabled){ const b=document.createElement('button'); b.textContent=text; if(cls)b.className=cls; if(fn)b.onclick=fn; b.disabled=!!disabled; return b; }
+function emSw(txt){ const s=document.createElement('div'); s.className='sw em'; s.textContent=txt; return s; }
+
 function openShop(){
   shopTab = cur==='game' ? 'mei' : 'bg';
   $('tabMei').style.display = cur==='game' ? '' : 'none';
-  buildShop(); $('shop').classList.add('open');
+  $('tabBoost').style.display = cur==='game' ? '' : 'none';
+  buildShop(); openSheet('shop');
 }
 function buildShop(){
   $('shopCoins').textContent=fmt(coins);
+  ['Mei','Boost','Field','Bg'].forEach(n=>{ $('tab'+n).className='tab'+(shopTab===n.toLowerCase()?' on':''); });
   $('tabMei').className='tab'+(shopTab==='mei'?' on':'');
-  $('tabBg').className='tab'+(shopTab==='bg'?' on':'');
   const list=$('shopList'); list.innerHTML='';
   if(shopTab==='mei'){
-    $('shopNote').textContent='Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.';
+    $('shopNote').textContent=t('note_mei');
     for(let k=2;k<=MAX;k++){
       const open=k<=maxEver+2, p=price(k);
-      const row=document.createElement('div'); row.className='row';
-      const c=document.createElement('canvas'); c.width=c.height=108; draw(c,k); if(!open)c.className='lock'; row.appendChild(c);
-      const info=document.createElement('div'); info.className='info';
-      info.innerHTML='<b>'+(open?LEVELS[k-1].n:'???')+'</b><small>'+(open?'Уровень '+k+' · при слиянии +'+fmt(reward(k))+' 🪙':'Открывается, когда дойдёшь до уровня '+(k-2))+'</small>';
-      row.appendChild(info);
-      const b=document.createElement('button'); b.textContent=open?('🪙 '+fmt(p)):'🔒';
-      b.disabled=!open||coins<p||over; b.onclick=()=>buy(k); row.appendChild(b);
-      list.appendChild(row);
+      const c=document.createElement('canvas'); c.width=c.height=108; draw(c,k); if(!open)c.className='lock';
+      list.appendChild(mkRow(c,open?nm(k):'???',open?t('lvl_n',k)+' · '+t('merge_plus',fmt(reward(k))):t('opens',k-2),
+        mkBtn(open?('🪙 '+fmt(p)):'🔒','',()=>buy(k),!open||coins<p||over)));
     }
-  } else {
-    $('shopNote').textContent='Фоны открываются с уровнем игрока. Опыт даёт каждое слияние.';
+  } else if(shopTab==='bg'){
+    $('shopNote').textContent=t('note_bg');
     BGS.forEach(bg=>{
-      const has=owned.indexOf(bg.id)>=0, locked=plv<bg.need;
-      const row=document.createElement('div'); row.className='row';
-      const sw=document.createElement('div'); sw.className='sw'; sw.style.background=bg.css; sw.style.backgroundSize='cover'; row.appendChild(sw);
-      const info=document.createElement('div'); info.className='info';
-      info.innerHTML='<b>'+bg.n+'</b><small>'+(has?'Куплено':locked?'Нужен уровень игрока '+bg.need:'Цена '+fmt(bg.price)+' 🪙')+'</small>';
-      row.appendChild(info);
-      const b=document.createElement('button');
-      if(bgId===bg.id){ b.textContent='✔ Выбран'; b.disabled=true; b.className='eq'; }
-      else if(has){ b.textContent='Выбрать'; b.className='eq'; b.onclick=()=>equipBg(bg.id); }
-      else if(locked){ b.textContent='🔒 ур. '+bg.need; b.disabled=true; }
-      else { b.textContent='🪙 '+fmt(bg.price); b.disabled=coins<bg.price; b.onclick=()=>buyBg(bg.id); }
-      row.appendChild(b); list.appendChild(row);
+      const has=owned.indexOf(bg.id)>=0, locked=!bg.pass && plv<bg.need;
+      const sw=document.createElement('div'); sw.className='sw'; sw.style.background=bg.css; sw.style.backgroundSize='cover';
+      let btn;
+      if(bgId===bg.id) btn=mkBtn(t('selected'),'eq',null,true);
+      else if(has) btn=mkBtn(t('choose'),'eq',()=>equipBg(bg.id));
+      else if(bg.pass) btn=mkBtn('🎟','',null,true);
+      else if(locked) btn=mkBtn(t('lock_lvl',bg.need),'',null,true);
+      else btn=mkBtn('🪙 '+fmt(bg.price),'',()=>buyBg(bg.id),coins<bg.price);
+      list.appendChild(mkRow(sw,bgName(bg),has?t('bought'):bg.pass?t('pass_only'):locked?t('need_pl',bg.need):t('price_n',fmt(bg.price)),btn));
+    });
+  } else if(shopTab==='field'){
+    $('shopNote').textContent=t('note_field');
+    [3,4,5].forEach(n=>{
+      const f=FIELD[n], has=n<=sizeMax, locked=f&&plv<f.need;
+      let btn;
+      if(size===n) btn=mkBtn(t('selected'),'eq',null,true);
+      else if(has) btn=mkBtn(t('choose'),'eq',()=>{ if(setSize(n)) buildShop(); });
+      else if(locked) btn=mkBtn(t('lock_lvl',f.need),'',null,true);
+      else btn=mkBtn('🪙 '+fmt(f.price),'',()=>buyField(n),coins<f.price);
+      list.appendChild(mkRow(emSw(n+'×'+n),t('fld_n',n),has?t('bought'):locked?t('need_pl',f.need):t('price_n',fmt(f.price)),btn));
+    });
+  } else {
+    $('shopNote').textContent=t('note_boost');
+    BOOSTS.forEach(bo=>{
+      list.appendChild(mkRow(emSw(bo.e),t('bst_'+bo.id),t('bst_'+bo.id+'_d'),
+        mkBtn('🪙 '+fmt(bo.price),'',()=>useBoost(bo.id),coins<bo.price||over)));
     });
   }
 }
 function buy(k){
   if(over) return;
   const p=price(k);
-  if(k>maxEver+2){ toast('Этот Мей Мей пока закрыт'); return; }
-  if(coins<p){ toast('Не хватает монет 🪙'); return; }
-  if(!emptyCells().length){ toast('На поле нет места!'); return; }
+  if(k>maxEver+2){ toast(t('closed_mei')); return; }
+  if(coins<p){ toast(t('no_coins')); return; }
+  if(!emptyCells().length){ toast(t('no_room')); return; }
   coins-=p; popIdx=-1; floatQ=null; place(k);
   if(k>maxLv)maxLv=k; save(); coinSound(); setTimeout(()=>meow(k),120);
   render(); buildEvo(); buildShop(); checkOver();
 }
 function buyBg(id){
   const bg=BGS.find(z=>z.id===id);
-  if(plv<bg.need){ toast('Нужен уровень игрока '+bg.need); return; }
-  if(coins<bg.price){ toast('Не хватает монет 🪙'); return; }
-  coins-=bg.price; owned.push(id); bgId=id; save(); coinSound(); applyBg(); buildShop(); updateLobby(); if(board)render();
+  if(plv<bg.need){ toast(t('need_pl',bg.need)); return; }
+  if(coins<bg.price){ toast(t('no_coins')); return; }
+  coins-=bg.price; owned.push(id); bgId=id; save(); coinSound(); applyBg(); buildShop(); updateLobby(); if(board&&cur==='game')render();
 }
 function equipBg(id){ bgId=id; save(); applyBg(); buildShop(); }
+function buyField(n){
+  const f=FIELD[n];
+  if(plv<f.need){ toast(t('need_pl',f.need)); return; }
+  if(coins<f.price){ toast(t('no_coins')); return; }
+  coins-=f.price; sizeMax=Math.max(sizeMax,n); save(); coinSound(); setSize(n); buildShop(); if(board&&cur==='game')render();
+}
+function useBoost(id){
+  if(cur!=='game'){ toast(t('bst_need_game')); return; }
+  if(over) return;
+  const bo=BOOSTS.find(z=>z.id===id);
+  if(coins<bo.price){ toast(t('no_coins')); return; }
+  if(id==='sweep'){
+    if(!board.some(v=>v===1)){ toast(t('bst_none')); return; }
+    board=board.map(v=>v===1?0:v);
+  } else if(id==='up'){
+    const idx=[]; board.forEach((v,i)=>{ if(v&&v<MAX) idx.push(i); });
+    if(!idx.length){ toast(t('bst_empty')); return; }
+    const i=idx[Math.random()*idx.length|0]; board[i]++; popIdx=i; if(board[i]>maxLv)maxLv=board[i]; meow(board[i]);
+  } else if(id==='x2'){ boost+=20;
+  } else if(id==='hammer'){
+    if(!board.some(v=>v)){ toast(t('bst_empty')); return; }
+    mode='hammer'; closeSheets();
+  } else if(id==='magic'){ magic=true; closeSheets();
+  } else if(id==='shuffle'){
+    if(board.filter(v=>v).length<2){ toast(t('bst_empty')); return; }
+    for(let i=board.length-1;i>0;i--){ const j=Math.random()*(i+1)|0; const tmp=board[i]; board[i]=board[j]; board[j]=tmp; }
+  } else if(id==='box'){
+    if(!emptyCells().length){ toast(t('no_room')); return; }
+    const lo=Math.max(2,maxEver-4), hi=Math.min(MAX,maxEver+1), lv=lo+Math.floor(Math.random()*(hi-lo+1));
+    place(lv); if(lv>maxLv)maxLv=lv; meow(lv);
+  }
+  coins-=bo.price; sel=null; qAdd('boost',1); save(); coinSound(); updateTag(); render(); buildShop(); checkOver();
+}
 
-// ------------------------------ экраны ------------------------------
+// ------------------------------ батл пасс ------------------------------
+function openPass(){ buildPass(); openSheet('pass'); }
+function buildPass(){
+  const tr=bpTier();
+  $('pTier').textContent=t('bp_tier',tr,TIERS);
+  $('pPts').textContent=t('bp_pts',bpPts);
+  if(tr>=TIERS){ $('pFill').style.width='100%'; $('pNext').textContent=t('bp_max'); }
+  else{
+    const lo=tr?tierCum(tr):0, hi=tierCum(tr+1);
+    $('pFill').style.width=((bpPts-lo)/(hi-lo)*100)+'%';
+    $('pNext').textContent=t('bp_next',hi-bpPts);
+  }
+  const pb=$('pBuy');
+  if(bpGold){ pb.textContent=t('bp_on'); pb.disabled=true; }
+  else{ pb.textContent=t('bp_buy',fmt(PASS_PRICE)); pb.disabled=coins<PASS_PRICE; }
+  const list=$('pList'); list.innerHTML='';
+  for(let i=1;i<=TIERS;i++){
+    const row=document.createElement('div'); row.className='prow'+(i===tr+1?' cur':'');
+    const n=document.createElement('div'); n.className='tn'; n.textContent=i; row.appendChild(n);
+    ['free','prem'].forEach(track=>{
+      const r=passRew(i,track), done=(track==='free'?bpFree:bpPrem).indexOf(i)>=0;
+      const reached=i<=tr, allowed=track==='free'||bpGold;
+      const b=document.createElement('button'); b.textContent=rewLabel(r)+(allowed?'':' 🔒');
+      if(done){ b.className='dn'; b.textContent=rewLabel(r)+' ✔'; b.disabled=true; }
+      else if(reached&&allowed){ b.className='cl'+(track==='prem'?' g':''); b.onclick=()=>claim(i,track); }
+      else { b.onclick=()=>toast(!reached?t('bp_noreach'):t('bp_need_prem')); }
+      row.appendChild(b);
+    });
+    list.appendChild(row);
+  }
+  updateLobby();
+}
+function claim(i,track){
+  const arr=track==='free'?bpFree:bpPrem;
+  if(i>bpTier()||arr.indexOf(i)>=0||(track==='prem'&&!bpGold)) return;
+  const r=passRew(i,track); arr.push(i);
+  if(r.k==='coins') coins+=r.v;
+  else if(r.k==='gift') gifts.push(r.v);
+  else if(owned.indexOf(r.v)<0) owned.push(r.v);
+  save(); coinSound(); toast(t('bp_got',rewLabel(r))); buildPass(); if(board&&cur==='game') render();
+}
+$('pBuy').onclick=()=>{
+  if(bpGold) return;
+  if(coins<PASS_PRICE){ toast(t('no_coins')); return; }
+  coins-=PASS_PRICE; bpGold=true; save(); coinSound(); buildPass(); if(board&&cur==='game') render();
+};
+
+// ------------------- панель: бонус, задания, достижения, коллекция, колесо -------------------
+let panelType='daily', spinning=false, wheelRot=0;
+function openPanel(type){ panelType=type; buildPanel(); openSheet('panel'); }
+function drawWheel(c){
+  const x=c.getContext('2d'), s=c.width, r=s/2-4, a=Math.PI*2/WHEEL.length;
+  x.clearRect(0,0,s,s);
+  WHEEL.forEach((p,i)=>{
+    x.beginPath(); x.moveTo(s/2,s/2); x.arc(s/2,s/2,r,-Math.PI/2+i*a-a/2,-Math.PI/2+i*a+a/2); x.closePath();
+    x.fillStyle=p.c; x.fill(); x.strokeStyle='#fff'; x.lineWidth=3; x.stroke();
+    x.save(); x.translate(s/2,s/2); x.rotate(i*a); x.fillStyle='#222'; x.font='bold '+(s/13)+'px system-ui,sans-serif';
+    x.textAlign='center'; x.fillText(wheelLabel(p),0,-r*0.68); x.restore();
+  });
+  x.beginPath(); x.arc(s/2,s/2,s/16,0,Math.PI*2); x.fillStyle='#fff'; x.fill();
+}
+function buildPanel(){
+  const list=$('panelList'); list.innerHTML='';
+  const titles={daily:'🎁 '+t('daily'),quests:'📋 '+t('quests'),ach:'🏆 '+t('ach'),coll:'📖 '+t('coll'),wheel:'🎡 '+t('wheel')};
+  $('panelTitle').textContent=titles[panelType];
+  if(panelType==='daily'){
+    $('panelNote').textContent=t('d_note');
+    const info=dailyInfo();
+    for(let d=1;d<=7;d++){
+      const r=dailyRew(d), done=d<=(info.claimed?info.day:info.day-1), isToday=!info.claimed&&d===info.day;
+      let btn;
+      if(done) btn=mkBtn('✔','ok',null,true);
+      else if(isToday) btn=mkBtn(t('claim'),'',claimDaily);
+      else btn=mkBtn('🔒','',null,true);
+      const row=mkRow(emSw(d),t('d_day',d)+(isToday?' · '+t('d_today'):''),dailyLabel(r),btn);
+      if(isToday) row.classList.add('hl');
+      list.appendChild(row);
+    }
+    if(info.claimed){ const p=document.createElement('div'); p.className='note'; p.textContent=t('d_done'); list.appendChild(p); }
+  } else if(panelType==='quests'){
+    $('panelNote').textContent=t('q_note');
+    ensureQuests();
+    quest.list.forEach((q,i)=>{
+      const ready=q.prog>=q.need&&!q.done;
+      const btn=q.done?mkBtn('✔','ok',null,true):mkBtn(ready?t('claim')+' 🪙'+fmt(q.rw):'🪙 '+fmt(q.rw),'',()=>claimQuest(i),!ready);
+      list.appendChild(mkRow(emSw('📋'),t('q_'+q.t,fmt(q.need)),(q.t==='reach'?Math.min(q.prog,q.need)>=q.need?'✔':nm(Math.min(MAX,q.need))+' → ':'')+(q.t==='reach'?'':fmt(Math.min(q.prog,q.need))+' / '+fmt(q.need)),btn));
+    });
+  } else if(panelType==='ach'){
+    $('panelNote').textContent=t('a_note');
+    ACH.forEach((a,i)=>{
+      const v=achVal(a.k), done=achClaimed.indexOf(i)>=0, ready=v>=a.n&&!done;
+      const btn=done?mkBtn('✔','ok',null,true):mkBtn(ready?t('claim')+' 🪙'+fmt(a.r):'🪙 '+fmt(a.r),'',()=>claimAch(i),!ready);
+      const row=mkRow(emSw('🏆'),t('a_'+a.k,fmt(a.n)),fmt(Math.min(v,a.n))+' / '+fmt(a.n),btn);
+      if(ready) row.classList.add('hl');
+      list.appendChild(row);
+    });
+  } else if(panelType==='coll'){
+    $('panelNote').textContent=t('c_note');
+    const head=document.createElement('div'); head.className='note'; head.style.padding='0 0 6px'; head.textContent=t('c_count',maxEver,MAX); list.appendChild(head);
+    COLL.forEach(c=>{
+      const done=collClaimed.indexOf(c.n)>=0, ready=maxEver>=c.n&&!done;
+      const btn=done?mkBtn('✔','ok',null,true):mkBtn(ready?t('claim')+' 🪙'+fmt(c.r):'🪙 '+fmt(c.r),'',()=>claimColl(c.n),!ready);
+      const row=mkRow(emSw('📖'),t('c_ms',c.n),Math.min(maxEver,c.n)+' / '+c.n,btn);
+      if(ready) row.classList.add('hl');
+      list.appendChild(row);
+    });
+    const g=document.createElement('div'); g.className='cgrid';
+    for(let lv=1;lv<=MAX;lv++){
+      const d=document.createElement('div'); d.className='cc'+(lv>maxEver?' lock':'');
+      const c=document.createElement('canvas'); c.width=c.height=96; draw(c,lv); d.appendChild(c);
+      const s=document.createElement('span'); s.textContent=lv; d.appendChild(s);
+      d.onclick=()=>{ if(lv<=maxEver){ meow(lv); toast(nm(lv)+' · '+t('lvl_n',lv)); } else toast('???'); };
+      g.appendChild(d);
+    }
+    list.appendChild(g);
+  } else {
+    $('panelNote').textContent=t('w_note',WHEEL_COST);
+    const wrap=document.createElement('div'); wrap.className='wheelwrap'; wrap.innerHTML='<div class="ptr">▼</div>';
+    const c=document.createElement('canvas'); c.width=c.height=320; c.id='wheelCv'; drawWheel(c);
+    c.style.transform='rotate('+wheelRot+'deg)'; wrap.appendChild(c); list.appendChild(wrap);
+    const free=wheelDate!==today();
+    const b=document.createElement('button'); b.className='spinbtn'; b.textContent=free?t('w_free'):t('w_paid',WHEEL_COST);
+    b.disabled=spinning||(!free&&coins<WHEEL_COST); b.onclick=spin; list.appendChild(b);
+  }
+  updateBadges();
+}
+function claimDaily(){
+  const info=dailyInfo(); if(info.claimed) return;
+  const r=dailyRew(info.day);
+  if(r.k==='coins') coins+=r.v; else { coins+=r.coins; gifts.push(r.gift); }
+  dailyLast=today(); dailyStreak=info.day; save(); coinSound(); toast(t('bp_got',dailyLabel(r))); buildPanel(); updateLobby();
+}
+function claimQuest(i){
+  const q=quest.list[i]; if(!q||q.done||q.prog<q.need) return;
+  q.done=true; coins+=q.rw; addXp(20); save(); coinSound(); toast(t('bp_got','🪙 '+fmt(q.rw))); buildPanel(); updateLobby();
+}
+function claimAch(i){
+  const a=ACH[i]; if(achClaimed.indexOf(i)>=0||achVal(a.k)<a.n) return;
+  achClaimed.push(i); coins+=a.r; save(); coinSound(); toast(t('bp_got','🪙 '+fmt(a.r))); buildPanel(); updateLobby();
+}
+function claimColl(n){
+  const c=COLL.find(z=>z.n===n); if(collClaimed.indexOf(n)>=0||maxEver<n) return;
+  collClaimed.push(n); coins+=c.r; save(); coinSound(); toast(t('bp_got','🪙 '+fmt(c.r))); buildPanel(); updateLobby();
+}
+function spin(){
+  if(spinning) return;
+  const free=wheelDate!==today();
+  if(!free && coins<WHEEL_COST){ toast(t('no_coins')); return; }
+  if(free) wheelDate=today(); else coins-=WHEEL_COST;
+  spinning=true; save();
+  const tw=WHEEL.reduce((s,p)=>s+p.w,0); let r=Math.random()*tw, idx=0;
+  for(;idx<WHEEL.length;idx++){ r-=WHEEL[idx].w; if(r<=0) break; } if(idx>=WHEEL.length) idx=WHEEL.length-1;
+  const el=$('wheelCv'), base=Math.floor(wheelRot/360)*360;
+  wheelRot=base+360*5+((360-idx*45)%360)+(Math.random()*20-10);
+  el.style.transition='transform 3.2s cubic-bezier(.17,.67,.2,1)'; el.style.transform='rotate('+wheelRot+'deg)';
+  const btn=document.querySelector('.spinbtn'); if(btn) btn.disabled=true;
+  setTimeout(()=>{
+    const p=WHEEL[idx]; let lab;
+    if(p.k==='coins'){ coins+=p.v; lab='🪙 '+p.v; }
+    else if(p.k==='xp'){ addXp(p.v); lab=t('w_xp',p.v); }
+    else if(p.k==='x2'){ boost+=p.v; lab=t('w_x2'); updateTag(); }
+    else { const lv=2+Math.floor(Math.random()*Math.max(1,Math.min(MAX,maxEver)-1)); gifts.push(lv); lab=t('bp_gift',lv); }
+    spinning=false; save(); coinSound(); meow(3); toast(t('w_prize',lab));
+    if($('panel').classList.contains('open')&&panelType==='wheel') buildPanel(); updateLobby();
+  },3300);
+}
+
+// ------------------------------ экраны и кнопки ------------------------------
 function show(name){
   cur=name;
   $('lobby').style.display = name==='lobby' ? 'flex' : 'none';
   $('game').style.display  = name==='game'  ? 'flex' : 'none';
-  $('shop').classList.remove('open'); $('settings').classList.remove('open');
-  $('over').style.display='none';
+  closeSheets(); $('over').style.display='none';
   window.scrollTo(0,0);
   if(name==='lobby') updateLobby();
 }
-function setSndUI(){ $('snd').textContent=muted?'🔇':'🔊'; $('setSnd').textContent=muted?'Выкл':'Вкл'; }
-
 $('play').onclick=()=>{ show('game'); newGame(); };
 $('menu').onclick=()=>show('lobby');
 $('toLobby').onclick=()=>show('lobby');
 $('again').onclick=newGame;
 $('restart').onclick=newGame;
 $('lShop').onclick=openShop; $('shopBtn').onclick=openShop;
-$('shopClose').onclick=()=>$('shop').classList.remove('open');
+$('lPass').onclick=openPass; $('passBtn').onclick=openPass;
+document.querySelectorAll('.ib').forEach(b=>b.onclick=()=>openPanel(b.dataset.panel));
+document.querySelectorAll('.closeBtn').forEach(b=>b.onclick=closeSheets);
 $('tabMei').onclick=()=>{ shopTab='mei'; buildShop(); };
 $('tabBg').onclick=()=>{ shopTab='bg'; buildShop(); };
-$('lSet').onclick=()=>$('settings').classList.add('open');
-$('setClose').onclick=()=>$('settings').classList.remove('open');
-$('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(place(1)){render();checkOver();} else toast('Поле заполнено'); };
-$('mascot').onclick=()=>meow(maxEver);
-const toggleSnd=()=>{ muted=!muted; save(); setSndUI(); if(!muted)meow(1); };
-$('snd').onclick=toggleSnd; $('setSnd').onclick=toggleSnd;
-$('setReset').onclick=()=>{
-  if(!confirm('Точно сбросить весь прогресс?')) return;
-  coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;
-  save(); applyBg(); updateLobby(); $('settings').classList.remove('open'); toast('Прогресс сброшен');
+$('tabBoost').onclick=()=>{ shopTab='boost'; buildShop(); };
+$('tabField').onclick=()=>{ shopTab='field'; buildShop(); };
+$('lSet').onclick=()=>openSheet('settings');
+$('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(place(spawnLvl())){render();checkOver();} else toast(t('full')); };
+$('mascotWrap').onclick=()=>{
+  meow(maxEver); const w=$('mascotWrap'); w.classList.remove('hop'); void w.offsetWidth; w.classList.add('hop');
+  burst(w,['❤️','💖','✨'],8); setTimeout(()=>w.classList.remove('hop'),600);
 };
+const toggleSnd=()=>{ muted=!muted; save(); setSndUI(); if(!muted)meow(1); };
+const toggleMus=()=>{ musicOn=!musicOn; save(); setSndUI(); if(musicOn) musicStart(); else musicStop(); };
+$('snd').onclick=toggleSnd; $('setSnd').onclick=toggleSnd;
+$('mus').onclick=toggleMus; $('setMus').onclick=toggleMus;
+$('setVibe').onclick=()=>{ vibe=!vibe; save(); setSndUI(); buzz(); };
+$('setHints').onclick=()=>{ hints=!hints; save(); setSndUI(); };
+$('setVol').oninput=e=>{ vol=e.target.value/100; save(); };
+$('setVol').onchange=()=>meow(1);
+$('setMVol').oninput=e=>{ mvol=e.target.value/100; save(); if(mvol<=0) musicStop(); else if(musicOn&&!mTimer) musicStart(); else musicVol(); };
+document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; save(); applyLang(); });
+$('setReset').onclick=()=>{
+  if(!confirm(t('confirm_reset'))) return;
+  coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;bpPts=0;bpFree=[];bpPrem=[];bpGold=false;gifts=[];boost=0;
+  size=3;sizeMax=3;stats={merges:0,earned:0,games:0};dailyLast='';dailyStreak=0;quest={date:'',list:[]};achClaimed=[];collClaimed=[];wheelDate='';
+  save(); applyBg(); applySize(); applyLang(); closeSheets(); toast(t('reset_done'));
+};
+document.addEventListener('pointerdown',()=>{ musicStart(); },{passive:true});
+document.addEventListener('visibilitychange',()=>{ if(document.hidden) musicStop(); else if(musicOn) musicStart(); });
 
-applyBg(); setSndUI(); show('lobby');
+applyBg(); applySize(); applyLang(); show('lobby');
 </script>
 </body>
 </html>
