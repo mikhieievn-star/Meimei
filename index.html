@@ -34,7 +34,7 @@
   #add .plus{font-size:26px;font-weight:800;line-height:1}
   #add small{font-size:11px;font-weight:700;opacity:.9}
   #inv .main{padding:8px 12px;font-size:15px}
-  #board{touch-action:none;user-select:none;-webkit-user-select:none}
+  #board{touch-action:manipulation;user-select:none;-webkit-user-select:none}
   .cell.tgt{border-color:#3fb950;background:#eaffef;transform:scale(1.06)}
   .cell.sel{border-color:#ff3fa4;background:#fff0f8;transform:scale(1.04)}
   .cell.pop canvas{animation:pop .35s ease-out}
@@ -67,6 +67,23 @@
   #mascotWrap{position:relative;width:160px;height:160px;animation:bob 2.4s ease-in-out infinite;cursor:pointer}
   #mascotWrap.hop{animation:hop .55s ease-out}
   #mascot{width:100%;height:100%}
+  #lobby{gap:10px}
+  .ptop{display:flex;align-items:center;gap:14px;width:min(92vw,420px);background:var(--panel);border-radius:20px;padding:10px 14px;cursor:pointer;box-sizing:border-box}
+  #mascotWrap{flex:none;width:72px;height:72px;animation:none;border-radius:50%;background:#f0f0f4;overflow:hidden;box-sizing:border-box}
+  .pinfo{flex:1;min-width:0;text-align:left}
+  .pinfo .bar{width:100%;margin:4px 0 0}
+  #mascotName{font-size:18px;font-weight:800;color:var(--fg)}
+  #mascotTitle{font-size:12px;color:var(--sub)}
+  #lobby .big.wide{width:min(92vw,420px)}
+  .mgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:min(92vw,420px)}
+  .mgrid .big{width:100%;padding:14px 6px;font-size:15px}
+  #lobby .iconrow{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:min(92vw,420px)}
+  #lobby .iconrow .ib{width:auto}
+  .cell.gold{background:linear-gradient(135deg,#fff3b0,#ffd23a)}
+  .cell.gold::after{content:'✨×3';position:absolute;top:2px;right:4px;font-size:12px;font-weight:800;color:#8a5a00}
+  .cell.ice canvas{opacity:.5;filter:saturate(.3)}
+  .cell.ice{background:#dff3ff}
+  .cell.ice::after{content:'❄️';position:absolute;top:2px;right:4px;font-size:18px}
   .big{width:min(80vw,300px);padding:14px;font-size:17px;border-radius:16px}
   .lstats{display:flex;gap:8px;margin-top:2px}
   .iconrow{display:flex;gap:6px;flex-wrap:wrap;justify-content:center;margin:4px 0}
@@ -150,27 +167,36 @@
 <!-- ============ ЛОББИ ============ -->
 <div id="lobby" class="screen">
   <h1>Мей Мей Merge</h1>
-  <div id="mascotWrap"><canvas id="mascot" width="320" height="320"></canvas></div>
-  <div class="xptxt" id="mascotName"></div>
-  <div class="xptxt xpl"></div>
-  <div class="bar"><i class="xpfill"></i></div>
+  <div class="ptop" id="ptop">
+    <div id="mascotWrap"><canvas id="mascot" width="160" height="160"></canvas></div>
+    <div class="pinfo">
+      <div id="mascotName"></div>
+      <div id="mascotTitle"></div>
+      <div class="xptxt xpl"></div>
+      <div class="bar"><i class="xpfill"></i></div>
+    </div>
+  </div>
   <div class="lstats">
     <div class="box coin"><span data-i="coins"></span><b id="lCoins">0</b></div>
     <div class="box"><span data-i="best"></span><b id="lBest">0</b></div>
   </div>
+  <button class="main alt big wide" id="play" data-i="play"></button>
+  <div class="mgrid">
+    <button class="main purple big" id="lTimed" data-i="timed_btn"></button>
+    <button class="main purple big" id="lPass"></button>
+    <button class="main gold big" id="lShop" data-i="shop"></button>
+    <button class="main big" id="lSet" data-i="settings"></button>
+  </div>
   <div class="iconrow">
-    <button class="ib" data-panel="profile"><span class="em">👤</span><small data-i="profile"></small><i class="dot"></i></button>
     <button class="ib" data-panel="daily"><span class="em">🎁</span><small data-i="daily"></small><i class="dot"></i></button>
     <button class="ib" data-panel="quests"><span class="em">📋</span><small data-i="quests"></small><i class="dot"></i></button>
-    <button class="ib" data-panel="ach"><span class="em">🏆</span><small data-i="ach"></small><i class="dot"></i></button>
-    <button class="ib" data-panel="coll"><span class="em">📖</span><small data-i="coll"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="chal"><span class="em">🎯</span><small data-i="chal"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="event"><span class="em">🎪</span><small data-i="event"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="nursery"><span class="em">🏡</span><small data-i="nursery"></small><i class="dot"></i></button>
     <button class="ib" data-panel="wheel"><span class="em">🎡</span><small data-i="wheel"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="coll"><span class="em">📖</span><small data-i="coll"></small><i class="dot"></i></button>
+    <button class="ib" data-panel="ach"><span class="em">🏆</span><small data-i="ach"></small><i class="dot"></i></button>
   </div>
-  <button class="main alt big" id="play" data-i="play"></button>
-  <button class="main purple big" id="lTimed" data-i="timed_btn"></button>
-  <button class="main purple big" id="lPass"></button>
-  <button class="main gold big" id="lShop" data-i="shop"></button>
-  <button class="main big" id="lSet" data-i="settings"></button>
 </div>
 
 <!-- ============ ИГРА ============ -->
@@ -257,8 +283,8 @@
 <script>
 // ------------------------------ языки ------------------------------
 const I18N = {
-ru:{timed_btn:'⏱ На время (1 мин)',timed_t:'Время вышло! ⏱',timed_over:'Очки: {0}  •  Монеты: +{1}  •  Рекорд: {2}', profile:'Профиль',nick:'Имя',nick_prompt:'Как тебя зовут?',pf_avatar:'Выбери аватар',pf_auto:'Авто (лучший)',pf_level:'Уровень игрока',pf_best:'Лучший счёт',pf_merges:'Слияний',pf_earned:'Заработано 🪙',pf_games:'Партий',pf_coll:'Коллекция',pf_tier:'Лучший тир пасса',pf_timed:'Рекорд на время',pf_combo:'Лучшее комбо', maxed:'Макс.',item_got:'{0}: +1 (в запасе {1})',x2_cd:'✨ Перезарядка: ещё {0} мин',box_new:'🎁 На поле появился подарок!',gift_got:'🎁 Подарок: {0}', tab_snd:'Звуки',note_snd:'Покупай новые голоса и мелодии. Выбранное работает сразу.',sec_voice:'Мяуканье',sec_music:'Музыка', v_cat:'Обычный кот',v_kitten:'Котёнок',v_lion:'Лев',m_calm:'Спокойная ночь',m_box:'Музыкальная шкатулка',m_night:'Ночной лоуфай', q_combo:'Сделай комбо ×{0}',q_timed:'Набери {0} очков в режиме «На время»',bp_season:'Сезон закончится через {0} дн. Потом прогресс сбросится!',bp_newseason:'🎟 Начался новый сезон Батл пасса!',have_n:'В запасе: {0}',cont:'▶ Продолжить',new_game:'🔄 Новая партия',set_new:'Начать партию заново',new_btn:'Заново',hammer_got:'🔨 Молот куплен! В запасе: {0}',coll_new:'📖 Новый в коллекции: {0}!',play:'▶ Играть',pass:'🎟 Батл пасс',shop:'🛒 Магазин',settings:'⚙️ Настройки',coins:'Монеты',best:'Рекорд',score:'Очки',
- plvl:'Уровень игрока {0} · {1}/{2} опыта',hint:'Drag a Mei Mei onto an identical one — get a new Mei, coins and XP! Call new ones with the button. Rare gifts 🎁 — tap to open.',
+ru:{nursery:'Питомник',chal:'Испытание',event:'Событие',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мея — он приносит монеты, пока тебя нет (копится до {0} часов).',pet_empty:'Свободный слот',pet_pick:'Выбрать',pet_change:'Сменить',pet_collect:'Забрать',pet_all:'Забрать всё',pet_rate:'+{0} 🪙 в час',pet_have:'накоплено: {0}',pet_buy:'Новый слот',pet_choose:'Кого посадить? (только открытые)',pet_cancel:'Отмена', chal_note:'У всех одна и та же партия в этот день. Собери Мей Мея «{0}», потратив не больше {1} вызовов. Бусты отключены. Награда один раз в день.',chal_goal:'Цель: {0}',chal_done:'Сегодня пройдено ✔ (можно тренироваться)',chal_streak:'Серия дней: {0}',chal_win:'Испытание пройдено! 🎯',chal_lose:'Не получилось 😿',chal_res_win:'Награда: 🪙 {0}  •  Серия: {1}',chal_res_lose:'Попробуй ещё — расстановка та же!',chal_replay:'Награда за сегодня уже получена',chal_left:'вызовов: {0}', evt_note:'Недельное событие: создай {0} раз Мей Мея «{1}» или выше. Осталось дней: {2}.',evt_m:'Создать: {0}', gold_new:'✨ Золотая клетка! Слияние на ней даёт ×3',ice_new:'❄️ Мей Мей заморожен! Оттает через несколько слияний',ice_block:'❄️ Он заморожен',ice_thaw:'☀️ Лёд растаял!',timed_btn:'⏱ На время (1 мин)',timed_t:'Время вышло! ⏱',timed_over:'Очки: {0}  •  Монеты: +{1}  •  Рекорд: {2}', profile:'Профиль',nick:'Имя',nick_prompt:'Как тебя зовут?',pf_avatar:'Выбери аватар',pf_auto:'No avatar (icon)',pf_level:'Уровень игрока',pf_best:'Лучший счёт',pf_merges:'Слияний',pf_earned:'Заработано 🪙',pf_games:'Партий',pf_coll:'Коллекция',pf_tier:'Лучший тир пасса',pf_timed:'Рекорд на время',pf_combo:'Лучшее комбо', maxed:'Макс.',item_got:'{0}: +1 (в запасе {1})',x2_cd:'✨ Перезарядка: ещё {0} мин',box_new:'🎁 На поле появился подарок!',gift_got:'🎁 Подарок: {0}', tab_snd:'Звуки',note_snd:'Покупай новые голоса и мелодии. Выбранное работает сразу.',sec_voice:'Мяуканье',sec_music:'Музыка', v_cat:'Обычный кот',v_kitten:'Котёнок',v_lion:'Лев',m_calm:'Спокойная ночь',m_box:'Музыкальная шкатулка',m_night:'Ночной лоуфай', q_combo:'Сделай комбо ×{0}',q_timed:'Набери {0} очков в режиме «На время»',bp_season:'Сезон закончится через {0} дн. Потом прогресс сбросится!',bp_newseason:'🎟 Начался новый сезон Батл пасса!',have_n:'В запасе: {0}',cont:'▶ Продолжить',new_game:'🔄 Новая партия',set_new:'Начать партию заново',new_btn:'Заново',hammer_got:'🔨 Молот куплен! В запасе: {0}',coll_new:'📖 Новый в коллекции: {0}!',play:'▶ Играть',pass:'🎟 Батл пасс',shop:'🛒 Магазин',settings:'⚙️ Настройки',coins:'Монеты',best:'Рекорд',score:'Очки',
+ plvl:'Уровень игрока {0} · {1}/{2} опыта',hint:'Tap a Mei Mei, then an identical one — get a new Mei, coins and XP! Call new ones with the button. Rare gifts 🎁 — tap to open.',
  add:'+ Позвать Мей Мей (ур. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрыть',tab_mei:'Мей Мей',tab_bg:'Фоны',tab_boost:'Бусты',tab_field:'Поле',
  note_mei:'Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.',
  note_bg:'Фоны открываются с уровнем игрока. Опыт даёт каждое слияние. Некоторые фоны — только в Батл пассе.',
@@ -289,9 +315,9 @@ ru:{timed_btn:'⏱ На время (1 мин)',timed_t:'Время вышло! �
  d_note:'Заходи каждый день, чтобы не потерять серию. На 7-й день — подарок!',d_day:'День {0}',d_done:'Сегодня уже получено ✔',d_today:'Сегодня',
  q_note:'Новые задания каждый день.',q_merge:'Сделай слияний: {0}',q_earn:'Заработай {0} 🪙 на слияниях',q_play:'Сыграй партий: {0}',q_boost:'Используй бустов: {0}',q_reach:'Получи Мей Мей уровня {0}',
  a_note:'Выполняй цели и получай монеты.',a_merges:'Сделать слияний: {0}',a_earned:'Заработать {0} 🪙',a_level:'Дойти до Мей Мей уровня {0}',a_games:'Сыграть партий: {0}',a_bgs:'Собрать фонов: {0}',a_tier:'Дойти до тира {0} Батл пасса',
- c_note:'Нажми на открытого Мей Мей, чтобы он мяукнул. Награды за 10, 20, 30, 44, 64 и 94 открытых.',c_count:'Открыто: {0}/{1}',c_ms:'Открыть {0} Мей Мей',
+ c_note:'Нажми на открытого Мей Мей, чтобы он мяукнул. Награды за 10, 20, 30, 44, 64, 94 и 104 открытых.',c_count:'Открыто: {0}/{1}',c_ms:'Открыть {0} Мей Мей',
  w_note:'Одно бесплатное вращение в день. Дополнительное стоит 🪙 {0}.',w_free:'🎡 Крутить бесплатно',w_paid:'🎡 Крутить · 🪙 {0}',w_prize:'Выигрыш: {0}',w_xp:'⭐ {0} опыта',w_x2:'✨ ×2 монеты'},
-uk:{timed_btn:'⏱ На час (1 хв)',timed_t:'Час вийшов! ⏱',timed_over:'Очки: {0}  •  Монети: +{1}  •  Рекорд: {2}', profile:'Профіль',nick:'Ім’я',nick_prompt:'Як тебе звати?',pf_avatar:'Обери аватар',pf_auto:'Авто (найкращий)',pf_level:'Рівень гравця',pf_best:'Найкращий рахунок',pf_merges:'Злиттів',pf_earned:'Зароблено 🪙',pf_games:'Партій',pf_coll:'Колекція',pf_tier:'Найкращий тір пасу',pf_timed:'Рекорд на час',pf_combo:'Найкраще комбо', maxed:'Макс.',item_got:'{0}: +1 (у запасі {1})',x2_cd:'✨ Перезарядка: ще {0} хв',box_new:'🎁 На полі з’явився подарунок!',gift_got:'🎁 Подарунок: {0}', tab_snd:'Звуки',note_snd:'Купуй нові голоси та мелодії. Обране працює одразу.',sec_voice:'Нявкання',sec_music:'Музика', v_cat:'Звичайний кіт',v_kitten:'Кошеня',v_lion:'Лев',m_calm:'Спокійна ніч',m_box:'Музична скринька',m_night:'Нічний лоуфай', q_combo:'Зроби комбо ×{0}',q_timed:'Набери {0} очок у режимі «На час»',bp_season:'Сезон закінчиться через {0} дн. Потім прогрес скинеться!',bp_newseason:'🎟 Почався новий сезон Батл пасу!',have_n:'У запасі: {0}',cont:'▶ Продовжити',new_game:'🔄 Нова партія',set_new:'Почати партію заново',new_btn:'Заново',hammer_got:'🔨 Молот куплено! У запасі: {0}',coll_new:'📖 Новий у колекції: {0}!',play:'▶ Грати',pass:'🎟 Батл пас',shop:'🛒 Магазин',settings:'⚙️ Налаштування',coins:'Монети',best:'Рекорд',score:'Очки',
+uk:{nursery:'Розплідник',chal:'Випробування',event:'Подія',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мей — він приносить монети, поки тебе немає (накопичується до {0} годин).',pet_empty:'Вільний слот',pet_pick:'Обрати',pet_change:'Змінити',pet_collect:'Забрати',pet_all:'Забрати все',pet_rate:'+{0} 🪙 на годину',pet_have:'накопичено: {0}',pet_buy:'Новий слот',pet_choose:'Кого посадити? (лише відкриті)',pet_cancel:'Скасувати', chal_note:'У всіх одна й та сама партія цього дня. Збери Мей Мея «{0}», витративши не більше {1} викликів. Бусти вимкнено. Нагорода раз на день.',chal_goal:'Мета: {0}',chal_done:'Сьогодні пройдено ✔ (можна тренуватись)',chal_streak:'Серія днів: {0}',chal_win:'Випробування пройдено! 🎯',chal_lose:'Не вийшло 😿',chal_res_win:'Нагорода: 🪙 {0}  •  Серія: {1}',chal_res_lose:'Спробуй ще — розстановка та сама!',chal_replay:'Нагороду за сьогодні вже отримано',chal_left:'викликів: {0}', evt_note:'Тижнева подія: створи {0} разів Мей Мея «{1}» або вище. Залишилось днів: {2}.',evt_m:'Створити: {0}', gold_new:'✨ Золота клітинка! Злиття на ній дає ×3',ice_new:'❄️ Мей Мей заморожений! Відтане за кілька злиттів',ice_block:'❄️ Він заморожений',ice_thaw:'☀️ Лід розтанув!',timed_btn:'⏱ На час (1 хв)',timed_t:'Час вийшов! ⏱',timed_over:'Очки: {0}  •  Монети: +{1}  •  Рекорд: {2}', profile:'Профіль',nick:'Ім’я',nick_prompt:'Як тебе звати?',pf_avatar:'Обери аватар',pf_auto:'Авто (найкращий)',pf_level:'Рівень гравця',pf_best:'Найкращий рахунок',pf_merges:'Злиттів',pf_earned:'Зароблено 🪙',pf_games:'Партій',pf_coll:'Колекція',pf_tier:'Найкращий тір пасу',pf_timed:'Рекорд на час',pf_combo:'Найкраще комбо', maxed:'Макс.',item_got:'{0}: +1 (у запасі {1})',x2_cd:'✨ Перезарядка: ще {0} хв',box_new:'🎁 На полі з’явився подарунок!',gift_got:'🎁 Подарунок: {0}', tab_snd:'Звуки',note_snd:'Купуй нові голоси та мелодії. Обране працює одразу.',sec_voice:'Нявкання',sec_music:'Музика', v_cat:'Звичайний кіт',v_kitten:'Кошеня',v_lion:'Лев',m_calm:'Спокійна ніч',m_box:'Музична скринька',m_night:'Нічний лоуфай', q_combo:'Зроби комбо ×{0}',q_timed:'Набери {0} очок у режимі «На час»',bp_season:'Сезон закінчиться через {0} дн. Потім прогрес скинеться!',bp_newseason:'🎟 Почався новий сезон Батл пасу!',have_n:'У запасі: {0}',cont:'▶ Продовжити',new_game:'🔄 Нова партія',set_new:'Почати партію заново',new_btn:'Заново',hammer_got:'🔨 Молот куплено! У запасі: {0}',coll_new:'📖 Новий у колекції: {0}!',play:'▶ Грати',pass:'🎟 Батл пас',shop:'🛒 Магазин',settings:'⚙️ Налаштування',coins:'Монети',best:'Рекорд',score:'Очки',
  plvl:'Рівень гравця {0} · {1}/{2} досвіду',hint:'Перетягни Мей Мей на такого ж — отримаєш нового, монети й досвід! Нових клич кнопкою.',
  add:'+ Покликати Мей Мей (рів. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрити',tab_mei:'Мей Мей',tab_bg:'Фони',tab_boost:'Бусти',tab_field:'Поле',
  note_mei:'Мей Мей з магазину одразу з’являється на полі. Нові рівні відкриваються, коли ти сам дійдеш до попередніх.',
@@ -321,11 +347,11 @@ uk:{timed_btn:'⏱ На час (1 хв)',timed_t:'Час вийшов! ⏱',time
  x2_tag:'✨ ×2 монети: залишилось {0}',tag_hammer:'🔨 Натисни на Мей Мей, щоб прибрати',tag_magic:'🪄 Магія готова: злий двох різних!',
  daily:'Бонус дня',quests:'Завдання',ach:'Досягнення',coll:'Колекція',wheel:'Колесо',claim:'Забрати',
  d_note:'Заходь щодня, щоб не втратити серію. На 7-й день — подарунок!',d_day:'День {0}',d_done:'Сьогодні вже отримано ✔',d_today:'Сьогодні',
- q_note:'Нові завдання щодня.',q_merge:'Зроби злиттів: {0}',q_earn:'Заробі {0} 🪙 на злиттях',q_play:'Зіграй партій: {0}',q_boost:'Використай бустів: {0}',q_reach:'Отримай Мей Мей рівня {0}',
+ q_note:'Нові завдання щодня.',q_merge:'Зроби злиттів: {0}',q_earn:'Зароби {0} 🪙 на злиттях',q_play:'Зіграй партій: {0}',q_boost:'Використай бустів: {0}',q_reach:'Отримай Мей Мей рівня {0}',
  a_note:'Виконуй цілі й отримуй монети.',a_merges:'Зробити злиттів: {0}',a_earned:'Заробити {0} 🪙',a_level:'Дійти до Мей Мей рівня {0}',a_games:'Зіграти партій: {0}',a_bgs:'Зібрати фонів: {0}',a_tier:'Дійти до тіру {0} Батл пасу',
- c_note:'Натисни на відкритого Мей Мей, щоб він нявкнув. Нагороди за 10, 20, 30, 44, 64 і 94 відкритих.',c_count:'Відкрито: {0}/{1}',c_ms:'Відкрити {0} Мей Мей',
+ c_note:'Натисни на відкритого Мей Мей, щоб він нявкнув. Нагороди за 10, 20, 30, 44, 64, 94 і 104 відкритих.',c_count:'Відкрито: {0}/{1}',c_ms:'Відкрити {0} Мей Мей',
  w_note:'Одне безкоштовне обертання на день. Додаткове коштує 🪙 {0}.',w_free:'🎡 Крутити безкоштовно',w_paid:'🎡 Крутити · 🪙 {0}',w_prize:'Виграш: {0}',w_xp:'⭐ {0} досвіду',w_x2:'✨ ×2 монети'},
-en:{timed_btn:'⏱ Time attack (1 min)',timed_t:"Time's up! ⏱",timed_over:'Score: {0}  •  Coins: +{1}  •  Best: {2}', profile:'Profile',nick:'Name',nick_prompt:'What is your name?',pf_avatar:'Pick an avatar',pf_auto:'Auto (best)',pf_level:'Player level',pf_best:'Best score',pf_merges:'Merges',pf_earned:'Earned 🪙',pf_games:'Games',pf_coll:'Collection',pf_tier:'Best pass tier',pf_timed:'Time attack best',pf_combo:'Best combo', maxed:'Max',item_got:'{0}: +1 ({1} in stock)',x2_cd:'✨ Cooldown: {0} min left',box_new:'🎁 A gift appeared on the board!',gift_got:'🎁 Gift: {0}', tab_snd:'Sounds',note_snd:'Buy new voices and tunes. Your pick plays right away.',sec_voice:'Meow',sec_music:'Music', v_cat:'Classic cat',v_kitten:'Kitten',v_lion:'Lion',m_calm:'Calm night',m_box:'Music box',m_night:'Night lo-fi', q_combo:'Make a ×{0} combo',q_timed:'Score {0} in Time attack',bp_season:'Season ends in {0} days. Progress then resets!',bp_newseason:'🎟 A new Battle Pass season has started!',have_n:'In stock: {0}',cont:'▶ Continue',new_game:'🔄 New game',set_new:'Start a new game',new_btn:'Restart',hammer_got:'🔨 Hammer bought! In stock: {0}',coll_new:'📖 New in collection: {0}!',play:'▶ Play',pass:'🎟 Battle Pass',shop:'🛒 Shop',settings:'⚙️ Settings',coins:'Coins',best:'Best',score:'Score',
+en:{nursery:'Nursery',chal:'Challenge',event:'Event',pf_title:'Title',pf_frame:'Frame', pet_note:'Place a Mei Mei here — it earns coins while you are away (stores up to {0} hours).',pet_empty:'Empty slot',pet_pick:'Choose',pet_change:'Change',pet_collect:'Collect',pet_all:'Collect all',pet_rate:'+{0} 🪙 per hour',pet_have:'stored: {0}',pet_buy:'New slot',pet_choose:'Who goes in? (unlocked ones only)',pet_cancel:'Cancel', chal_note:'Everyone gets the same game today. Make a "{0}" using at most {1} calls. Boosts are off. Reward once a day.',chal_goal:'Goal: {0}',chal_done:'Done today ✔ (you can practice)',chal_streak:'Day streak: {0}',chal_win:'Challenge complete! 🎯',chal_lose:'Not this time 😿',chal_res_win:'Reward: 🪙 {0}  •  Streak: {1}',chal_res_lose:'Try again — same layout!',chal_replay:'Today’s reward is already claimed',chal_left:'calls: {0}', evt_note:'Weekly event: create "{1}" or higher {0} times. Days left: {2}.',evt_m:'Create: {0}', gold_new:'✨ Golden cell! A merge on it gives ×3',ice_new:'❄️ A Mei Mei is frozen! It thaws after a few merges',ice_block:'❄️ It is frozen',ice_thaw:'☀️ The ice has melted!',timed_btn:'⏱ Time attack (1 min)',timed_t:"Time's up! ⏱",timed_over:'Score: {0}  •  Coins: +{1}  •  Best: {2}', profile:'Profile',nick:'Name',nick_prompt:'What is your name?',pf_avatar:'Pick an avatar',pf_auto:'Auto (best)',pf_level:'Player level',pf_best:'Best score',pf_merges:'Merges',pf_earned:'Earned 🪙',pf_games:'Games',pf_coll:'Collection',pf_tier:'Best pass tier',pf_timed:'Time attack best',pf_combo:'Best combo', maxed:'Max',item_got:'{0}: +1 ({1} in stock)',x2_cd:'✨ Cooldown: {0} min left',box_new:'🎁 A gift appeared on the board!',gift_got:'🎁 Gift: {0}', tab_snd:'Sounds',note_snd:'Buy new voices and tunes. Your pick plays right away.',sec_voice:'Meow',sec_music:'Music', v_cat:'Classic cat',v_kitten:'Kitten',v_lion:'Lion',m_calm:'Calm night',m_box:'Music box',m_night:'Night lo-fi', q_combo:'Make a ×{0} combo',q_timed:'Score {0} in Time attack',bp_season:'Season ends in {0} days. Progress then resets!',bp_newseason:'🎟 A new Battle Pass season has started!',have_n:'In stock: {0}',cont:'▶ Continue',new_game:'🔄 New game',set_new:'Start a new game',new_btn:'Restart',hammer_got:'🔨 Hammer bought! In stock: {0}',coll_new:'📖 New in collection: {0}!',play:'▶ Play',pass:'🎟 Battle Pass',shop:'🛒 Shop',settings:'⚙️ Settings',coins:'Coins',best:'Best',score:'Score',
  plvl:'Player level {0} · {1}/{2} XP',hint:'Drag a Mei Mei onto an identical one — get a new Mei, coins and XP! Call new ones with the button.',
  add:'+ Call a Mei Mei (lv. {0})',restart:'Restart',menu:'🏠 Menu',close:'Close',tab_mei:'Mei Mei',tab_bg:'Themes',tab_boost:'Boosts',tab_field:'Field',
  note_mei:'A Mei Mei from the shop appears on the board right away. New levels unlock once you reach the previous ones yourself.',
@@ -357,7 +383,7 @@ en:{timed_btn:'⏱ Time attack (1 min)',timed_t:"Time's up! ⏱",timed_over:'Sco
  d_note:'Come back every day to keep your streak. Day 7 gives a gift!',d_day:'Day {0}',d_done:'Already claimed today ✔',d_today:'Today',
  q_note:'New quests every day.',q_merge:'Make {0} merges',q_earn:'Earn {0} 🪙 from merges',q_play:'Play {0} games',q_boost:'Use {0} boost',q_reach:'Make a Mei Mei of level {0}',
  a_note:'Complete goals and get coins.',a_merges:'Make {0} merges',a_earned:'Earn {0} 🪙',a_level:'Reach Mei Mei level {0}',a_games:'Play {0} games',a_bgs:'Collect {0} backgrounds',a_tier:'Reach Battle Pass tier {0}',
- c_note:'Tap an unlocked Mei Mei to hear it meow. Rewards at 10, 20, 30, 44, 64 and 94 unlocked.',c_count:'Unlocked: {0}/{1}',c_ms:'Unlock {0} Mei Meis',
+ c_note:'Tap an unlocked Mei Mei to hear it meow. Rewards at 10, 20, 30, 44, 64, 94 and 104 unlocked.',c_count:'Unlocked: {0}/{1}',c_ms:'Unlock {0} Mei Meis',
  w_note:'One free spin per day. Extra spins cost 🪙 {0}.',w_free:'🎡 Spin for free',w_paid:'🎡 Spin · 🪙 {0}',w_prize:'You won: {0}',w_xp:'⭐ {0} XP',w_x2:'✨ ×2 coins'}
 };
 const LI={ru:0,uk:1,en:2};
@@ -365,7 +391,7 @@ let lang=(navigator.language||'ru').slice(0,2); if(!I18N[lang]) lang='en';
 const t=(k,...a)=>{ let s=(I18N[lang][k]!==undefined?I18N[lang][k]:(I18N.ru[k]!==undefined?I18N.ru[k]:k)); a.forEach((v,i)=>{s=s.split('{'+i+'}').join(v);}); return s; };
 
 // ------------------------- Мей Мей (внешний вид) -------------------------
-// Свои картинки: PNG с прозрачным фоном в папке img/ с именами 1.png ... 94.png
+// Свои картинки: PNG с прозрачным фоном в папке img/ с именами 1.png ... 104.png
 const LEVELS = [
   {fur:'#e8e8ec', shade:'#b5b5bf', spot:'#2a2a31'},
   {fur:'#d4ecff', shade:'#9cc9ee', spot:'#2c4a78'},
@@ -460,7 +486,17 @@ const LEVELS = [
   {fur:'#ffffff', shade:'#d0d8ff', spot:'#6a7ac0', a:['halo','wings','cape','crown'], glow:'255,255,255'},
   {fur:'#1a0a2a', shade:'#000000', spot:'#b44cff', a:['horns','cape','crown','wings'], hc:'#b44cff', eye:'#b44cff', dark:1, glow:'180,76,255'},
   {rainbow:1, shade:'#c08a00', spot:'#3a2a5a', a:['crown','halo','wings','cape','stars'], glow:'255,255,200', eye:'#ff2bd6'},
-  {rainbow:1, shade:'#2a1a5a', spot:'#ffffff', a:['crown','halo','wings','cape','stars','horns','antennae','glasses'], hc:'#ffd23a', ant:'#ffd23a', glow:'255,255,255', eye:'#ffcc00'}
+  {rainbow:1, shade:'#2a1a5a', spot:'#ffffff', a:['crown','halo','wings','cape','stars','horns','antennae','glasses'], hc:'#ffd23a', ant:'#ffd23a', glow:'255,255,255', eye:'#ffcc00'},
+  {fur:'#d0d8ff', shade:'#8a98e0', spot:'#1a2a6a', a:['glasses','wizard','stars'], glow:'160,180,255'},
+  {fur:'#ffe0b0', shade:'#e0a860', spot:'#7a4a1a', a:['chef','flowers']},
+  {fur:'#ff4fd8', shade:'#a01a8a', spot:'#2bf0ff', a:['phones','headband'], eye:'#2bf0ff', dark:1, glow:'255,79,216'},
+  {fur:'#7ad98a', shade:'#2f9a4a', spot:'#0e4a1a', a:['antlers','flowers'], glow:'120,255,150'},
+  {fur:'#1a2a5a', shade:'#050a20', spot:'#ffe650', a:['crown','stars'], eye:'#ffe650', dark:1, glow:'255,230,80'},
+  {rainbow:1, shade:'#c08a00', spot:'#3a2a5a', a:['crown','party','stars'], glow:'255,240,160', eye:'#ff2bd6'},
+  {fur:'#e8f4ff', shade:'#8ab0d0', spot:'#2a4a6a', a:['pirate','halo'], glow:'200,230,255'},
+  {fur:'#c9a0ff', shade:'#7a4ae0', spot:'#2a0a5a', a:['wizard','halo','stars'], glow:'200,160,255'},
+  {fur:'#0a0a2a', shade:'#000010', spot:'#9a6aff', a:['stars','wings','cape'], eye:'#9a6aff', dark:1, glow:'120,80,255'},
+  {rainbow:1, shade:'#2a1a5a', spot:'#ffffff', a:['crown','halo','wings','cape','stars','horns','antennae','glasses','tiara'], hc:'#ffd23a', ant:'#ffd23a', glow:'255,255,255', eye:'#ff2bd6'}
 ];
 const NAMES = [
  ['Мей Мей','Мей Мей','Mei Mei'],['Ледяной Мей','Крижаний Мей','Icy Mei'],['Зелёный пришелец','Зелений прибулець','Green Alien'],
@@ -494,7 +530,11 @@ const NAMES = [
  ['Магма Мей','Магма Мей','Magma Mei'],['Нефритовый дракон','Нефритовий дракон','Jade Dragon'],['Сакура-самурай','Сакура-самурай','Sakura Samurai'],
  ['Чёрная дыра','Чорна діра','Black Hole'],['Мей Времени','Мей Часу','Chrono Master'],['Мей-титан','Мей-титан','Titan Mei'],
  ['Кометный Мей','Кометний Мей','Comet Mei'],['Огненная богиня','Вогняна богиня','Fire Goddess'],['Архангел Мей','Архангел Мей','Archangel Mei'],
- ['Повелитель тьмы','Володар темряви','Lord of Darkness'],['Творец Мей','Творець Мей','Creator Mei'],['Мей Вечности','Мей Вічності','Eternal Mei']
+ ['Повелитель тьмы','Володар темряви','Lord of Darkness'],['Творец Мей','Творець Мей','Creator Mei'],['Мей Вечности','Мей Вічності','Eternal Mei'],
+ ['Мей-астроном','Мей-астроном','Astronomer Mei'],['Пекарь Мей','Пекар Мей','Baker Mei'],['Неон-диджей','Неон-діджей','Neon DJ'],
+ ['Дух леса','Дух лісу','Forest Spirit'],['Штормовой король','Штормовий король','Storm King'],['Мей Сотый','Мей Сотий','Mei the 100th'],
+ ['Призрачный пират','Примарний пірат','Ghost Pirate'],['Хранитель времени','Охоронець часу','Time Keeper'],['Мей-галактика','Мей-галактика','Galaxy Mei'],
+ ['Абсолют Ультра','Абсолют Ультра','Absolute Ultra']
 ];
 const MAX = LEVELS.length;
 const nm = lv => NAMES[lv-1][LI[lang]];
@@ -530,8 +570,8 @@ const BGS = [
 const bgName = b => b.n[LI[lang]];
 const FIELD = {4:{price:800,need:4},5:{price:4000,need:10}};
 
-const price  = k => Math.round(10*Math.pow(2.15,k-2));
-const reward = j => Math.max(1,Math.round(1.5*Math.pow(1.6,j-2)));
+const price  = k => Math.round(15*Math.pow(2.25,k-2));
+const reward = j => Math.max(2,Math.round(3*Math.pow(1.6,j-2)));
 const xpNeed = l => Math.round(30*Math.pow(1.35,l-1));
 const fmt = n => n>=1e15?(n/1e15).toFixed(1)+'Q':n>=1e12?(n/1e12).toFixed(1)+'T':n>=1e9?(n/1e9).toFixed(1)+'B':n>=1e6?(n/1e6).toFixed(1)+'M':n>=1e4?(n/1e3).toFixed(1)+'K':String(n);
 
@@ -562,12 +602,12 @@ function rewLabel(r){
 const ACH=[
  {k:'merges',n:50,r:60},{k:'merges',n:300,r:300},{k:'merges',n:1500,r:2000},
  {k:'earned',n:1000,r:100},{k:'earned',n:20000,r:800},{k:'earned',n:500000,r:10000},
- {k:'level',n:6,r:100},{k:'level',n:12,r:500},{k:'level',n:24,r:3000},{k:'level',n:36,r:20000},{k:'level',n:44,r:100000},{k:'level',n:64,r:1000000},{k:'level',n:94,r:5000000},
+ {k:'level',n:6,r:100},{k:'level',n:12,r:500},{k:'level',n:24,r:3000},{k:'level',n:36,r:20000},{k:'level',n:44,r:100000},{k:'level',n:64,r:1000000},{k:'level',n:94,r:5000000},{k:'level',n:104,r:10000000},
  {k:'games',n:10,r:100},{k:'games',n:50,r:600},
  {k:'bgs',n:4,r:300},{k:'bgs',n:8,r:3000},
  {k:'tier',n:10,r:500},{k:'tier',n:30,r:5000},{k:'tier',n:50,r:20000}
 ];
-const COLL=[{n:10,r:200},{n:20,r:800},{n:30,r:3000},{n:44,r:20000},{n:64,r:200000},{n:94,r:2000000}];
+const COLL=[{n:10,r:200},{n:20,r:800},{n:30,r:3000},{n:44,r:20000},{n:64,r:200000},{n:94,r:2000000},{n:104,r:5000000}];
 
 // Колесо
 const WHEEL_COST=100;
@@ -581,13 +621,15 @@ LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; rende
 // ------------------------------ состояние ------------------------------
 let coins=0,best=0,maxEver=1,xp=0,plv=1,owned=[1],bgId=1,seen=[1];
 let inv={}, x2Until=0, x2Cd=0, voiceId='cat', voices=['cat'], trackId='calm', tracks=['calm'], avatar=0, nick='', bestTimed=0, bestCombo=0;
+let framesOwned=[], pets=[null], petSlots=1, chalDone='', chalStreak=0, evtWeek='', evtLv=5, evtNeed=15, evtProg=0, evtClaimed=[], evtDone=0, titleId='newbie', frameId='none';
+let chal=false, chalLeft=0, chalGoal=6, chalR=null, chalNext=1, petPick=-1, golden=-1, gMerges=0, frozen=-1, frozenLeft=0;
 let muted=false, vol=0.8, vibe=true, hints=true, musicOn=true, mvol=0.5;
 let bpSeason='', bpBest=0, bpPts=0, bpFree=[], bpPrem=[], bpGold=false, gifts=[], boost=0;
 let size=3, sizeMax=3, stats={merges:0,earned:0,games:0};
 let dailyLast='', dailyStreak=0, quest={date:'',list:[]}, achClaimed=[], collClaimed=[], wheelDate='';
 try{
   const d=JSON.parse(localStorage.getItem('meimei-save5')||localStorage.getItem('meimei-save4')||localStorage.getItem('meimei-save3')||localStorage.getItem('meimei-save')||'{}');
-  coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; inv=d.inv||{}; if(d.hammers&&!inv.hammer) inv.hammer=Math.min(10,d.hammers); x2Until=d.x2Until||0; x2Cd=d.x2Cd||0; voiceId=d.voiceId||'cat'; voices=d.voices||['cat']; trackId=d.trackId||'calm'; tracks=d.tracks||['calm']; avatar=d.avatar||0; nick=d.nick||''; bestTimed=d.bestTimed||0; bestCombo=d.bestCombo||0; seen=d.seen||null; if(!seen){seen=[];for(let i=1;i<=maxEver;i++)seen.push(i);} xp=d.xp||0; plv=d.plv||1; owned=d.owned||[1]; bgId=d.bg||1;
+  coins=d.coins||0; best=d.best||0; maxEver=d.maxEver||1; inv=d.inv||{}; if(d.hammers&&!inv.hammer) inv.hammer=Math.min(10,d.hammers); x2Until=d.x2Until||0; x2Cd=d.x2Cd||0; voiceId=d.voiceId||'cat'; voices=d.voices||['cat']; trackId=d.trackId||'calm'; tracks=d.tracks||['calm']; avatar=d.avatar||0; nick=d.nick||''; bestTimed=d.bestTimed||0; bestCombo=d.bestCombo||0; framesOwned=d.framesOwned||[]; pets=d.pets||[null]; petSlots=d.petSlots||1; while(pets.length<petSlots)pets.push(null); chalDone=d.chalDone||''; chalStreak=d.chalStreak||0; evtWeek=d.evtWeek||''; evtLv=d.evtLv||5; evtNeed=d.evtNeed||15; evtProg=d.evtProg||0; evtClaimed=d.evtClaimed||[]; evtDone=d.evtDone||0; titleId=d.titleId||'newbie'; frameId=d.frameId||'none'; seen=d.seen||null; if(!seen){seen=[];for(let i=1;i<=maxEver;i++)seen.push(i);} xp=d.xp||0; plv=d.plv||1; owned=d.owned||[1]; bgId=d.bg||1;
   muted=!!d.muted; if(d.vol!==undefined) vol=d.vol; if(d.vibe!==undefined) vibe=d.vibe; if(d.hints!==undefined) hints=d.hints;
   if(d.musicOn!==undefined) musicOn=d.musicOn; if(d.mvol!==undefined) mvol=d.mvol;
   if(d.lang&&I18N[d.lang]) lang=d.lang;
@@ -596,7 +638,7 @@ try{
   dailyLast=d.dailyLast||''; dailyStreak=d.dailyStreak||0; if(d.quest) quest=d.quest; achClaimed=d.achClaimed||[]; collClaimed=d.collClaimed||[]; wheelDate=d.wheelDate||'';
 }catch(e){}
 function save(){ try{ localStorage.setItem('meimei-save5',JSON.stringify({coins,best,maxEver,xp,plv,owned,bg:bgId,muted,vol,vibe,hints,musicOn,mvol,lang,
-  bpPts,bpFree,bpPrem,bpGold,gifts,boost,size,sizeMax,stats,dailyLast,dailyStreak,quest,achClaimed,collClaimed,wheelDate,seen,inv,x2Until,x2Cd,voiceId,voices,trackId,tracks,avatar,nick,bestTimed,bestCombo,bpSeason,bpBest})); }catch(e){} }
+  bpPts,bpFree,bpPrem,bpGold,gifts,boost,size:(chal&&stash?stash.size:size),sizeMax,stats,dailyLast,dailyStreak,quest,achClaimed,collClaimed,wheelDate,seen,inv,x2Until,x2Cd,voiceId,voices,trackId,tracks,avatar,nick,bestTimed,bestCombo,framesOwned,pets,petSlots,chalDone,chalStreak,evtWeek,evtLv,evtNeed,evtProg,evtClaimed,evtDone,titleId,frameId,bpSeason,bpBest})); }catch(e){} }
 const $=id=>document.getElementById(id);
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 const today=()=>dstr(new Date());
@@ -701,7 +743,7 @@ function poly(x,pts,fill,stroke){x.beginPath();pts.forEach((p,i)=>i?x.lineTo(p[0
 
 function draw(c, lv){
   const s=c.width, x=c.getContext('2d'); x.clearRect(0,0,s,s);
-  if(lv<0){ x.font=(s*0.72)+'px serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText('🎁',s/2,s/2+s*0.04); return; }
+  if(lv<=0){ x.font=(s*(lv<0?0.72:0.55))+'px serif'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(lv<0?'🎁':'👤',s/2,s/2+s*0.04); return; }
   if(imgs[lv]){const im=imgs[lv], r=Math.min(s/im.width,s/im.height);
     x.drawImage(im,(s-im.width*r)/2,(s-im.height*r)/2,im.width*r,im.height*r); return;}
   const L=LEVELS[lv-1], A=L.a||[], has=k=>A.indexOf(k)>=0;
@@ -776,7 +818,7 @@ function applyBg(){
   document.body.style.backgroundAttachment='fixed';
   document.body.classList.toggle('dark',!!b.dark);
 }
-function toast(s){ const e=$('toast'); e.textContent=s; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),2200); }
+function toast(s,ms){ const e=$('toast'); e.textContent=s; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),ms||2200); }
 function burst(parent,list,n){
   for(let i=0;i<n;i++){
     const s=document.createElement('span'); s.className='bp'; s.textContent=list[i%list.length];
@@ -803,6 +845,31 @@ function addBp(n){ checkSeason(); const before=bpTier(); bpPts+=n; const after=b
 function claimable(){ const tr=bpTier(); let c=0; for(let i=1;i<=tr;i++){ if(bpFree.indexOf(i)<0)c++; if(bpGold&&bpPrem.indexOf(i)<0)c++; } return c; }
 
 // ежедневные задания
+const weekMon=()=>{ const d=new Date(); d.setDate(d.getDate()-((d.getDay()+6)%7)); return dstr(d); };
+const weekDaysLeft=()=>7-((new Date().getDay()+6)%7);
+function checkEvent(){
+  const k=weekMon(); if(evtWeek===k) return;
+  evtWeek=k; evtProg=0; evtClaimed=[];
+  evtLv=Math.max(4,Math.min(14,maxEver-1)); evtNeed=evtLv<=6?15:evtLv<=8?8:evtLv<=10?5:3; save();
+}
+const evtMs=()=>[Math.ceil(evtNeed/3),Math.ceil(evtNeed*2/3),evtNeed];
+const evtReward=i=>i===0?{coins:100+plv*15}:i===1?{coins:200+plv*25,item:'up'}:{coins:400+plv*40,item:'magic'};
+function evtClaim(i){
+  const n=evtMs()[i]; if(evtProg<n||evtClaimed.indexOf(i)>=0) return;
+  const r=evtReward(i); evtClaimed.push(i); coins+=r.coins; let lab='🪙 '+fmt(r.coins);
+  if(r.item) lab+=' + '+giveItem(r.item);
+  if(i===2) evtDone++;
+  save(); coinSound(); toast(t('bp_got',lab)); buildPanel(); updateLobby();
+}
+const PET_COSTS=[0,600,4000,20000], PET_CAP_H=8;
+const petRate=lv=>Math.max(2,Math.round(price(Math.max(2,lv))/12));
+const petAmount=p=>p?Math.floor(petRate(p.lv)*Math.min(PET_CAP_H,(Date.now()-p.t)/36e5)):0;
+function petCollect(i){
+  const p=pets[i]; if(!p) return; const a=petAmount(p); if(a<1) return;
+  coins+=a; p.t=Date.now(); save(); coinSound(); toast(t('bp_got','🪙 '+fmt(a))); buildPanel(); updateLobby();
+}
+const chalInfo=()=>plv>=12?{goal:7,spawns:26,start:12}:{goal:6,spawns:20,start:10};
+const chalStreakNow=()=>(chalDone===today()||chalDone===yesterday())?chalStreak:0;
 function ensureQuests(){
   const td=today(); if(quest.date===td && quest.list && quest.list.length) return;
   const r=seedRand(td+plv);
@@ -840,6 +907,9 @@ function updateBadges(){
   b.ach=ACH.filter((a,i)=>achVal(a.k)>=a.n&&achClaimed.indexOf(i)<0).length;
   b.coll=COLL.filter(c=>seen.length>=c.n&&collClaimed.indexOf(c.n)<0).length;
   b.wheel=wheelDate!==today()?1:0;
+  b.chal=chalDone!==today()?1:0;
+  checkEvent(); b.event=evtMs().filter((n,i)=>evtProg>=n&&evtClaimed.indexOf(i)<0).length;
+  b.nursery=pets.filter(p=>p&&petAmount(p)>=10).length;
   document.querySelectorAll('.ib').forEach(btn=>badge(btn,b[btn.dataset.panel]||0));
 }
 function updateXpUI(){
@@ -847,10 +917,55 @@ function updateXpUI(){
   document.querySelectorAll('.xpl').forEach(e=>e.textContent=t('plvl',plv,xp,need));
   document.querySelectorAll('.xpfill').forEach(e=>e.style.width=Math.min(100,xp/need*100)+'%');
 }
-const avatarLv=()=>(avatar&&seen.indexOf(avatar)>=0)?avatar:maxEver;
+const avatarLv=()=>(avatar&&seen.indexOf(avatar)>=0)?avatar:0;
+const L3=a=>a[LI[lang]];
+const TITLES=[
+ {id:'newbie',n:['Новичок','Новачок','Rookie'],d:['Доступен сразу','Доступний одразу','Available from the start'],ok:()=>true},
+ {id:'merger',n:['Слиятель','Злиттєвик','Merger'],d:['300 слияний','300 злиттів','300 merges'],ok:()=>stats.merges>=300},
+ {id:'rich',n:['Богач','Багатій','Tycoon'],d:['Заработать 20000 🪙','Заробити 20000 🪙','Earn 20000 🪙'],ok:()=>stats.earned>=20000},
+ {id:'coll',n:['Коллекционер','Колекціонер','Collector'],d:['Открыть 30 Мей Мей','Відкрити 30 Мей Мей','Unlock 30 Mei Meis'],ok:()=>seen.length>=30},
+ {id:'combo',n:['Мастер комбо','Майстер комбо','Combo Master'],d:['Комбо ×8','Комбо ×8','Combo ×8'],ok:()=>bestCombo>=8},
+ {id:'speed',n:['Молния','Блискавка','Lightning'],d:['300 очков «На время»','300 очок «На час»','300 pts in Time attack'],ok:()=>bestTimed>=300},
+ {id:'pass',n:['Герой сезона','Герой сезону','Season Hero'],d:['Тир 25 Батл пасса','Тір 25 Батл пасу','Battle Pass tier 25'],ok:()=>Math.max(bpBest,bpTier())>=25},
+ {id:'streak',n:['Постоянный','Постійний','Regular'],d:['Испытание 7 дней подряд','Випробування 7 днів поспіль','Challenge 7 days in a row'],ok:()=>chalStreak>=7},
+ {id:'boss',n:['Охотник на боссов','Мисливець на босів','Boss Hunter'],d:['Пройти недельное событие','Пройти тижневу подію','Finish a weekly event'],ok:()=>evtDone>=1},
+ {id:'legend',n:['Легенда','Легенда','Legend'],d:['Открыть 64 Мей Мей','Відкрити 64 Мей Мей','Unlock 64 Mei Meis'],ok:()=>seen.length>=64}
+];
+const RB='linear-gradient(135deg,#ff6b6b,#ffd93d,#6bff95,#4dc9ff,#c77dff)';
+const FRAMES=[
+ {id:'none',n:['Без рамки','Без рамки','No frame'],d:['Доступна сразу','Доступна одразу','Available from the start'],ok:()=>true,st:{border:'5px solid #e4e4ec'}},
+ {id:'bronze',n:['Бронза','Бронза','Bronze'],d:['Уровень игрока 5','Рівень гравця 5','Player level 5'],ok:()=>plv>=5,st:{border:'5px solid #cd7f32'}},
+ {id:'silver',n:['Серебро','Срібло','Silver'],d:['Уровень игрока 10','Рівень гравця 10','Player level 10'],ok:()=>plv>=10,st:{border:'5px solid #c4c8d4'}},
+ {id:'gold',n:['Золото','Золото','Gold'],d:['Уровень игрока 15','Рівень гравця 15','Player level 15'],ok:()=>plv>=15,st:{border:'5px solid #ffd23a',boxShadow:'0 0 18px rgba(255,210,58,.7)'}},
+ {id:'neon',n:['Неон','Неон','Neon'],d:['Тир 30 Батл пасса','Тір 30 Батл пасу','Battle Pass tier 30'],ok:()=>Math.max(bpBest,bpTier())>=30,st:{border:'5px solid #2bf0ff',boxShadow:'0 0 18px rgba(43,240,255,.8)'}},
+ {id:'rainbow',n:['Радужная','Райдужна','Rainbow'],d:['Пройти недельное событие','Пройти тижневу подію','Finish a weekly event'],ok:()=>evtDone>=1,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,'+RB+' border-box'}},
+ {id:'cosmic',n:['Космос','Космос','Cosmic'],d:['Открыть 64 Мей Мей','Відкрити 64 Мей Мей','Unlock 64 Mei Meis'],ok:()=>seen.length>=64,st:{border:'5px solid #9a6aff',boxShadow:'0 0 20px rgba(154,106,255,.85)'}},
+ {id:'mint',n:['Мятная','М’ятна','Mint'],d:['Можно купить','Можна купити','Can be bought'],price:500,ok:()=>false,st:{border:'5px solid #6fe3b0'}},
+ {id:'pink',n:['Розовая','Рожева','Pink'],d:['Можно купить','Можна купити','Can be bought'],price:500,ok:()=>false,st:{border:'5px solid #ff7ac8'}},
+ {id:'sunset',n:['Закат','Захід','Sunset'],d:['Можно купить','Можна купити','Can be bought'],price:2000,ok:()=>false,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#ff8f6a,#ffd86b,#ff5ea8) border-box'}},
+ {id:'ice',n:['Ледяная','Крижана','Icy'],d:['Серия испытаний 3 дня','Серія випробувань 3 дні','3-day challenge streak'],ok:()=>chalStreak>=3,st:{border:'5px solid #9fe6ff',boxShadow:'0 0 16px rgba(159,230,255,.9)'}},
+ {id:'flame',n:['Пламя','Полум’я','Flame'],d:['Можно купить','Можна купити','Can be bought'],price:3000,ok:()=>false,st:{border:'5px solid #ff7a1a',boxShadow:'0 0 16px rgba(255,90,20,.85),0 0 30px rgba(255,200,40,.5)'}},
+ {id:'royal',n:['Королевская','Королівська','Royal'],d:['Открыть 44 Мей Мей','Відкрити 44 Мей Мей','Unlock 44 Mei Meis'],ok:()=>seen.length>=44,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#ffd23a,#8a3aff,#ffd23a) border-box'}},
+ {id:'aurora',n:['Аврора','Аврора','Aurora'],d:['Комбо ×12','Комбо ×12','Combo ×12'],ok:()=>bestCombo>=12,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#6bffb0,#4dc9ff,#c77dff) border-box'}},
+ {id:'diamond',n:['Бриллиант','Діамант','Diamond'],d:['Уровень игрока 25 или купить','Рівень гравця 25 або купити','Player level 25 or buy'],price:10000,ok:()=>plv>=25,st:{border:'5px solid #e8fbff',boxShadow:'0 0 20px rgba(120,230,255,.95),0 0 6px #fff'}}
+];
+function applyFrame(el,id){
+  const f=FRAMES.find(z=>z.id===id)||FRAMES[0]; el.style.border=''; el.style.boxShadow=''; el.style.background='';
+  Object.keys(f.st).forEach(k=>{ el.style[k]=f.st[k]; });
+}
+const titleName=id=>L3((TITLES.find(z=>z.id===id)||TITLES[0]).n);
+const ACC_TXT={crown:['носит корону','носить корону','wears a crown'],wings:['умеет летать','вміє літати','can fly'],halo:['светится как ангел','світиться як ангел','glows like an angel'],horns:['с озорными рожками','з пустотливими ріжками','has mischievous horns'],antennae:['ловит сигналы из космоса','ловить сигнали з космосу','picks up space signals'],bow:['обожает бантики','обожнює бантики','loves bows'],phones:['слушает музыку','слухає музику','listens to music'],glasses:['очень умный','дуже розумний','is very smart'],wizard:['колдует звёздной пылью','чаклує зоряним пилом','casts spells with stardust'],stars:['окружён звёздами','оточений зорями','is surrounded by stars'],cape:['носит плащ героя','носить плащ героя','wears a hero cape'],party:['всегда на вечеринке','завжди на вечірці','is always at a party'],santa:['разносит подарки','розносить подарунки','delivers presents'],scarf:['не мёрзнет в шарфе','не мерзне в шарфі','stays warm in a scarf'],pirate:['ищет сокровища','шукає скарби','hunts for treasure'],headband:['тренируется каждый день','тренується щодня','trains every day'],chef:['готовит вкусняшки','готує смаколики','cooks tasty treats'],flowers:['любит цветы','любить квіти','loves flowers'],antlers:['живёт в лесу','живе в лісі','lives in the forest'],tiara:['мечтает о королевстве','мріє про королівство','dreams of a kingdom']};
+const TIER_TXT=[['живёт во дворе','живе у дворі','lives in the backyard'],['путешествует по городам','мандрує містами','travels between cities'],['прилетел с далёкой звезды','прилетів з далекої зорі','came from a distant star'],['существует вне времени','існує поза часом','exists beyond time']];
+function story(lv,tail){
+  const L=LEVELS[lv-1], i=LI[lang], A=((L&&L.a)||[]).filter(k=>ACC_TXT[k]).slice(0,2);
+  const tier=TIER_TXT[lv<=10?0:lv<=30?1:lv<=60?2:3][i], and=['и','і','and'][i];
+  const acc=A.length?A.map(k=>ACC_TXT[k][i]).join(' '+and+' '):['просто пушистый и очень милый','просто пухнастий і дуже милий','just fluffy and adorable'][i];
+  return (tail?'':nm(lv)+' — ')+tier+', '+acc+'.';
+}
 function updateLobby(){
-  const al=avatarLv(); draw($('mascot'),al);
-  $('mascotName').textContent=(nick?nick+' · ':'')+nm(al);
+  draw($('mascot'),avatarLv()); applyFrame($('mascotWrap'),frameId);
+  $('mascotName').textContent=(nick||t('nick'))+' ✏️';
+  $('mascotTitle').textContent=titleName(titleId);
   $('lCoins').textContent=fmt(coins); $('lBest').textContent=fmt(best);
   const c=claimable(); $('lPass').textContent=t('pass')+(c?' ('+c+')':'');
   updateXpUI(); updateBadges();
@@ -884,14 +999,15 @@ function applySize(){ boardEl.style.setProperty('--n',size); }
 function emptyCells(){ const e=[]; board.forEach((v,i)=>{if(!v)e.push(i);}); return e; }
 function place(level){ const e=emptyCells(); if(!e.length) return false; newIdx=e[Math.random()*e.length|0]; board[newIdx]=level; return true; }
 function updateAdd(){
-  const b=$('add'), lv=spawnLvl(); b.innerHTML=''; b.setAttribute('aria-label',t('add',lv));
+  const b=$('add'), lv=chal?chalNext:spawnLvl(); b.disabled=chal&&chalLeft<1; b.innerHTML=''; b.setAttribute('aria-label',t('add',lv));
   const pl=document.createElement('span'); pl.className='plus'; pl.textContent='+'; b.appendChild(pl);
   const c=document.createElement('canvas'); c.width=c.height=72; draw(c,lv); b.appendChild(c);
-  const sm=document.createElement('small'); sm.textContent=t('lvl_n',lv); b.appendChild(sm);
+  const sm=document.createElement('small'); sm.textContent=chal?'×'+chalLeft:t('lvl_n',lv); b.appendChild(sm);
 }
 function updateTag(){
-  $('add').style.display=timed?'none':''; $('shopBtn').style.display=timed?'none':''; $('inv').style.display=timed?'none':'';
+  $('add').style.display=timed?'none':''; $('shopBtn').style.display=(timed||chal)?'none':''; $('inv').style.display=(timed||chal)?'none':'';
   const p=[], now=Date.now();
+  if(chal) p.push('🎯 '+nm(chalGoal)+' · '+t('chal_left',chalLeft));
   if(timed&&!over) p.push('⏱ '+Math.max(0,Math.ceil((tEnd-now)/1000))+'s');
   if(now<x2Until){ const sc=Math.ceil((x2Until-now)/1000); p.push(t('x2_tag',Math.floor(sc/60)+':'+String(sc%60).padStart(2,'0'))); }
   if(magic)p.push(t('tag_magic')); if(mode==='hammer')p.push(t('tag_hammer'));
@@ -922,7 +1038,7 @@ function setSize(n){
 
 function newGame(){
   applySize();
-  board=Array(N()).fill(0); score=0; sel=null; over=false; maxLv=1; stageLv=1; combo=0; popIdx=-1; newIdx=-1; floatQ=null; mode=null; magic=false;
+  board=Array(N()).fill(0); score=0; sel=null; over=false; maxLv=1; stageLv=1; combo=0; golden=-1; frozen=-1; popIdx=-1; newIdx=-1; floatQ=null; mode=null; magic=false;
   $('over').style.display='none';
   const g=gifts.slice(); gifts=[];
   g.forEach(l=>{ if(place(l)){ if(l>maxLv)maxLv=l; } else gifts.push(l); });
@@ -933,10 +1049,11 @@ function newGame(){
 function hasMoves(){
   const n=N();
   if(board.some(v=>v<0)) return true;
-  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++) if(board[i]>0&&board[i]===board[j]&&board[i]<MAX) return true;
+  for(let i=0;i<n;i++)for(let j=i+1;j<n;j++) if(i!==frozen&&j!==frozen&&board[i]>0&&board[i]===board[j]&&board[i]<MAX) return true;
   return false;
 }
 function checkOver(){
+  if(chal){ if(!over&&!hasMoves()&&(chalLeft<1||board.every(v=>v))) finishChal(false); return; }
   if(timed){
     if(board.every(v=>v) && !hasMoves()){
       const idx=[]; board.forEach((v,i)=>{ if(v>0&&v<MAX) idx.push(i); });
@@ -960,44 +1077,65 @@ function afterMove(){
 function tap(i){
   if(over) return; popIdx=-1; newIdx=-1; floatQ=null;
   if(mode==='hammer'){
-    if(board[i]){ board[i]=0; inv.hammer=Math.max(0,getInv('hammer')-1); mode=null; sel=null; save(); updateTag(); render(); }
+    if(board[i]){ board[i]=0; if(i===frozen) frozen=-1; inv.hammer=Math.max(0,getInv('hammer')-1); mode=null; sel=null; save(); updateTag(); render(); }
     return;
   }
-  sel=(board[i]>0&&sel!==i)?i:null; render();
+  const v=board[i];
+  if(v<0){ openBox(i); return; }
+  if(i===frozen){ toast(t('ice_block')); return; }
+  if(!v){ sel=null; render(); return; }
+  if(sel===null){ sel=i; render(); return; }
+  if(sel===i){ sel=null; render(); return; }
+  const a=board[sel], same=a===v&&v<MAX, magicOk=magic&&getInv('magic')>0&&a!==v&&Math.max(a,v)<MAX;
+  if(same||magicOk) drop(sel,i); else { sel=i; render(); }
 }
 const x2on=()=>Date.now()<x2Until;
 function drop(from,to){
   if(over) return; popIdx=-1; newIdx=-1; floatQ=null; sel=null;
   if(to<0||from===to||!(board[from]>0)||board[to]<0){ render(); return; }
+  if(from===frozen||to===frozen){ toast(t('ice_block')); render(); return; }
   const a=board[from], b=board[to];
   if(!b){ board[to]=a; board[from]=0; newIdx=to; render(); return; }
   const same=a===b&&b<MAX, magicOk=magic&&getInv('magic')>0&&a!==b&&Math.max(a,b)<MAX;
   if(!(same||magicOk)){ render(); return; }
-  const sb=spawnLvl(), nl=Math.max(a,b)+1;
+  const sb=spawnLvl(), nl=Math.max(a,b)+1, norm=!special();
   if(magicOk){ magic=false; inv.magic=getInv('magic')-1; }
   board[to]=nl; board[from]=0; popIdx=to;
   const now=Date.now(); combo=(now-lastMergeT<3500)?combo+1:1; lastMergeT=now; if(combo>bestCombo) bestCombo=combo;
   const cm=1+0.25*Math.min(combo-1,8), pts=Math.round(nl*10*cm);
-  let gain=0;
-  if(!timed){ gain=Math.max(1,Math.round(reward(nl)*cm*(x2on()?2:1))); coins+=gain; stats.earned+=gain; qAdd('earn',gain); }
+  let gain=0, goldHit=false;
+  if(norm){
+    let mm=x2on()?2:1; if(to===golden){ mm*=3; goldHit=true; golden=-1; }
+    gain=Math.max(1,Math.round(reward(nl)*cm*mm)); coins+=gain; stats.earned+=gain; qAdd('earn',gain);
+  }
   score+=pts; stats.merges++;
-  if(nl>maxLv)maxLv=nl; if(nl>stageLv)stageLv=nl; if(nl>maxEver)maxEver=nl; if(!timed&&score>best)best=score;
+  if(nl>maxLv)maxLv=nl; if(nl>stageLv)stageLv=nl; if(nl>maxEver)maxEver=nl; if(norm&&score>best)best=score;
   qAdd('merge',1); qMax('reach',nl); qMax('combo',combo);
-  floatQ=[to,(timed?'+'+pts:'+'+fmt(gain)+' 🪙')+(combo>1?' 🔥×'+combo:'')+(!timed&&x2on()?' ✨':''),nl];
-  meow(nl); buzz(); addXp(nl*2); if(!timed) addBp(nl);
+  if(norm&&nl>=evtLv){ checkEvent(); evtProg=Math.min(evtNeed,evtProg+1); }
+  floatQ=[to,(special()?'+'+pts:'+'+fmt(gain)+' 🪙')+(combo>1?' 🔥×'+combo:'')+(goldHit?' ✨×3':(norm&&x2on()?' ✨':'')),nl];
+  meow(nl); buzz(); addXp(nl*2); if(norm) addBp(nl);
   if(timed) place(spawnLvl());
-  else if(!board.some(v=>v<0) && emptyCells().length && Math.random()<0.04){ place(-1); setTimeout(()=>toast(t('box_new')),500); }
+  else if(norm){
+    if(frozen>=0){ frozenLeft--; if(frozenLeft<=0){ frozen=-1; setTimeout(()=>toast(t('ice_thaw')),600); } }
+    if(golden>=0){ gMerges++; if(gMerges>8) golden=-1; }
+    const mei=[]; board.forEach((v,i)=>{ if(v>0&&i!==frozen&&i!==golden) mei.push(i); });
+    if(golden<0&&mei.length&&Math.random()<0.12){ golden=mei[Math.random()*mei.length|0]; gMerges=0; setTimeout(()=>toast(t('gold_new')),500); }
+    else if(frozen<0&&golden!==to&&mei.length>2&&Math.random()<0.06){ const c=mei.filter(i=>i!==to&&i!==golden); if(c.length){ frozen=c[Math.random()*c.length|0]; frozenLeft=4; setTimeout(()=>toast(t('ice_new')),500); } }
+    if(!board.some(v=>v<0) && emptyCells().length && Math.random()<0.04){ place(-1); setTimeout(()=>toast(t('box_new')),900); }
+  }
   save(); updateTag(); updateAdd();
   if(spawnLvl()>sb) setTimeout(()=>toast(t('spawn_up')),1100);
+  if(chal&&nl>=chalGoal){ render(); finishChal(true); return; }
   afterMove();
 }
 
-// ---- режим «На время» ----
+// ---- особые режимы ----
+const special=()=>timed||chal;
+function stashGame(){ if(!special()) stash=board?{board:board.slice(),score,over,maxLv,stageLv,size}:{none:true,size}; }
+function resetBoardState(){ over=false; maxLv=1; stageLv=1; combo=0; mode=null; magic=false; sel=null; popIdx=-1; newIdx=-1; floatQ=null; score=0; golden=-1; frozen=-1; $('over').style.display='none'; }
 function startTimed(){
-  if(!timed){ stash=board?{board:board.slice(),score,over,maxLv,stageLv}:null; }
-  timed=true; show('game');
-  const n=N(); board=Array(n).fill(0); score=0; over=false; maxLv=1; stageLv=1; combo=0; mode=null; magic=false; sel=null; popIdx=-1; newIdx=-1; floatQ=null;
-  applySize(); $('over').style.display='none';
+  stashGame(); chal=false; timed=true; show('game');
+  const n=N(); board=Array(n).fill(0); resetBoardState(); applySize();
   const cnt=Math.ceil(n*0.6); for(let k=0;k<cnt;k++) place(Math.random()<0.25?2:1);
   newIdx=-1; tEnd=Date.now()+60000; clearInterval(tTimer); tTimer=setInterval(timedTick,200);
   stats.games++; qAdd('play',1); save(); render(); updateTag(); updateAdd();
@@ -1011,58 +1149,54 @@ function finishTimed(){
   $('overScore').textContent=t('timed_over',score,rw,bestTimed);
   $('over').style.display='flex'; updateTag(); render();
 }
+function startChal(){
+  stashGame(); timed=false; chal=true; clearInterval(tTimer); tTimer=null; show('game');
+  const ci=chalInfo(); size=4; applySize(); board=Array(16).fill(0); resetBoardState();
+  chalR=seedRand('chal'+today()); chalLeft=ci.spawns; chalGoal=ci.goal;
+  const idx=[]; for(let k=0;k<16;k++) idx.push(k);
+  for(let k=15;k>0;k--){ const j=Math.floor(chalR()*(k+1)); const tmp=idx[k]; idx[k]=idx[j]; idx[j]=tmp; }
+  const lv=[1,1,1,2,2,3]; for(let k=0;k<ci.start;k++) board[idx[k]]=lv[Math.floor(chalR()*lv.length)];
+  chalNext=chalR()<0.3?2:1; render(); updateTag(); updateAdd();
+}
+function chalSpawn(){
+  if(over||chalLeft<1) return;
+  if(place(chalNext)){ chalLeft--; chalNext=chalR()<0.3?2:1; render(); updateAdd(); updateTag(); checkOver(); } else toast(t('full'));
+}
+function finishChal(win){
+  if(over) return; over=true; mode=null; sel=null; let txt;
+  if(win){
+    if(chalDone!==today()){
+      chalStreak=(chalDone===yesterday())?chalStreak+1:1; chalDone=today();
+      const rw=150+plv*20+Math.min(7,chalStreak)*20; coins+=rw; addXp(40+plv*3); coinSound(); txt=t('chal_res_win',rw,chalStreak);
+    } else txt=t('chal_replay');
+  } else txt=t('chal_res_lose');
+  save(); meow(win?Math.max(3,maxLv):1,!win);
+  document.querySelector('#over h2').textContent=t(win?'chal_win':'chal_lose');
+  $('overScore').textContent=txt; $('over').style.display='flex'; updateTag(); render(); updateBadges();
+}
 function leaveTimed(){
   clearInterval(tTimer); tTimer=null;
-  if(!timed) return; timed=false; combo=0; mode=null; magic=false; sel=null;
-  if(stash){ board=stash.board; score=stash.score; over=stash.over; maxLv=stash.maxLv; stageLv=stash.stageLv; stash=null; }
-  else { board=null; over=false; }
+  if(!timed&&!chal) return;
+  timed=false; chal=false; combo=0; mode=null; magic=false; sel=null; golden=-1; frozen=-1;
+  if(stash){
+    size=stash.size; applySize();
+    if(stash.none){ board=null; over=false; } else { board=stash.board; score=stash.score; over=stash.over; maxLv=stash.maxLv; stageLv=stash.stageLv; }
+    stash=null;
+  } else { board=null; over=false; }
   $('over').style.display='none';
 }
-let drag=null;
-function cellAt(x,y){ const el=document.elementFromPoint(x,y); const c=el&&el.closest?el.closest('.cell'):null; return c?Array.prototype.indexOf.call(boardEl.children,c):-1; }
-function clearTgt(){ Array.prototype.forEach.call(boardEl.children,c=>c.classList.remove('tgt')); }
-boardEl.addEventListener('pointerdown',e=>{
-  if(over||drag) return; const i=cellAt(e.clientX,e.clientY); if(i<0) return;
-  if(mode==='hammer'){ tap(i); return; }
-  if(board[i]<0){ openBox(i); return; }
-  if(!board[i]){ sel=null; render(); return; }
-  drag={from:i,x:e.clientX,y:e.clientY,moved:false,g:null,id:e.pointerId};
-  try{ boardEl.setPointerCapture(e.pointerId); }catch(_){}
-  e.preventDefault();
-});
-boardEl.addEventListener('pointermove',e=>{
-  if(!drag||e.pointerId!==drag.id) return;
-  if(!drag.moved){
-    if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<8) return;
-    drag.moved=true; sel=null;
-    const cell=boardEl.children[drag.from], r=cell.getBoundingClientRect(), cv=cell.querySelector('canvas');
-    const g=document.createElement('canvas'); g.width=g.height=200; draw(g,board[drag.from]);
-    g.style.cssText='position:fixed;pointer-events:none;z-index:50;width:'+(r.width*0.95)+'px;height:'+(r.height*0.95)+'px;transform:translate(-50%,-50%) scale(1.12);filter:drop-shadow(0 8px 10px rgba(0,0,0,.35))';
-    document.body.appendChild(g); drag.g=g; if(cv) cv.style.opacity='.25';
-  }
-  drag.g.style.left=e.clientX+'px'; drag.g.style.top=e.clientY+'px';
-  const t2=cellAt(e.clientX,e.clientY); clearTgt();
-  if(t2>=0&&t2!==drag.from) boardEl.children[t2].classList.add('tgt');
-});
-function endDrag(e,cancel){
-  if(!drag||e.pointerId!==drag.id) return;
-  const d=drag; drag=null; if(d.g) d.g.remove(); clearTgt();
-  if(cancel){ render(); return; }
-  if(!d.moved){ tap(d.from); return; }
-  drop(d.from,cellAt(e.clientX,e.clientY));
-}
-boardEl.addEventListener('pointerup',e=>endDrag(e,false));
-boardEl.addEventListener('pointercancel',e=>endDrag(e,true));
+boardEl.addEventListener('click',e=>{ const c=e.target.closest?e.target.closest('.cell'):null; if(c) tap(Array.prototype.indexOf.call(boardEl.children,c)); });
 function render(){
   if(!board) return;
+  if(frozen>=0&&!(board[frozen]>0)) frozen=-1;
   boardEl.innerHTML='';
   board.forEach((v,i)=>{
-    const b=document.createElement('button'); b.className='cell'+(sel===i?' sel':'')+(popIdx===i?' pop':'')+(newIdx===i?' new':'');
+    const b=document.createElement('button'); b.className='cell'+(sel===i?' sel':'')+(popIdx===i?' pop':'')+(newIdx===i?' new':'')+(golden===i?' gold':'')+(frozen===i?' ice':'');
     if(v){const c=document.createElement('canvas'); c.width=c.height=200; draw(c,v); b.appendChild(c);}
     boardEl.appendChild(b);
   });
   let nw=0; board.forEach(v=>{ if(v>0&&seen.indexOf(v)<0){ seen.push(v); nw=v; } });
-  if(nw){ save(); setTimeout(()=>{ toast(t('coll_new',nm(nw))); updateBadges(); },300); }
+  if(nw){ save(); setTimeout(()=>{ toast(t('coll_new',nm(nw))+' '+story(nw,1),4500); updateBadges(); },300); }
   if(floatQ){const el=boardEl.children[floatQ[0]];
     if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);
       burst(el, floatQ[2]>=10?['❤️','✨','💖']:['🪙','✨','⭐'], 9);}
@@ -1213,7 +1347,7 @@ function buyItem(id){
   refreshCoins(); updateTag(); buildShop();
 }
 function useItem(id){
-  if(cur!=='game'||timed){ toast(t('bst_need_game')); return; }
+  if(cur!=='game'||timed||chal){ toast(t('bst_need_game')); return; }
   if(over) return;
   if(id==='hammer'){
     if(mode==='hammer') mode=null;
@@ -1322,7 +1456,7 @@ function drawWheel(c){
 }
 function buildPanel(){
   const list=$('panelList'); list.innerHTML='';
-  const titles={daily:'🎁 '+t('daily'),quests:'📋 '+t('quests'),ach:'🏆 '+t('ach'),coll:'📖 '+t('coll'),wheel:'🎡 '+t('wheel'),profile:'👤 '+t('profile')};
+  const titles={daily:'🎁 '+t('daily'),quests:'📋 '+t('quests'),ach:'🏆 '+t('ach'),coll:'📖 '+t('coll'),wheel:'🎡 '+t('wheel'),profile:'👤 '+t('profile'),nursery:'🏡 '+t('nursery'),chal:'🎯 '+t('chal'),event:'🎪 '+t('event')};
   $('panelTitle').textContent=titles[panelType];
   if(panelType==='daily'){
     $('panelNote').textContent=t('d_note');
@@ -1338,13 +1472,58 @@ function buildPanel(){
       list.appendChild(row);
     }
     if(info.claimed){ const p=document.createElement('div'); p.className='note'; p.textContent=t('d_done'); list.appendChild(p); }
+  } else if(panelType==='nursery'){
+    $('panelNote').textContent=t('pet_note',PET_CAP_H);
+    if(petPick>=0){
+      const h=document.createElement('div'); h.className='note'; h.style.fontWeight='700'; h.textContent=t('pet_choose'); list.appendChild(h);
+      const g=document.createElement('div'); g.className='cgrid';
+      seen.slice().sort((a,b)=>a-b).forEach(lv=>{
+        const d=document.createElement('div'); d.className='cc';
+        const cv=document.createElement('canvas'); cv.width=cv.height=96; draw(cv,lv); d.appendChild(cv);
+        const sp=document.createElement('span'); sp.textContent='+'+fmt(petRate(lv)); d.appendChild(sp);
+        d.onclick=()=>{ if(pets[petPick]) coins+=petAmount(pets[petPick]); pets[petPick]={lv:lv,t:Date.now()}; petPick=-1; save(); meow(lv); buildPanel(); updateLobby(); };
+        g.appendChild(d);
+      });
+      list.appendChild(g); list.appendChild(mkBtn(t('pet_cancel'),'',()=>{ petPick=-1; buildPanel(); }));
+    } else {
+      const tot=pets.reduce((a,p)=>a+petAmount(p),0);
+      const all=mkBtn(t('pet_all')+(tot?' 🪙'+fmt(tot):''),'',()=>{ pets.forEach((p,i)=>{ if(p) petCollect(i); }); },tot<1); all.style.cssText='display:block;margin:6px auto 10px'; list.appendChild(all);
+      for(let i=0;i<petSlots;i++){
+        const p=pets[i];
+        if(p){
+          const c=document.createElement('canvas'); c.width=c.height=108; draw(c,p.lv); const a=petAmount(p);
+          const row=mkRow(c,nm(p.lv),t('pet_rate',fmt(petRate(p.lv)))+' · '+t('pet_have',fmt(a)),mkBtn(t('pet_collect'),'',()=>petCollect(i),a<1));
+          row.appendChild(mkBtn(t('pet_change'),'eq',()=>{ petPick=i; buildPanel(); })); list.appendChild(row);
+        } else list.appendChild(mkRow(emSw('🏡'),t('pet_empty'),'',mkBtn(t('pet_pick'),'',()=>{ petPick=i; buildPanel(); })));
+      }
+      if(petSlots<PET_COSTS.length){
+        const cost=PET_COSTS[petSlots];
+        list.appendChild(mkRow(emSw('➕'),t('pet_buy'),t('price_n',fmt(cost)),mkBtn('🪙 '+fmt(cost),'',()=>{ if(coins<cost){ toast(t('no_coins')); return; } coins-=cost; pets.push(null); petSlots++; save(); coinSound(); buildPanel(); updateLobby(); },coins<cost)));
+      }
+    }
+  } else if(panelType==='chal'){
+    const ci=chalInfo(), done=chalDone===today();
+    $('panelNote').textContent=t('chal_note',nm(ci.goal),ci.spawns);
+    list.appendChild(mkRow(emSw('🎯'),t('chal_goal',nm(ci.goal)),done?t('chal_done'):t('chal_streak',chalStreakNow()),mkBtn('▶','',()=>{ closeSheets(); startChal(); })));
+    if(!done) list.appendChild(mkRow(emSw('🔥'),t('chal_streak',chalStreakNow()),'🪙 '+fmt(150+plv*20+Math.min(7,chalStreakNow()+1)*20),null));
+  } else if(panelType==='event'){
+    checkEvent();
+    $('panelNote').textContent=t('evt_note',evtNeed,nm(evtLv),weekDaysLeft());
+    const c=document.createElement('canvas'); c.width=c.height=108; draw(c,evtLv);
+    list.appendChild(mkRow(c,nm(evtLv),Math.min(evtProg,evtNeed)+' / '+evtNeed,null));
+    evtMs().forEach((n,i)=>{
+      const r=evtReward(i), done=evtClaimed.indexOf(i)>=0, ready=evtProg>=n&&!done;
+      const lab='🪙 '+fmt(r.coins)+(r.item?' + '+BOOSTS.find(z=>z.id===r.item).e:'');
+      const btn=done?mkBtn('✔','ok',null,true):mkBtn(ready?t('claim'):lab,'',()=>evtClaim(i),!ready);
+      const row=mkRow(emSw(i+1),t('evt_m',n),Math.min(evtProg,n)+' / '+n+' · '+lab,btn); if(ready) row.classList.add('hl'); list.appendChild(row);
+    });
   } else if(panelType==='profile'){
     $('panelNote').textContent='';
     const top=document.createElement('div'); top.style.cssText='display:flex;align-items:center;gap:14px;padding:6px 4px 12px';
-    const c=document.createElement('canvas'); c.width=c.height=120; c.style.cssText='width:84px;height:84px;background:var(--box);border-radius:16px'; draw(c,avatarLv()); top.appendChild(c);
+    const c=document.createElement('canvas'); c.width=c.height=120; c.style.cssText='width:84px;height:84px;background:#f0f0f4;border-radius:50%;box-sizing:border-box'; applyFrame(c,frameId); draw(c,avatarLv()); top.appendChild(c);
     const info=document.createElement('div'); info.style.flex='1';
     const nmEl=document.createElement('b'); nmEl.style.fontSize='20px'; nmEl.textContent=nick||t('nick'); info.appendChild(nmEl);
-    const sub=document.createElement('div'); sub.className='xptxt'; sub.textContent=t('pf_level')+' '+plv+' · '+nm(avatarLv()); info.appendChild(sub);
+    const sub=document.createElement('div'); sub.className='xptxt'; sub.textContent=titleName(titleId)+' · '+t('pf_level')+' '+plv; info.appendChild(sub);
     top.appendChild(info);
     top.appendChild(mkBtn('✏️','',()=>{ const v=prompt(t('nick_prompt'),nick); if(v!==null){ nick=v.trim().slice(0,16); save(); buildPanel(); updateLobby(); } }));
     list.appendChild(top);
@@ -1360,6 +1539,20 @@ function buildPanel(){
       d.onclick=()=>{ avatar=lv; save(); meow(lv); buildPanel(); updateLobby(); }; g.appendChild(d);
     });
     list.appendChild(g);
+    const hd=txt=>{ const d=document.createElement('div'); d.className='note'; d.style.fontWeight='700'; d.textContent=txt; list.appendChild(d); };
+    hd(t('pf_title'));
+    TITLES.forEach(ti=>{ const ok=ti.ok(), cu=titleId===ti.id;
+      list.appendChild(mkRow(emSw('🏷'),L3(ti.n),L3(ti.d),cu?mkBtn(t('selected'),'eq',null,true):ok?mkBtn(t('choose'),'eq',()=>{ titleId=ti.id; save(); buildPanel(); updateLobby(); }):mkBtn('🔒','',null,true))); });
+    hd(t('pf_frame'));
+    FRAMES.forEach(fr=>{
+      const own=fr.ok()||framesOwned.indexOf(fr.id)>=0, cu=frameId===fr.id; const sw=document.createElement('div'); sw.className='sw'; applyFrame(sw,fr.id);
+      let btn;
+      if(cu) btn=mkBtn(t('selected'),'eq',null,true);
+      else if(own) btn=mkBtn(t('choose'),'eq',()=>{ frameId=fr.id; save(); buildPanel(); updateLobby(); });
+      else if(fr.price) btn=mkBtn('🪙 '+fmt(fr.price),'',()=>{ if(coins<fr.price){ toast(t('no_coins')); return; } coins-=fr.price; framesOwned.push(fr.id); frameId=fr.id; save(); coinSound(); buildPanel(); updateLobby(); },coins<fr.price);
+      else btn=mkBtn('🔒','',null,true);
+      list.appendChild(mkRow(sw,L3(fr.n),own||!fr.price?L3(fr.d):t('price_n',fmt(fr.price)),btn));
+    });
   } else if(panelType==='quests'){
     $('panelNote').textContent=t('q_note');
     ensureQuests();
@@ -1392,7 +1585,7 @@ function buildPanel(){
       const d=document.createElement('div'); d.className='cc'+(seen.indexOf(lv)<0?' lock':'');
       const c=document.createElement('canvas'); c.width=c.height=96; draw(c,lv); d.appendChild(c);
       const s=document.createElement('span'); s.textContent=lv; d.appendChild(s);
-      d.onclick=()=>{ if(seen.indexOf(lv)>=0){ meow(lv); toast(nm(lv)+' · '+t('lvl_n',lv)); } else toast('???'); };
+      d.onclick=()=>{ if(seen.indexOf(lv)>=0){ meow(lv); toast(story(lv),3800); } else toast('???'); };
       g.appendChild(d);
     }
     list.appendChild(g);
@@ -1458,12 +1651,12 @@ function show(name){
   window.scrollTo(0,0);
   if(name==='lobby'){ checkSeason(); updateLobby(); updatePlayBtn(); }
 }
-function updatePlayBtn(){ const on=!!board&&!over&&!timed; $('play').textContent=on?t('cont'):t('play'); }
-$('play').onclick=()=>{ if(board&&!over&&!timed){ show('game'); applySize(); render(); updateTag(); updateAdd(); } else { show('game'); newGame(); } };
+function updatePlayBtn(){ const on=!!board&&!over&&!special(); $('play').textContent=on?t('cont'):t('play'); }
+$('play').onclick=()=>{ if(board&&!over&&!special()){ show('game'); applySize(); render(); updateTag(); updateAdd(); } else { show('game'); newGame(); } };
 $('lTimed').onclick=startTimed;
 $('menu').onclick=()=>show('lobby');
 $('toLobby').onclick=()=>show('lobby');
-$('again').onclick=()=>{ if(timed) startTimed(); else newGame(); };
+$('again').onclick=()=>{ if(timed) startTimed(); else if(chal) startChal(); else newGame(); };
 $('lShop').onclick=openShop; $('shopBtn').onclick=openShop;
 $('lPass').onclick=openPass;
 document.querySelectorAll('.ib').forEach(b=>b.onclick=()=>openPanel(b.dataset.panel));
@@ -1474,11 +1667,8 @@ $('tabSnd').onclick=()=>{ shopTab='snd'; buildShop(); };
 $('tabBoost').onclick=()=>{ shopTab='boost'; buildShop(); };
 $('tabField').onclick=()=>{ shopTab='field'; buildShop(); };
 $('lSet').onclick=()=>openSheet('settings');
-$('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(place(spawnLvl())){render();checkOver();} else toast(t('full')); };
-$('mascotWrap').onclick=()=>{
-  meow(avatarLv()); const w=$('mascotWrap'); w.classList.remove('hop'); void w.offsetWidth; w.classList.add('hop');
-  burst(w,['❤️','💖','✨'],8); setTimeout(()=>w.classList.remove('hop'),600);
-};
+$('add').onclick=()=>{ if(over)return; popIdx=-1; floatQ=null; if(chal){ chalSpawn(); return; } if(place(spawnLvl())){render();checkOver();} else toast(t('full')); };
+$('ptop').onclick=()=>openPanel('profile');
 const toggleSnd=()=>{ muted=!muted; save(); setSndUI(); if(!muted)meow(1); };
 const toggleMus=()=>{ musicOn=!musicOn; save(); setSndUI(); if(musicOn) musicStart(); else musicStop(); };
 $('setSnd').onclick=toggleSnd;
@@ -1491,7 +1681,7 @@ $('setMVol').oninput=e=>{ mvol=e.target.value/100; save(); if(mvol<=0) musicStop
 document.querySelectorAll('[data-lang]').forEach(b=>b.onclick=()=>{ lang=b.dataset.lang; save(); applyLang(); });
 $('setReset').onclick=()=>{
   if(!confirm(t('confirm_reset'))) return;
-  coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;seen=[1];inv={};x2Until=0;x2Cd=0;voiceId='cat';voices=['cat'];trackId='calm';tracks=['calm'];avatar=0;nick='';bestTimed=0;bestCombo=0;bpBest=0;bpPts=0;bpFree=[];bpPrem=[];bpGold=false;gifts=[];boost=0;
+  coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;seen=[1];inv={};x2Until=0;x2Cd=0;voiceId='cat';voices=['cat'];trackId='calm';tracks=['calm'];avatar=0;nick='';bestTimed=0;bestCombo=0;framesOwned=[];pets=[null];petSlots=1;chalDone='';chalStreak=0;evtWeek='';evtProg=0;evtClaimed=[];evtDone=0;titleId='newbie';frameId='none';bpBest=0;bpPts=0;bpFree=[];bpPrem=[];bpGold=false;gifts=[];boost=0;
   size=3;sizeMax=3;stats={merges:0,earned:0,games:0};dailyLast='';dailyStreak=0;quest={date:'',list:[]};achClaimed=[];collClaimed=[];wheelDate='';
   save(); applyBg(); applySize(); applyLang(); closeSheets(); toast(t('reset_done'));
 };
