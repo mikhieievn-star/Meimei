@@ -1,8 +1,8 @@
 // Офлайн-кэш Мей Мей Merge. Меняй версию, если хочешь принудительно сбросить кэш.
-const CACHE='meimei-v15';
-const CORE=['./','./index.html','./manifest.webmanifest','./icon-192.png','./icon-512.png','./icon-180.png'];
+const CACHE='meimei-v15d';
+const CORE=['./','./index.html','./manifest.webmanifest','./IMG_1078.png','./IMG_1079.png','./IMG_1080.png'];
 self.addEventListener('install',e=>{
-  e.waitUntil(caches.open(CACHE).then(c=>c.addAll(CORE)).then(()=>self.skipWaiting()));
+  e.waitUntil(caches.open(CACHE).then(c=>Promise.all(CORE.map(u=>c.add(u).catch(()=>{})))).then(()=>self.skipWaiting()));
 });
 self.addEventListener('activate',e=>{
   e.waitUntil(caches.keys().then(ks=>Promise.all(ks.filter(k=>k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim()));
