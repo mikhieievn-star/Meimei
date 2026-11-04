@@ -2,7 +2,7 @@
 <html lang="ru">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <title>Мей Мей Merge</title>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#ff3fa4">
@@ -19,7 +19,8 @@
   #board,#board *{touch-action:none}
   html{-webkit-text-size-adjust:100%}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-  body{margin:0;min-height:100vh;background:#fff;color:var(--fg);
+  html{min-height:100%}
+  body{margin:0;min-height:100vh;min-height:100dvh;background:#fff;color:var(--fg);
        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
   .screen{display:flex;flex-direction:column;align-items:center;width:100%}
   h1{font-size:22px;margin:14px 0 4px}
@@ -90,7 +91,7 @@
   .evo canvas{width:calc(100%/11 - 3px);aspect-ratio:1;background:#f6f6f9;border-radius:6px}
   .evo canvas.lock{filter:brightness(0);opacity:.15}
 
-  #lobby{min-height:100vh;justify-content:center;gap:8px;padding:16px 20px 28px}
+  #lobby{min-height:100vh;min-height:100dvh;justify-content:center;gap:8px;padding:16px 20px 28px}
   #lobby h1{font-size:30px;margin:0}
   #mascotWrap{position:relative;width:160px;height:160px;animation:bob 2.4s ease-in-out infinite;cursor:pointer}
   #mascotWrap.hop{animation:hop .55s ease-out}
@@ -353,7 +354,7 @@
       <div class="pair"><button id="bkCopy" data-i="bk_copy"></button><button id="bkPaste" data-i="bk_paste"></button></div></div>
     <div class="set"><span data-i="set_reset"></span><button class="red" id="setReset" data-i="reset_btn"></button></div>
     <div class="note" data-i="reset_note"></div>
-    <div class="note" style="text-align:center;padding-bottom:16px">v15.4 · no-zoom</div>
+    <div class="note" style="text-align:center;padding-bottom:16px">v15.5</div>
   </div>
 </div>
 
@@ -903,6 +904,7 @@ function applyBg(){
   const b=BGS.find(z=>z.id===bgId)||BGS[0];
   document.body.style.background=b.css;
   document.body.style.backgroundAttachment='fixed';
+  const de=document.documentElement; de.style.background=b.css; de.style.backgroundAttachment='fixed'; de.style.minHeight='100%';
   document.body.classList.toggle('dark',!!b.dark);
 }
 function toast(s,ms){ const e=$('toast'); e.textContent=s; e.classList.add('show'); clearTimeout(toast.t); toast.t=setTimeout(()=>e.classList.remove('show'),ms||2200); }
