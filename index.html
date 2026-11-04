@@ -1262,12 +1262,12 @@ function render(){
   if(floatQ){const el=boardEl.children[floatQ[0]];
     if(el){const sp=document.createElement('span'); sp.className='float'; sp.textContent=floatQ[1]; el.appendChild(sp);
       const L=floatQ[2];
-      burst(el, L>=10?['❤️','✨','💖']:['🪙','✨','⭐'], L>=12?18:L>=8?13:9);
-      const rc=L>=12?'#b36bff':L>=8?'#ff3fa4':L>=5?'#e0a000':'#3fb950';
+      burst(el, L>=10?['❤️','✨','💖']:['🪙','✨','⭐'], 9);
+      const rc=L>=5?'#e0a000':'#3fb950';
       el.style.setProperty('--rc',rc); el.classList.add('glow');
       const rg=document.createElement('span'); rg.className='ring'; el.appendChild(rg); setTimeout(()=>rg.remove(),800);
-      if(L>=6){ const r2=document.createElement('span'); r2.className='ring r2'; el.appendChild(r2); setTimeout(()=>r2.remove(),900); }
-      if(L>=8){ boardEl.classList.remove('shake'); void boardEl.offsetWidth; boardEl.classList.add('shake'); }}
+      if(L>=50){ const r2=document.createElement('span'); r2.className='ring r2'; el.appendChild(r2); setTimeout(()=>r2.remove(),900); }
+      }
     floatQ=null;}
   $('score').textContent=fmt(score); $('best').textContent=fmt(timed?bestTimed:best); $('coins').textContent=fmt(coins);
   $('name').textContent = sel!==null&&board[sel] ? nm(board[sel])+' ('+t('lvl_n',board[sel])+')' : '';
