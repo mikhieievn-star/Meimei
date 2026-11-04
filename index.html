@@ -10,11 +10,13 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Мей Мей">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
-<link rel="apple-touch-icon" href="icon-180.png">
-<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="IMG_1078.png">
+<link rel="icon" href="IMG_1079.png">
 <style>
   :root{--fg:#222;--sub:#777;--box:#f0f0f4;--panel:#f6f6f9}
   body.dark{--fg:#fff;--sub:#b8bce0;--box:rgba(255,255,255,.14);--panel:rgba(255,255,255,.1)}
+  html,body,button,#board,.cell{touch-action:manipulation}
+  html{-webkit-text-size-adjust:100%}
   *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
   body{margin:0;min-height:100vh;background:#fff;color:var(--fg);
        font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
@@ -1724,6 +1726,11 @@ document.addEventListener('pointerdown',()=>{ musicStart(); },{passive:true});
 document.addEventListener('visibilitychange',()=>{ if(document.hidden) musicStop(); else if(musicOn) musicStart(); });
 
 setInterval(()=>{ if(cur==='game'&&!document.hidden) updateTag(); },500);
+// запрет увеличения двойным тапом и щипком (Safari)
+(function(){
+  ['gesturestart','gesturechange','gestureend'].forEach(g=>document.addEventListener(g,e=>e.preventDefault()));
+  document.addEventListener('dblclick',e=>e.preventDefault());
+})();
 applyBg(); applySize(); applyLang(); show('lobby');
 if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',()=>{ try{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){} }); }
 </script>
