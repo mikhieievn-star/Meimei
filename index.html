@@ -219,7 +219,7 @@
   .dot{box-shadow:0 0 0 2px #fff}
   #board{border-radius:24px;background:linear-gradient(160deg,rgba(255,255,255,.65),rgba(238,230,255,.65));box-shadow:0 8px 28px rgba(80,50,160,.14);border:1px solid rgba(255,255,255,.7)}
   body.dark #board{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.12)}
-  .cell{border-radius:16px;background:linear-gradient(180deg,#fff,#f4f0fb);box-shadow:0 2px 6px rgba(80,50,160,.12),inset 0 -2px 0 rgba(80,50,160,.06);transition:transform .12s,background .12s}
+  .cell{border-radius:16px;background:var(--cbg,linear-gradient(180deg,#fff,#f4f0fb));border-color:var(--cbd,transparent);box-shadow:var(--csh,0 2px 6px rgba(80,50,160,.12),inset 0 -2px 0 rgba(80,50,160,.06));transition:transform .12s,background .12s}
   .cell.tgt{background:linear-gradient(180deg,#f0fff3,#d8f8e0)}
   .cell.sel{background:linear-gradient(180deg,#fff5fb,#ffe0f1);box-shadow:0 0 0 3px rgba(255,63,164,.25),0 4px 12px rgba(255,63,164,.25)}
   .gbar #add{background:linear-gradient(135deg,#ff5fb5,#ff3fa4);box-shadow:0 5px 0 #c92a80,0 10px 18px rgba(255,63,164,.25)}
@@ -257,6 +257,15 @@
   #ptop.hasbn #mascotName{text-shadow:0 1px 3px rgba(0,0,0,.18)}
   #ptop.bnanim{background-size:300% 300%!important;animation:bnmove 9s ease infinite}
   @keyframes bnmove{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
+  /* v16 layout: поле по центру, панель кнопок прижата вниз */
+  #game{min-height:100vh;min-height:100dvh}
+  #board{width:min(94vw,480px);margin-top:auto}
+  .gtop,.glv{width:min(94vw,480px)}
+  .gbar{width:min(94vw,480px);margin:auto 0 max(20px,env(safe-area-inset-bottom))}
+  .gbar .icoBtn{height:64px;width:64px;font-size:26px}
+  .gbar #add{height:64px;font-size:17px}
+  #name{margin-top:10px}
 </style>
 </head>
 <body>
@@ -368,7 +377,7 @@
       <div class="pair"><button id="bkCopy" data-i="bk_copy"></button><button id="bkPaste" data-i="bk_paste"></button></div></div>
     <div class="set"><span data-i="set_reset"></span><button class="red" id="setReset" data-i="reset_btn"></button></div>
     <div class="note" data-i="reset_note"></div>
-    <div class="note" style="text-align:center;padding-bottom:16px">v15.9</div>
+    <div class="note" style="text-align:center;padding-bottom:16px">v16.0</div>
   </div>
 </div>
 
@@ -384,7 +393,7 @@
 <script>
 // ------------------------------ языки ------------------------------
 const I18N = {
-ru:{pf_banner:'Баннер профиля',ham_q:'Убрать Мей Мея «{0}» с поля? Это нельзя отменить.',ham_chal:'🔨 В испытании молоток недоступен',ham_off:'🔨 Молоток выключен',bk_t:'Код сохранения',bk_note:'Перенос прогресса на другой телефон',bk_copy:'Копировать',bk_paste:'Вставить',bk_copied:'Код скопирован! Сохрани его в заметках 📋',bk_prompt:'Вставь код сохранения:',bk_bad:'Код не подошёл 😿',bk_ok:'Прогресс загружен!',bk_manual:'Скопируй код вручную:',tut_t:'Как играть 🐆',tut_1:'1️⃣ Нажми на Мей Мея, потом на такого же — они сольются в нового и принесут монеты.',tut_2:'2️⃣ Кнопка внизу зовёт новых Мей Мей, когда поле пустеет.',tut_3:'3️⃣ Монеты трать в магазине: фоны, поле, голоса, музыка. Не забывай про питомник и задания!',tut_ok:'Понятно!',restart_q:'Начать заново? Текущая партия будет потеряна.',nursery:'Питомник',chal:'Испытание',event:'Событие',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мея — он приносит монеты, пока тебя нет (копится до {0} часов).',pet_empty:'Свободный слот',pet_pick:'Выбрать',pet_change:'Сменить',pet_collect:'Забрать',pet_all:'Забрать всё',pet_rate:'+{0} 🪙 в час',pet_have:'накоплено: {0}',pet_buy:'Новый слот',pet_choose:'Кого посадить? (только открытые)',pet_cancel:'Отмена', chal_note:'У всех одна и та же партия в этот день. Собери Мей Мея «{0}», потратив не больше {1} вызовов. Бусты отключены. Награда один раз в день.',chal_goal:'Цель: {0}',chal_done:'Сегодня пройдено ✔ (можно тренироваться)',chal_streak:'Серия дней: {0}',chal_win:'Испытание пройдено! 🎯',chal_lose:'Не получилось 😿',chal_res_win:'Награда: 🪙 {0}  •  Серия: {1}',chal_res_lose:'Попробуй ещё — расстановка та же!',chal_replay:'Награда за сегодня уже получена',chal_left:'вызовов: {0}', evt_note:'Недельное событие: создай {0} раз Мей Мея «{1}» или выше. Осталось дней: {2}.',evt_m:'Создать: {0}', gold_new:'✨ Золотая клетка! Слияние на ней даёт ×3',ice_new:'❄️ Мей Мей заморожен! Оттает через несколько слияний',ice_block:'❄️ Он заморожен',ice_thaw:'☀️ Лёд растаял!',timed_btn:'⏱ На время (1 мин)',timed_t:'Время вышло! ⏱',timed_over:'Очки: {0}  •  Монеты: +{1}  •  Рекорд: {2}', profile:'Профиль',nick:'Имя',nick_prompt:'Как тебя зовут?',pf_avatar:'Выбери аватар',pf_auto:'Без аватара (иконка)',pf_level:'Уровень игрока',pf_best:'Лучший счёт',pf_merges:'Слияний',pf_earned:'Заработано 🪙',pf_games:'Партий',pf_coll:'Коллекция',pf_tier:'Лучший тир пасса',pf_timed:'Рекорд на время',pf_combo:'Лучшее комбо', maxed:'Макс.',item_got:'{0}: +1 (в запасе {1})',x2_cd:'✨ Перезарядка: ещё {0} мин',box_new:'🎁 На поле появился подарок!',gift_got:'🎁 Подарок: {0}', tab_snd:'Звуки',note_snd:'Покупай новые голоса и мелодии. Выбранное работает сразу.',sec_voice:'Мяуканье',sec_music:'Музыка', v_cat:'Обычный кот',v_kitten:'Котёнок',v_lion:'Лев',m_calm:'Спокойная ночь',m_box:'Музыкальная шкатулка',m_night:'Ночной лоуфай', q_combo:'Сделай комбо ×{0}',q_timed:'Набери {0} очков в режиме «На время»',bp_season:'Сезон закончится через {0} дн. Потом прогресс сбросится!',bp_newseason:'🎟 Начался новый сезон Батл пасса!',have_n:'В запасе: {0}',cont:'▶ Продолжить',new_game:'🔄 Новая партия',set_new:'Начать партию заново',new_btn:'Заново',hammer_got:'🔨 Молот куплен! В запасе: {0}',coll_new:'📖 Новый в коллекции: {0}!',play:'▶ Играть',pass:'🎟 Батл пасс',shop:'🛒 Магазин',settings:'⚙️ Настройки',coins:'Монеты',best:'Рекорд',score:'Очки',
+ru:{cs_h:'Стиль клеток',pf_banner:'Баннер профиля',ham_q:'Убрать Мей Мея «{0}» с поля? Это нельзя отменить.',ham_chal:'🔨 В испытании молоток недоступен',ham_off:'🔨 Молоток выключен',bk_t:'Код сохранения',bk_note:'Перенос прогресса на другой телефон',bk_copy:'Копировать',bk_paste:'Вставить',bk_copied:'Код скопирован! Сохрани его в заметках 📋',bk_prompt:'Вставь код сохранения:',bk_bad:'Код не подошёл 😿',bk_ok:'Прогресс загружен!',bk_manual:'Скопируй код вручную:',tut_t:'Как играть 🐆',tut_1:'1️⃣ Нажми на Мей Мея, потом на такого же — они сольются в нового и принесут монеты.',tut_2:'2️⃣ Кнопка внизу зовёт новых Мей Мей, когда поле пустеет.',tut_3:'3️⃣ Монеты трать в магазине: фоны, поле, голоса, музыка. Не забывай про питомник и задания!',tut_ok:'Понятно!',restart_q:'Начать заново? Текущая партия будет потеряна.',nursery:'Питомник',chal:'Испытание',event:'Событие',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мея — он приносит монеты, пока тебя нет (копится до {0} часов).',pet_empty:'Свободный слот',pet_pick:'Выбрать',pet_change:'Сменить',pet_collect:'Забрать',pet_all:'Забрать всё',pet_rate:'+{0} 🪙 в час',pet_have:'накоплено: {0}',pet_buy:'Новый слот',pet_choose:'Кого посадить? (только открытые)',pet_cancel:'Отмена', chal_note:'У всех одна и та же партия в этот день. Собери Мей Мея «{0}», потратив не больше {1} вызовов. Бусты отключены. Награда один раз в день.',chal_goal:'Цель: {0}',chal_done:'Сегодня пройдено ✔ (можно тренироваться)',chal_streak:'Серия дней: {0}',chal_win:'Испытание пройдено! 🎯',chal_lose:'Не получилось 😿',chal_res_win:'Награда: 🪙 {0}  •  Серия: {1}',chal_res_lose:'Попробуй ещё — расстановка та же!',chal_replay:'Награда за сегодня уже получена',chal_left:'вызовов: {0}', evt_note:'Недельное событие: создай {0} раз Мей Мея «{1}» или выше. Осталось дней: {2}.',evt_m:'Создать: {0}', gold_new:'✨ Золотая клетка! Слияние на ней даёт ×3',ice_new:'❄️ Мей Мей заморожен! Оттает через несколько слияний',ice_block:'❄️ Он заморожен',ice_thaw:'☀️ Лёд растаял!',timed_btn:'⏱ На время (1 мин)',timed_t:'Время вышло! ⏱',timed_over:'Очки: {0}  •  Монеты: +{1}  •  Рекорд: {2}', profile:'Профиль',nick:'Имя',nick_prompt:'Как тебя зовут?',pf_avatar:'Выбери аватар',pf_auto:'Без аватара (иконка)',pf_level:'Уровень игрока',pf_best:'Лучший счёт',pf_merges:'Слияний',pf_earned:'Заработано 🪙',pf_games:'Партий',pf_coll:'Коллекция',pf_tier:'Лучший тир пасса',pf_timed:'Рекорд на время',pf_combo:'Лучшее комбо', maxed:'Макс.',item_got:'{0}: +1 (в запасе {1})',x2_cd:'✨ Перезарядка: ещё {0} мин',box_new:'🎁 На поле появился подарок!',gift_got:'🎁 Подарок: {0}', tab_snd:'Звуки',note_snd:'Покупай новые голоса и мелодии. Выбранное работает сразу.',sec_voice:'Мяуканье',sec_music:'Музыка', v_cat:'Обычный кот',v_kitten:'Котёнок',v_lion:'Лев',m_calm:'Спокойная ночь',m_box:'Музыкальная шкатулка',m_night:'Ночной лоуфай', q_combo:'Сделай комбо ×{0}',q_timed:'Набери {0} очков в режиме «На время»',bp_season:'Сезон закончится через {0} дн. Потом прогресс сбросится!',bp_newseason:'🎟 Начался новый сезон Батл пасса!',have_n:'В запасе: {0}',cont:'▶ Продолжить',new_game:'🔄 Новая партия',set_new:'Начать партию заново',new_btn:'Заново',hammer_got:'🔨 Молот куплен! В запасе: {0}',coll_new:'📖 Новый в коллекции: {0}!',play:'▶ Играть',pass:'🎟 Батл пасс',shop:'🛒 Магазин',settings:'⚙️ Настройки',coins:'Монеты',best:'Рекорд',score:'Очки',
  plvl:'Уровень игрока {0} · {1}/{2} опыта',hint:'Нажми на Мей Мей, потом на такого же — получишь нового, монеты и опыт! Новых зови кнопкой. Редкие подарки 🎁 — нажми, чтобы открыть.',
  add:'+ Позвать Мей Мей (ур. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрыть',tab_mei:'Мей Мей',tab_bg:'Фоны',tab_boost:'Бусты',tab_field:'Поле',
  note_mei:'Мей Мей из магазина сразу появляется на поле. Новые уровни открываются, когда ты сам доберёшься до предыдущих.',
@@ -418,7 +427,7 @@ ru:{pf_banner:'Баннер профиля',ham_q:'Убрать Мей Мея «
  a_note:'Выполняй цели и получай монеты.',a_merges:'Сделать слияний: {0}',a_earned:'Заработать {0} 🪙',a_level:'Дойти до Мей Мей уровня {0}',a_games:'Сыграть партий: {0}',a_bgs:'Собрать фонов: {0}',a_tier:'Дойти до тира {0} Батл пасса',
  c_note:'Нажми на открытого Мей Мей, чтобы он мяукнул. Награды за 10, 20, 30, 44, 64, 94 и 104 открытых.',c_count:'Открыто: {0}/{1}',c_ms:'Открыть {0} Мей Мей',
  w_note:'Одно бесплатное вращение в день. Дополнительное стоит 🪙 {0}.',w_free:'🎡 Крутить бесплатно',w_paid:'🎡 Крутить · 🪙 {0}',w_prize:'Выигрыш: {0}',w_xp:'⭐ {0} опыта',w_x2:'✨ ×2 монеты'},
-uk:{pf_banner:'Банер профілю',ham_q:'Прибрати Мей Мей «{0}» з поля? Це не можна скасувати.',ham_chal:'🔨 У випробуванні молоток недоступний',ham_off:'🔨 Молоток вимкнено',bk_t:'Код збереження',bk_note:'Перенесення прогресу на інший телефон',bk_copy:'Копіювати',bk_paste:'Вставити',bk_copied:'Код скопійовано! Збережи його в нотатках 📋',bk_prompt:'Встав код збереження:',bk_bad:'Код не підійшов 😿',bk_ok:'Прогрес завантажено!',bk_manual:'Скопіюй код вручну:',tut_t:'Як грати 🐆',tut_1:'1️⃣ Натисни на Мей Мей, потім на такого ж — вони зіллються в нового та принесуть монети.',tut_2:'2️⃣ Кнопка внизу кличе нових Мей Мей, коли поле порожніє.',tut_3:'3️⃣ Монети витрачай у магазині: фони, поле, голоси, музика. Не забувай про розплідник і завдання!',tut_ok:'Зрозуміло!',restart_q:'Почати заново? Поточну партію буде втрачено.',nursery:'Розплідник',chal:'Випробування',event:'Подія',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мей — він приносить монети, поки тебе немає (накопичується до {0} годин).',pet_empty:'Вільний слот',pet_pick:'Обрати',pet_change:'Змінити',pet_collect:'Забрати',pet_all:'Забрати все',pet_rate:'+{0} 🪙 на годину',pet_have:'накопичено: {0}',pet_buy:'Новий слот',pet_choose:'Кого посадити? (лише відкриті)',pet_cancel:'Скасувати', chal_note:'У всіх одна й та сама партія цього дня. Збери Мей Мея «{0}», витративши не більше {1} викликів. Бусти вимкнено. Нагорода раз на день.',chal_goal:'Мета: {0}',chal_done:'Сьогодні пройдено ✔ (можна тренуватись)',chal_streak:'Серія днів: {0}',chal_win:'Випробування пройдено! 🎯',chal_lose:'Не вийшло 😿',chal_res_win:'Нагорода: 🪙 {0}  •  Серія: {1}',chal_res_lose:'Спробуй ще — розстановка та сама!',chal_replay:'Нагороду за сьогодні вже отримано',chal_left:'викликів: {0}', evt_note:'Тижнева подія: створи {0} разів Мей Мея «{1}» або вище. Залишилось днів: {2}.',evt_m:'Створити: {0}', gold_new:'✨ Золота клітинка! Злиття на ній дає ×3',ice_new:'❄️ Мей Мей заморожений! Відтане за кілька злиттів',ice_block:'❄️ Він заморожений',ice_thaw:'☀️ Лід розтанув!',timed_btn:'⏱ На час (1 хв)',timed_t:'Час вийшов! ⏱',timed_over:'Очки: {0}  •  Монети: +{1}  •  Рекорд: {2}', profile:'Профіль',nick:'Ім’я',nick_prompt:'Як тебе звати?',pf_avatar:'Обери аватар',pf_auto:'Без аватара (іконка)',pf_level:'Рівень гравця',pf_best:'Найкращий рахунок',pf_merges:'Злиттів',pf_earned:'Зароблено 🪙',pf_games:'Партій',pf_coll:'Колекція',pf_tier:'Найкращий тір пасу',pf_timed:'Рекорд на час',pf_combo:'Найкраще комбо', maxed:'Макс.',item_got:'{0}: +1 (у запасі {1})',x2_cd:'✨ Перезарядка: ще {0} хв',box_new:'🎁 На полі з’явився подарунок!',gift_got:'🎁 Подарунок: {0}', tab_snd:'Звуки',note_snd:'Купуй нові голоси та мелодії. Обране працює одразу.',sec_voice:'Нявкання',sec_music:'Музика', v_cat:'Звичайний кіт',v_kitten:'Кошеня',v_lion:'Лев',m_calm:'Спокійна ніч',m_box:'Музична скринька',m_night:'Нічний лоуфай', q_combo:'Зроби комбо ×{0}',q_timed:'Набери {0} очок у режимі «На час»',bp_season:'Сезон закінчиться через {0} дн. Потім прогрес скинеться!',bp_newseason:'🎟 Почався новий сезон Батл пасу!',have_n:'У запасі: {0}',cont:'▶ Продовжити',new_game:'🔄 Нова партія',set_new:'Почати партію заново',new_btn:'Заново',hammer_got:'🔨 Молот куплено! У запасі: {0}',coll_new:'📖 Новий у колекції: {0}!',play:'▶ Грати',pass:'🎟 Батл пас',shop:'🛒 Магазин',settings:'⚙️ Налаштування',coins:'Монети',best:'Рекорд',score:'Очки',
+uk:{cs_h:'Стиль клітинок',pf_banner:'Банер профілю',ham_q:'Прибрати Мей Мей «{0}» з поля? Це не можна скасувати.',ham_chal:'🔨 У випробуванні молоток недоступний',ham_off:'🔨 Молоток вимкнено',bk_t:'Код збереження',bk_note:'Перенесення прогресу на інший телефон',bk_copy:'Копіювати',bk_paste:'Вставити',bk_copied:'Код скопійовано! Збережи його в нотатках 📋',bk_prompt:'Встав код збереження:',bk_bad:'Код не підійшов 😿',bk_ok:'Прогрес завантажено!',bk_manual:'Скопіюй код вручну:',tut_t:'Як грати 🐆',tut_1:'1️⃣ Натисни на Мей Мей, потім на такого ж — вони зіллються в нового та принесуть монети.',tut_2:'2️⃣ Кнопка внизу кличе нових Мей Мей, коли поле порожніє.',tut_3:'3️⃣ Монети витрачай у магазині: фони, поле, голоси, музика. Не забувай про розплідник і завдання!',tut_ok:'Зрозуміло!',restart_q:'Почати заново? Поточну партію буде втрачено.',nursery:'Розплідник',chal:'Випробування',event:'Подія',pf_title:'Титул',pf_frame:'Рамка', pet_note:'Посади Мей Мей — він приносить монети, поки тебе немає (накопичується до {0} годин).',pet_empty:'Вільний слот',pet_pick:'Обрати',pet_change:'Змінити',pet_collect:'Забрати',pet_all:'Забрати все',pet_rate:'+{0} 🪙 на годину',pet_have:'накопичено: {0}',pet_buy:'Новий слот',pet_choose:'Кого посадити? (лише відкриті)',pet_cancel:'Скасувати', chal_note:'У всіх одна й та сама партія цього дня. Збери Мей Мея «{0}», витративши не більше {1} викликів. Бусти вимкнено. Нагорода раз на день.',chal_goal:'Мета: {0}',chal_done:'Сьогодні пройдено ✔ (можна тренуватись)',chal_streak:'Серія днів: {0}',chal_win:'Випробування пройдено! 🎯',chal_lose:'Не вийшло 😿',chal_res_win:'Нагорода: 🪙 {0}  •  Серія: {1}',chal_res_lose:'Спробуй ще — розстановка та сама!',chal_replay:'Нагороду за сьогодні вже отримано',chal_left:'викликів: {0}', evt_note:'Тижнева подія: створи {0} разів Мей Мея «{1}» або вище. Залишилось днів: {2}.',evt_m:'Створити: {0}', gold_new:'✨ Золота клітинка! Злиття на ній дає ×3',ice_new:'❄️ Мей Мей заморожений! Відтане за кілька злиттів',ice_block:'❄️ Він заморожений',ice_thaw:'☀️ Лід розтанув!',timed_btn:'⏱ На час (1 хв)',timed_t:'Час вийшов! ⏱',timed_over:'Очки: {0}  •  Монети: +{1}  •  Рекорд: {2}', profile:'Профіль',nick:'Ім’я',nick_prompt:'Як тебе звати?',pf_avatar:'Обери аватар',pf_auto:'Без аватара (іконка)',pf_level:'Рівень гравця',pf_best:'Найкращий рахунок',pf_merges:'Злиттів',pf_earned:'Зароблено 🪙',pf_games:'Партій',pf_coll:'Колекція',pf_tier:'Найкращий тір пасу',pf_timed:'Рекорд на час',pf_combo:'Найкраще комбо', maxed:'Макс.',item_got:'{0}: +1 (у запасі {1})',x2_cd:'✨ Перезарядка: ще {0} хв',box_new:'🎁 На полі з’явився подарунок!',gift_got:'🎁 Подарунок: {0}', tab_snd:'Звуки',note_snd:'Купуй нові голоси та мелодії. Обране працює одразу.',sec_voice:'Нявкання',sec_music:'Музика', v_cat:'Звичайний кіт',v_kitten:'Кошеня',v_lion:'Лев',m_calm:'Спокійна ніч',m_box:'Музична скринька',m_night:'Нічний лоуфай', q_combo:'Зроби комбо ×{0}',q_timed:'Набери {0} очок у режимі «На час»',bp_season:'Сезон закінчиться через {0} дн. Потім прогрес скинеться!',bp_newseason:'🎟 Почався новий сезон Батл пасу!',have_n:'У запасі: {0}',cont:'▶ Продовжити',new_game:'🔄 Нова партія',set_new:'Почати партію заново',new_btn:'Заново',hammer_got:'🔨 Молот куплено! У запасі: {0}',coll_new:'📖 Новий у колекції: {0}!',play:'▶ Грати',pass:'🎟 Батл пас',shop:'🛒 Магазин',settings:'⚙️ Налаштування',coins:'Монети',best:'Рекорд',score:'Очки',
  plvl:'Рівень гравця {0} · {1}/{2} досвіду',hint:'Натисни на Мей Мей, потім на такого ж — отримаєш нового, монети й досвід! Нових клич кнопкою. Рідкісні подарунки 🎁 — натисни, щоб відкрити.',
  add:'+ Покликати Мей Мей (рів. {0})',restart:'Заново',menu:'🏠 Меню',close:'Закрити',tab_mei:'Мей Мей',tab_bg:'Фони',tab_boost:'Бусти',tab_field:'Поле',
  note_mei:'Мей Мей з магазину одразу з’являється на полі. Нові рівні відкриваються, коли ти сам дійдеш до попередніх.',
@@ -452,7 +461,7 @@ uk:{pf_banner:'Банер профілю',ham_q:'Прибрати Мей Мей 
  a_note:'Виконуй цілі й отримуй монети.',a_merges:'Зробити злиттів: {0}',a_earned:'Заробити {0} 🪙',a_level:'Дійти до Мей Мей рівня {0}',a_games:'Зіграти партій: {0}',a_bgs:'Зібрати фонів: {0}',a_tier:'Дійти до тіру {0} Батл пасу',
  c_note:'Натисни на відкритого Мей Мей, щоб він нявкнув. Нагороди за 10, 20, 30, 44, 64, 94 і 104 відкритих.',c_count:'Відкрито: {0}/{1}',c_ms:'Відкрити {0} Мей Мей',
  w_note:'Одне безкоштовне обертання на день. Додаткове коштує 🪙 {0}.',w_free:'🎡 Крутити безкоштовно',w_paid:'🎡 Крутити · 🪙 {0}',w_prize:'Виграш: {0}',w_xp:'⭐ {0} досвіду',w_x2:'✨ ×2 монети'},
-en:{pf_banner:'Profile banner',ham_q:'Remove the Mei Mei “{0}” from the board? This cannot be undone.',ham_chal:'🔨 The hammer is not available in the challenge',ham_off:'🔨 Hammer off',bk_t:'Save code',bk_note:'Move progress to another phone',bk_copy:'Copy',bk_paste:'Paste',bk_copied:'Code copied! Keep it in your notes 📋',bk_prompt:'Paste your save code:',bk_bad:'That code did not work 😿',bk_ok:'Progress loaded!',bk_manual:'Copy the code manually:',tut_t:'How to play 🐆',tut_1:'1️⃣ Tap a Mei Mei, then an identical one — they merge into a new one and earn coins.',tut_2:'2️⃣ The button at the bottom calls new Mei Meis when the board gets empty.',tut_3:'3️⃣ Spend coins in the shop: themes, bigger field, voices, music. Don’t forget the nursery and quests!',tut_ok:'Got it!',restart_q:'Restart? The current game will be lost.',nursery:'Nursery',chal:'Challenge',event:'Event',pf_title:'Title',pf_frame:'Frame', pet_note:'Place a Mei Mei here — it earns coins while you are away (stores up to {0} hours).',pet_empty:'Empty slot',pet_pick:'Choose',pet_change:'Change',pet_collect:'Collect',pet_all:'Collect all',pet_rate:'+{0} 🪙 per hour',pet_have:'stored: {0}',pet_buy:'New slot',pet_choose:'Who goes in? (unlocked ones only)',pet_cancel:'Cancel', chal_note:'Everyone gets the same game today. Make a "{0}" using at most {1} calls. Boosts are off. Reward once a day.',chal_goal:'Goal: {0}',chal_done:'Done today ✔ (you can practice)',chal_streak:'Day streak: {0}',chal_win:'Challenge complete! 🎯',chal_lose:'Not this time 😿',chal_res_win:'Reward: 🪙 {0}  •  Streak: {1}',chal_res_lose:'Try again — same layout!',chal_replay:'Today’s reward is already claimed',chal_left:'calls: {0}', evt_note:'Weekly event: create "{1}" or higher {0} times. Days left: {2}.',evt_m:'Create: {0}', gold_new:'✨ Golden cell! A merge on it gives ×3',ice_new:'❄️ A Mei Mei is frozen! It thaws after a few merges',ice_block:'❄️ It is frozen',ice_thaw:'☀️ The ice has melted!',timed_btn:'⏱ Time attack (1 min)',timed_t:"Time's up! ⏱",timed_over:'Score: {0}  •  Coins: +{1}  •  Best: {2}', profile:'Profile',nick:'Name',nick_prompt:'What is your name?',pf_avatar:'Pick an avatar',pf_auto:'No avatar (icon)',pf_level:'Player level',pf_best:'Best score',pf_merges:'Merges',pf_earned:'Earned 🪙',pf_games:'Games',pf_coll:'Collection',pf_tier:'Best pass tier',pf_timed:'Time attack best',pf_combo:'Best combo', maxed:'Max',item_got:'{0}: +1 ({1} in stock)',x2_cd:'✨ Cooldown: {0} min left',box_new:'🎁 A gift appeared on the board!',gift_got:'🎁 Gift: {0}', tab_snd:'Sounds',note_snd:'Buy new voices and tunes. Your pick plays right away.',sec_voice:'Meow',sec_music:'Music', v_cat:'Classic cat',v_kitten:'Kitten',v_lion:'Lion',m_calm:'Calm night',m_box:'Music box',m_night:'Night lo-fi', q_combo:'Make a ×{0} combo',q_timed:'Score {0} in Time attack',bp_season:'Season ends in {0} days. Progress then resets!',bp_newseason:'🎟 A new Battle Pass season has started!',have_n:'In stock: {0}',cont:'▶ Continue',new_game:'🔄 New game',set_new:'Start a new game',new_btn:'Restart',hammer_got:'🔨 Hammer bought! In stock: {0}',coll_new:'📖 New in collection: {0}!',play:'▶ Play',pass:'🎟 Battle Pass',shop:'🛒 Shop',settings:'⚙️ Settings',coins:'Coins',best:'Best',score:'Score',
+en:{cs_h:'Cell style',pf_banner:'Profile banner',ham_q:'Remove the Mei Mei “{0}” from the board? This cannot be undone.',ham_chal:'🔨 The hammer is not available in the challenge',ham_off:'🔨 Hammer off',bk_t:'Save code',bk_note:'Move progress to another phone',bk_copy:'Copy',bk_paste:'Paste',bk_copied:'Code copied! Keep it in your notes 📋',bk_prompt:'Paste your save code:',bk_bad:'That code did not work 😿',bk_ok:'Progress loaded!',bk_manual:'Copy the code manually:',tut_t:'How to play 🐆',tut_1:'1️⃣ Tap a Mei Mei, then an identical one — they merge into a new one and earn coins.',tut_2:'2️⃣ The button at the bottom calls new Mei Meis when the board gets empty.',tut_3:'3️⃣ Spend coins in the shop: themes, bigger field, voices, music. Don’t forget the nursery and quests!',tut_ok:'Got it!',restart_q:'Restart? The current game will be lost.',nursery:'Nursery',chal:'Challenge',event:'Event',pf_title:'Title',pf_frame:'Frame', pet_note:'Place a Mei Mei here — it earns coins while you are away (stores up to {0} hours).',pet_empty:'Empty slot',pet_pick:'Choose',pet_change:'Change',pet_collect:'Collect',pet_all:'Collect all',pet_rate:'+{0} 🪙 per hour',pet_have:'stored: {0}',pet_buy:'New slot',pet_choose:'Who goes in? (unlocked ones only)',pet_cancel:'Cancel', chal_note:'Everyone gets the same game today. Make a "{0}" using at most {1} calls. Boosts are off. Reward once a day.',chal_goal:'Goal: {0}',chal_done:'Done today ✔ (you can practice)',chal_streak:'Day streak: {0}',chal_win:'Challenge complete! 🎯',chal_lose:'Not this time 😿',chal_res_win:'Reward: 🪙 {0}  •  Streak: {1}',chal_res_lose:'Try again — same layout!',chal_replay:'Today’s reward is already claimed',chal_left:'calls: {0}', evt_note:'Weekly event: create "{1}" or higher {0} times. Days left: {2}.',evt_m:'Create: {0}', gold_new:'✨ Golden cell! A merge on it gives ×3',ice_new:'❄️ A Mei Mei is frozen! It thaws after a few merges',ice_block:'❄️ It is frozen',ice_thaw:'☀️ The ice has melted!',timed_btn:'⏱ Time attack (1 min)',timed_t:"Time's up! ⏱",timed_over:'Score: {0}  •  Coins: +{1}  •  Best: {2}', profile:'Profile',nick:'Name',nick_prompt:'What is your name?',pf_avatar:'Pick an avatar',pf_auto:'No avatar (icon)',pf_level:'Player level',pf_best:'Best score',pf_merges:'Merges',pf_earned:'Earned 🪙',pf_games:'Games',pf_coll:'Collection',pf_tier:'Best pass tier',pf_timed:'Time attack best',pf_combo:'Best combo', maxed:'Max',item_got:'{0}: +1 ({1} in stock)',x2_cd:'✨ Cooldown: {0} min left',box_new:'🎁 A gift appeared on the board!',gift_got:'🎁 Gift: {0}', tab_snd:'Sounds',note_snd:'Buy new voices and tunes. Your pick plays right away.',sec_voice:'Meow',sec_music:'Music', v_cat:'Classic cat',v_kitten:'Kitten',v_lion:'Lion',m_calm:'Calm night',m_box:'Music box',m_night:'Night lo-fi', q_combo:'Make a ×{0} combo',q_timed:'Score {0} in Time attack',bp_season:'Season ends in {0} days. Progress then resets!',bp_newseason:'🎟 A new Battle Pass season has started!',have_n:'In stock: {0}',cont:'▶ Continue',new_game:'🔄 New game',set_new:'Start a new game',new_btn:'Restart',hammer_got:'🔨 Hammer bought! In stock: {0}',coll_new:'📖 New in collection: {0}!',play:'▶ Play',pass:'🎟 Battle Pass',shop:'🛒 Shop',settings:'⚙️ Settings',coins:'Coins',best:'Best',score:'Score',
  plvl:'Player level {0} · {1}/{2} XP',hint:'Tap a Mei Mei, then an identical one — get a new Mei, coins and XP! Call new ones with the button. Rare gifts 🎁 — tap to open.',
  add:'+ Call a Mei Mei (lv. {0})',restart:'Restart',menu:'🏠 Menu',close:'Close',tab_mei:'Mei Mei',tab_bg:'Themes',tab_boost:'Boosts',tab_field:'Field',
  note_mei:'A Mei Mei from the shop appears on the board right away. New levels unlock once you reach the previous ones yourself.',
@@ -666,7 +675,20 @@ const BGS = [
   {id:19,n:['Королевский','Королівський','Royal'], need:16, price:5000, dark:1, css:'radial-gradient(circle at 30% 20%,#7a3aff,transparent 55%),linear-gradient(#1a0a3a,#3a0a4a)'},
   {id:20,n:['Снежный','Сніжний','Snowy'], pass:1, css:'linear-gradient(#dff3ff,#ffffff)'},
   {id:21,n:['Золотой туман','Золотий туман','Golden Mist'], pass:1, css:'radial-gradient(circle at 50% 30%,#fff3b0,transparent 60%),linear-gradient(#ffe9a8,#ffb347)'},
-  {id:22,n:['Хрусталь','Кришталь','Crystal'], pass:1, dark:1, css:'radial-gradient(circle at 20% 20%,#2bf0ff,transparent 40%),radial-gradient(circle at 80% 70%,#b44cff,transparent 45%),#0a0a2a'}
+  {id:22,n:['Хрусталь','Кришталь','Crystal'], pass:1, dark:1, css:'radial-gradient(circle at 20% 20%,#2bf0ff,transparent 40%),radial-gradient(circle at 80% 70%,#b44cff,transparent 45%),#0a0a2a'},
+  {id:23,n:['Персик','Персик','Peach'], need:2, price:80, css:'linear-gradient(#ffd1b3,#fff0e6)'},
+  {id:24,n:['Лёд','Лід','Ice'], need:5, price:220, css:'linear-gradient(#c9f1ff,#effcff)'},
+  {id:25,n:['Пустыня','Пустеля','Desert'], need:6, price:300, css:'linear-gradient(#ffd98a,#f2a65a)'},
+  {id:26,n:['Мятные полоски','М’ятні смужки','Mint stripes'], need:7, price:500, css:'repeating-linear-gradient(-45deg,#c8f5e0 0 14px,#f0fff8 14px 28px)'},
+  {id:27,n:['Глубокое море','Глибоке море','Deep sea'], need:8, price:800, dark:1, css:'linear-gradient(#001a33,#00406b 60%,#0a7a9a)'},
+  {id:28,n:['Осень','Осінь','Autumn'], need:9, price:950, css:'linear-gradient(#ffc27a,#d25a2a)'},
+  {id:29,n:['Сумерки','Сутінки','Twilight'], need:10, price:1200, dark:1, css:'linear-gradient(#2b1055,#7597de)'},
+  {id:30,n:['Тёмный лес','Темний ліс','Dark forest'], need:11, price:1500, dark:1, css:'linear-gradient(#08210f,#1c5a2f)'},
+  {id:31,n:['Вишня','Вишня','Cherry'], need:12, price:1600, css:'linear-gradient(#ff7a9a,#ffd1dc)'},
+  {id:32,n:['Галактика','Галактика','Galaxy'], need:13, price:2200, dark:1, css:STARS+',radial-gradient(circle at 20% 25%,#ff4fd8,transparent 45%),radial-gradient(circle at 80% 75%,#4f7bff,transparent 50%),#0a0620'},
+  {id:33,n:['Шахматы','Шахмати','Checkers'], need:4, price:200, css:'conic-gradient(#fff 25%,#efe6ff 0 50%,#fff 0 75%,#efe6ff 0) 0 0/64px 64px'},
+  {id:34,n:['Мандарин','Мандарин','Tangerine'], need:14, price:2600, css:'linear-gradient(135deg,#ffe08a,#ff9a3a)'},
+  {id:35,n:['Полночь','Північ','Midnight'], need:17, price:4500, dark:1, css:'linear-gradient(#000,#10102a 60%,#1c1c4a)'}
 ];
 const bgName = b => b.n[LI[lang]];
 const FIELD = {4:{price:800,need:4},5:{price:4000,need:10}};
@@ -724,7 +746,7 @@ LEVELS.forEach((_,i)=>{ const im=new Image(); im.onload=()=>{imgs[i+1]=im; rende
 let coins=0,best=0,maxEver=1,xp=0,plv=1,owned=[1],bgId=1,seen=[1];
 let inv={}, x2Until=0, x2Cd=0, voiceId='cat', voices=['cat'], trackId='calm', tracks=['calm'], avatar=0, nick='', bestTimed=0, bestCombo=0;
 let savedGame=null;
-let bannerId='none', bannersOwned=[];
+let bannerId='none', bannersOwned=[], cellId='classic', cellsOwned=[];
 let tutDone=false, framesOwned=[], pets=[null], petSlots=1, chalDone='', chalStreak=0, evtWeek='', evtLv=5, evtNeed=15, evtProg=0, evtClaimed=[], evtDone=0, titleId='newbie', frameId='none';
 let chal=false, chalLeft=0, chalGoal=6, chalR=null, chalNext=1, petPick=-1, golden=-1, gMerges=0, frozen=-1, frozenLeft=0;
 let muted=false, vol=0.8, vibe=true, hints=true, musicOn=true, mvol=0.5;
@@ -739,12 +761,12 @@ try{
   if(d.lang&&I18N[d.lang]) lang=d.lang;
   bpSeason=d.bpSeason||''; bpBest=d.bpBest||0; bpPts=d.bpPts||0; bpFree=d.bpFree||[]; bpPrem=d.bpPrem||[]; bpGold=!!d.bpGold; gifts=d.gifts||[]; boost=d.boost||0;
   size=d.size||3; sizeMax=d.sizeMax||size; if(d.stats) stats=d.stats;
-  dailyLast=d.dailyLast||''; dailyStreak=d.dailyStreak||0; if(d.quest) quest=d.quest; achClaimed=d.achClaimed||[]; collClaimed=d.collClaimed||[]; wheelDate=d.wheelDate||''; savedGame=(d.game&&Array.isArray(d.game.board))?d.game:null; bannerId=d.bannerId||'none'; bannersOwned=d.bannersOwned||[];
+  dailyLast=d.dailyLast||''; dailyStreak=d.dailyStreak||0; if(d.quest) quest=d.quest; achClaimed=d.achClaimed||[]; collClaimed=d.collClaimed||[]; wheelDate=d.wheelDate||''; savedGame=(d.game&&Array.isArray(d.game.board))?d.game:null; bannerId=d.bannerId||'none'; bannersOwned=d.bannersOwned||[]; cellId=d.cellId||'classic'; cellsOwned=d.cellsOwned||[];
 }catch(e){}
 function snapGame(){ return {board:board.slice(),score,maxLv,stageLv,golden,frozen,frozenLeft,gMerges}; }
 function curGameSnap(){ try{ if(cur==='game'&&board&&!over&&!timed&&!chal) return snapGame(); }catch(e){} return savedGame; }
 function save(){ if(coins>1e15) coins=1e15; try{ localStorage.setItem('meimei-save5',JSON.stringify({coins,best,maxEver,xp,plv,owned,bg:bgId,muted,vol,vibe,hints,musicOn,mvol,lang,
-  bpPts,bpFree,bpPrem,bpGold,gifts,boost,size:(chal&&stash?stash.size:size),sizeMax,stats,dailyLast,dailyStreak,quest,achClaimed,collClaimed,wheelDate,seen,inv,game:curGameSnap(),bannerId,bannersOwned,x2Until,x2Cd,voiceId,voices,trackId,tracks,avatar,nick,bestTimed,bestCombo,tutDone,framesOwned,pets,petSlots,chalDone,chalStreak,evtWeek,evtLv,evtNeed,evtProg,evtClaimed,evtDone,titleId,frameId,bpSeason,bpBest})); }catch(e){} }
+  bpPts,bpFree,bpPrem,bpGold,gifts,boost,size:(chal&&stash?stash.size:size),sizeMax,stats,dailyLast,dailyStreak,quest,achClaimed,collClaimed,wheelDate,seen,inv,game:curGameSnap(),bannerId,bannersOwned,cellId,cellsOwned,x2Until,x2Cd,voiceId,voices,trackId,tracks,avatar,nick,bestTimed,bestCombo,tutDone,framesOwned,pets,petSlots,chalDone,chalStreak,evtWeek,evtLv,evtNeed,evtProg,evtClaimed,evtDone,titleId,frameId,bpSeason,bpBest})); }catch(e){} }
 const $=id=>document.getElementById(id);
 const dstr=d=>d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
 const today=()=>dstr(new Date());
@@ -784,7 +806,7 @@ function coinSound(){
       o.start(tm+i*0.08); o.stop(tm+i*0.08+0.14); });
   }catch(e){}
 }
-function buzz(){ try{ if(vibe && navigator.vibrate) navigator.vibrate(25); }catch(e){} }
+function buzz(){ if(typeof haptic==='function') haptic(25,2); }
 
 // ---------------------- спокойная фоновая музыка ----------------------
 const CHORDS=[[48,55,59,64],[45,52,57,60],[41,48,52,57],[43,50,55,59]];
@@ -1052,8 +1074,34 @@ const BANNERS=[
  {id:'night',n:['Звёздная ночь','Зоряна ніч','Starry night'],price:120000,bg:'linear-gradient(180deg,#0b0b2b,#2a1b5e)',tx:'#fff',fx:'stars'},
  {id:'aurora',n:['Северное сияние','Північне сяйво','Aurora'],price:200000,bg:'linear-gradient(135deg,#0c1f3f,#16675a 55%,#4b3aa8)',tx:'#fff',fx:'ribbons'},
  {id:'rainbow',n:['Радуга','Веселка','Rainbow'],price:300000,bg:'linear-gradient(120deg,#ff6b9d,#ffb86b,#fff06b,#6bffb0,#6bb8ff,#b06bff,#ff6b9d)',tx:'#3a2350',anim:true},
- {id:'gold',n:['Золото','Золото','Gold'],d:['Уровень игрока 20','Рівень гравця 20','Player level 20'],ok:()=>plv>=20,bg:'linear-gradient(135deg,#f7d56a,#e0a000 55%,#fff1a8)',tx:'#4a3200',fx:'sparkle'}
+ {id:'gold',n:['Золото','Золото','Gold'],d:['Уровень игрока 20','Рівень гравця 20','Player level 20'],ok:()=>plv>=20,bg:'linear-gradient(135deg,#f7d56a,#e0a000 55%,#fff1a8)',tx:'#4a3200',fx:'sparkle'},
+ {id:'clouds',n:['Облака','Хмари','Clouds'],price:60000,bg:'linear-gradient(180deg,#5aa9ff,#bfe3ff)',tx:'#12335e',fx:'clouds'},
+ {id:'autumn',n:['Осень','Осінь','Autumn'],price:70000,bg:'linear-gradient(160deg,#ffd9a0,#e0793a)',tx:'#4a1f0a',fx:'leaves'},
+ {id:'rain',n:['Дождь','Дощ','Rain'],price:80000,bg:'linear-gradient(180deg,#44546a,#8896a8)',tx:'#fff',fx:'rain'},
+ {id:'love',n:['Любовь','Кохання','Love'],price:90000,bg:'linear-gradient(135deg,#ff6f9f,#ff9ac1 55%,#ffd1e1)',tx:'#5a1030',fx:'hearts'},
+ {id:'lava',n:['Лава','Лава','Lava'],price:150000,bg:'linear-gradient(180deg,#2a0a0a,#8a1a0a 65%,#ff6a1a)',tx:'#fff',fx:'embers'},
+ {id:'galaxy',n:['Галактика','Галактика','Galaxy'],price:180000,bg:'radial-gradient(circle at 25% 30%,#6a2a9a,transparent 55%),radial-gradient(circle at 80% 80%,#1a4a9a,transparent 55%),#07061a',tx:'#fff',fx:'stars'},
+ {id:'neon',n:['Неоновый город','Неонове місто','Neon city'],price:200000,bg:'radial-gradient(circle at 15% 20%,#ff2bd6,transparent 45%),radial-gradient(circle at 85% 80%,#2bf0ff,transparent 45%),#0a0420',tx:'#fff',fx:'stars'},
+ {id:'mintfresh',n:['Мятная свежесть','М’ятна свіжість','Mint fresh'],price:40000,bg:'linear-gradient(135deg,#c8f5e0,#8fe3c0)',tx:'#12503a',fx:'bubbles'},
+ {id:'desert',n:['Пустыня','Пустеля','Desert'],price:40000,bg:'linear-gradient(180deg,#ffd98a,#f2a65a)',tx:'#5a2a0a'},
+ {id:'lavender',n:['Лаванда','Лаванда','Lavender'],price:40000,bg:'linear-gradient(135deg,#cdb6ff,#f0e6ff)',tx:'#3a2a6a'},
 ];
+
+const CELLS=[
+ {id:'classic',n:['Классика','Класика','Classic'],price:0},
+ {id:'glass',n:['Стекло','Скло','Glass'],price:300,bg:'rgba(255,255,255,.28)',bd:'rgba(255,255,255,.6)',sh:'none'},
+ {id:'dark',n:['Тёмные','Темні','Dark'],price:300,bg:'linear-gradient(180deg,#34345a,#22223f)',bd:'transparent',sh:'0 2px 6px rgba(0,0,0,.35)'},
+ {id:'rose',n:['Розовые','Рожеві','Rose'],price:400,bg:'linear-gradient(180deg,#fff3fa,#ffd3ea)',bd:'transparent',sh:'0 2px 6px rgba(255,100,170,.25)'},
+ {id:'mint',n:['Мятные','М’ятні','Mint'],price:400,bg:'linear-gradient(180deg,#f3fff9,#c9f3df)',bd:'transparent',sh:'0 2px 6px rgba(40,160,110,.22)'},
+ {id:'wood',n:['Дерево','Дерево','Wood'],price:800,bg:'repeating-linear-gradient(90deg,#e6bf86 0 8px,#d9ae72 8px 16px)',bd:'transparent',sh:'0 2px 5px rgba(90,50,10,.35)'},
+ {id:'neon',n:['Неон','Неон','Neon'],price:1500,bg:'rgba(10,4,32,.55)',bd:'#2bf0ff',sh:'0 0 10px rgba(43,240,255,.7),inset 0 0 8px rgba(43,240,255,.25)'},
+ {id:'gold',n:['Золото','Золото','Gold'],price:3000,bg:'linear-gradient(135deg,#fff3b0,#ffd23a 60%,#f0a800)',bd:'transparent',sh:'0 2px 8px rgba(224,160,0,.45)'}
+];
+function applySkin(){
+  const c=CELLS.find(z=>z.id===cellId)||CELLS[0], st=document.body.style;
+  ['--cbg','--cbd','--csh'].forEach(k=>st.removeProperty(k));
+  if(c.bg){ st.setProperty('--cbg',c.bg); st.setProperty('--cbd',c.bd); st.setProperty('--csh',c.sh); }
+}
 const FRAMES=[
  {id:'none',n:['Без рамки','Без рамки','No frame'],d:['Доступна сразу','Доступна одразу','Available from the start'],ok:()=>true,st:{border:'5px solid #e4e4ec'}},
  {id:'bronze',n:['Бронза','Бронза','Bronze'],d:['Уровень игрока 5','Рівень гравця 5','Player level 5'],ok:()=>plv>=5,st:{border:'5px solid #cd7f32'}},
@@ -1069,6 +1117,18 @@ const FRAMES=[
  {id:'flame',n:['Пламя','Полум’я','Flame'],d:['Можно купить','Можна купити','Can be bought'],price:3000,ok:()=>false,st:{border:'5px solid #ff7a1a',boxShadow:'0 0 16px rgba(255,90,20,.85),0 0 30px rgba(255,200,40,.5)'}},
  {id:'royal',n:['Королевская','Королівська','Royal'],d:['Открыть 44 Мей Мей','Відкрити 44 Мей Мей','Unlock 44 Mei Meis'],ok:()=>seen.length>=44,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#ffd23a,#8a3aff,#ffd23a) border-box'}},
  {id:'aurora',n:['Аврора','Аврора','Aurora'],d:['Комбо ×12','Комбо ×12','Combo ×12'],ok:()=>bestCombo>=12,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#6bffb0,#4dc9ff,#c77dff) border-box'}},
+ {id:'emerald',n:['Изумруд', 'Смарагд', 'Emerald'],d:['Можно купить','Можна купити','Can be bought'],price:1500,ok:()=>false,st:{border:'5px solid #2ecc8f',boxShadow:'0 0 14px rgba(46,204,143,.7)'}},
+ {id:'ruby',n:['Рубин', 'Рубін', 'Ruby'],d:['Можно купить','Можна купити','Can be bought'],price:1500,ok:()=>false,st:{border:'5px solid #e0314b',boxShadow:'0 0 14px rgba(224,49,75,.7)'}},
+ {id:'sapphire',n:['Сапфир', 'Сапфір', 'Sapphire'],d:['Можно купить','Можна купити','Can be bought'],price:1500,ok:()=>false,st:{border:'5px solid #2f6bff',boxShadow:'0 0 14px rgba(47,107,255,.7)'}},
+ {id:'candy',n:['Конфетная', 'Цукеркова', 'Candy'],d:['Можно купить','Можна купити','Can be bought'],price:2500,ok:()=>false,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#ff7ac8,#7ac8ff) border-box'}},
+ {id:'sakuraF',n:['Сакура', 'Сакура', 'Sakura'],d:['Можно купить','Можна купити','Can be bought'],price:3000,ok:()=>false,st:{border:'5px solid #ffb7d5',boxShadow:'0 0 16px rgba(255,150,200,.8),0 0 0 3px rgba(255,255,255,.8) inset'}},
+ {id:'galaxyF',n:['Галактика', 'Галактика', 'Galaxy'],d:['Можно купить','Можна купити','Can be bought'],price:5000,ok:()=>false,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#6a2aff,#ff4fd8) border-box'}},
+ {id:'lime',n:['Лайм', 'Лайм', 'Lime'],d:['Можно купить','Можна купити','Can be bought'],price:2000,ok:()=>false,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#d4ff3a,#2ecc8f) border-box'}},
+ {id:'dashed',n:['Пунктир', 'Пунктир', 'Dashed'],d:['Можно купить','Можна купити','Can be bought'],price:800,ok:()=>false,st:{border:'5px dashed #7a55e0'}},
+ {id:'dotted',n:['Точки', 'Крапки', 'Dotted'],d:['Можно купить','Можна купити','Can be bought'],price:800,ok:()=>false,st:{border:'5px dotted #ff3fa4'}},
+ {id:'double',n:['Двойная', 'Подвійна', 'Double'],d:['Можно купить','Можна купити','Can be bought'],price:1200,ok:()=>false,st:{border:'7px double #222'}},
+ {id:'lava',n:['Лава', 'Лава', 'Lava'],d:['Можно купить','Можна купити','Can be bought'],price:6000,ok:()=>false,st:{border:'5px solid transparent',background:'linear-gradient(#f0f0f4,#f0f0f4) padding-box,linear-gradient(135deg,#ffcf3a,#ff2a2a) border-box'}},
+ {id:'night',n:['Ночная', 'Нічна', 'Night'],d:['Можно купить','Можна купити','Can be bought'],price:4000,ok:()=>false,st:{border:'5px solid #1a1a4a',boxShadow:'0 0 16px rgba(80,80,255,.8)'}},
  {id:'diamond',n:['Бриллиант','Діамант','Diamond'],d:['Уровень игрока 25 или купить','Рівень гравця 25 або купити','Player level 25 or buy'],price:10000,ok:()=>plv>=25,st:{border:'5px solid #e8fbff',boxShadow:'0 0 20px rgba(120,230,255,.95),0 0 6px #fff'}}
 ];
 function applyFrame(el,id){
@@ -1122,6 +1182,9 @@ function bnFrame(){
     bnParts.forEach(p=>{ const cx=((p.x+tm*9*p.s*d)%(w+320*d))-160*d, cy=p.y; const r=(110+60*p.r)*d;
       const g=x.createRadialGradient(cx,cy,0,cx,cy,r); g.addColorStop(0,'rgba(255,255,255,.30)'); g.addColorStop(1,'rgba(255,255,255,0)');
       x.fillStyle=g; x.beginPath(); x.arc(cx,cy,r,0,6.283); x.fill(); });
+  } else if(fx==='clouds'){
+    bnParts.forEach(p=>{ const cx=((p.x+tm*12*p.s*d)%(w+240*d))-120*d, cy=h*(.18+.6*p.r), r=(11+9*p.r)*d;
+      x.fillStyle='rgba(255,255,255,.88)'; [[-1.2,.3,.8],[0,0,1],[1.2,.3,.8],[.5,.5,.7],[-.5,.5,.7]].forEach(c=>{ x.beginPath(); x.arc(cx+c[0]*r,cy+c[1]*r,r*c[2],0,6.283); x.fill(); }); });
   } else if(fx==='ribbons'){
     const cols=['rgba(80,255,170,.30)','rgba(150,120,255,.30)','rgba(60,200,255,.28)'];
     for(let k=0;k<3;k++){ x.beginPath(); for(let i=0;i<=w;i+=8*d){ const y=h*(.28+.22*k)+Math.sin(i/(55*d)+tm*.7+k*1.7)*15*d; i?x.lineTo(i,y):x.moveTo(i,y); }
@@ -1129,13 +1192,23 @@ function bnFrame(){
   } else {
     if(fx==='sakura'&&bnTree) x.drawImage(bnTree,0,0);
     bnParts.forEach(p=>{
-      if(fx==='sakura'){
+      if(fx==='sakura'||fx==='leaves'){
         p.y+=p.s*.45*d; p.x+=Math.sin(tm*p.s+p.a)*.5*d; if(p.y>h+10*d){ p.y=-10*d; p.x=Math.random()*w; }
-        x.save(); x.translate(p.x,p.y); x.rotate(p.a+tm*p.s); x.fillStyle=p.r>.5?'rgba(255,143,186,.95)':'rgba(255,190,214,.95)';
+        x.save(); x.translate(p.x,p.y); x.rotate(p.a+tm*p.s); x.fillStyle=fx==='leaves'?['rgba(255,140,40,.95)','rgba(200,60,30,.95)','rgba(255,200,60,.95)'][(p.r*3)|0]:(p.r>.5?'rgba(255,143,186,.95)':'rgba(255,190,214,.95)');
         x.beginPath(); x.ellipse(0,0,(3.2+3*p.r)*d,(2+1.6*p.r)*d,0,0,6.283); x.fill(); x.restore();
       } else if(fx==='snow'){
         p.y+=p.s*.5*d; p.x+=Math.sin(tm*p.s+p.a)*.35*d; if(p.y>h+6*d){ p.y=-6*d; p.x=Math.random()*w; }
         x.fillStyle='rgba(255,255,255,.9)'; x.beginPath(); x.arc(p.x,p.y,(1.3+1.6*p.r)*d,0,6.283); x.fill();
+      } else if(fx==='rain'){
+        p.y+=p.s*4*d; p.x-=p.s*1.2*d; if(p.y>h+10*d){ p.y=-10*d; p.x=Math.random()*w*1.2; }
+        x.strokeStyle='rgba(255,255,255,.55)'; x.lineWidth=1.1*d; x.beginPath(); x.moveTo(p.x,p.y); x.lineTo(p.x-3*d,p.y+9*d); x.stroke();
+      } else if(fx==='hearts'){
+        p.y-=p.s*.55*d; p.x+=Math.sin(tm*p.s+p.a)*.4*d; if(p.y<-12*d){ p.y=h+12*d; p.x=Math.random()*w; }
+        x.fillStyle='rgba(255,255,255,.85)'; x.font=((8+7*p.r)*d)+'px sans-serif'; x.fillText('♥',p.x,p.y);
+      } else if(fx==='embers'){
+        p.y-=p.s*.7*d; p.x+=Math.sin(tm*2*p.s+p.a)*.5*d; if(p.y<-6*d){ p.y=h+6*d; p.x=Math.random()*w; }
+        const al=.4+.6*Math.abs(Math.sin(tm*3*p.s+p.a)); x.fillStyle='rgba(255,'+((140+90*p.r)|0)+',60,'+al+')'; x.shadowColor='rgba(255,120,30,.9)'; x.shadowBlur=6*d;
+        x.beginPath(); x.arc(p.x,p.y,(1.2+1.4*p.r)*d,0,6.283); x.fill(); x.shadowBlur=0;
       } else if(fx==='bubbles'){
         p.y-=p.s*.5*d; p.x+=Math.sin(tm*p.s+p.a)*.3*d; if(p.y<-10*d){ p.y=h+10*d; p.x=Math.random()*w; }
         x.strokeStyle='rgba(255,255,255,.6)'; x.lineWidth=1.3*d; x.beginPath(); x.arc(p.x,p.y,(2+4*p.r)*d,0,6.283); x.stroke();
@@ -1164,7 +1237,7 @@ function applyBanner(){
     bnKey=key; const dpr=Math.min(2,window.devicePixelRatio||1);
     cv.width=Math.round(pt.clientWidth*dpr); cv.height=Math.round(pt.clientHeight*dpr);
     bnTree=b.fx==='sakura'?bnMakeTree(cv.width,cv.height,cv.width/350):null;
-    const n=b.fx==='fog'?5:20; bnParts=[]; for(let i=0;i<n;i++) bnParts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random(),s:.4+Math.random()*1.1,a:Math.random()*6.283});
+    const n=(b.fx==='fog'||b.fx==='clouds')?5:20; bnParts=[]; for(let i=0;i<n;i++) bnParts.push({x:Math.random()*cv.width,y:Math.random()*cv.height,r:Math.random(),s:.4+Math.random()*1.1,a:Math.random()*6.283});
   }
   if(!bnRaf) bnRaf=requestAnimationFrame(bnFrame);
 }
@@ -1473,6 +1546,16 @@ function buildShop(){
       else btn=mkBtn('🪙 '+fmt(bg.price),'',()=>buyBg(bg.id),coins<bg.price);
       list.appendChild(mkRow(sw,bgName(bg),has?t('bought'):bg.pass?t('pass_only'):locked?t('need_pl',bg.need):t('price_n',fmt(bg.price)),btn));
     });
+    { const h=document.createElement('div'); h.className='note'; h.style.fontWeight='700'; h.textContent=t('cs_h'); list.appendChild(h);
+      CELLS.forEach(c=>{
+        const has=!c.price||cellsOwned.indexOf(c.id)>=0, cu=cellId===c.id;
+        const sw=document.createElement('div'); sw.className='sw'; sw.style.cssText='width:56px;height:56px;border-radius:14px;border:2px solid '+(c.bd&&c.bd!=='transparent'?c.bd:'rgba(0,0,0,.08)')+';background:'+(c.bg||'linear-gradient(180deg,#fff,#f4f0fb)')+';box-shadow:'+(c.sh||'0 2px 6px rgba(80,50,160,.12)');
+        let btn;
+        if(cu) btn=mkBtn(t('selected'),'eq',null,true);
+        else if(has) btn=mkBtn(t('choose'),'eq',()=>{ cellId=c.id; applySkin(); save(); buildShop(); });
+        else btn=mkBtn('🪙 '+fmt(c.price),'',()=>{ if(coins<c.price){ toast(t('no_coins')); return; } coins-=c.price; cellsOwned.push(c.id); cellId=c.id; applySkin(); save(); coinSound(); buildShop(); updateLobby(); if(board&&cur==='game') render(); },coins<c.price);
+        list.appendChild(mkRow(sw,L3(c.n),has?t('bought'):t('price_n',fmt(c.price)),btn));
+      }); }
   } else if(shopTab==='snd'){
     $('shopNote').textContent=t('note_snd');
     const head=txt=>{ const d=document.createElement('div'); d.className='note'; d.style.fontWeight='700'; d.textContent=txt; list.appendChild(d); };
@@ -1859,7 +1942,7 @@ $('hammerBtn').onclick=()=>{
 $('setReset').onclick=()=>{
   if(!confirm(t('confirm_reset'))) return;
   coins=0;best=0;maxEver=1;xp=0;plv=1;owned=[1];bgId=1;seen=[1];inv={};x2Until=0;x2Cd=0;voiceId='cat';voices=['cat'];trackId='calm';tracks=['calm'];avatar=0;nick='';bestTimed=0;bestCombo=0;framesOwned=[];pets=[null];petSlots=1;chalDone='';chalStreak=0;evtWeek='';evtProg=0;evtClaimed=[];evtDone=0;titleId='newbie';frameId='none';bpBest=0;bpPts=0;bpFree=[];bpPrem=[];bpGold=false;gifts=[];boost=0;
-  savedGame=null;bannerId='none';bannersOwned=[];size=3;sizeMax=3;stats={merges:0,earned:0,games:0};dailyLast='';dailyStreak=0;quest={date:'',list:[]};achClaimed=[];collClaimed=[];wheelDate='';
+  savedGame=null;bannerId='none';bannersOwned=[];cellId='classic';cellsOwned=[];size=3;sizeMax=3;stats={merges:0,earned:0,games:0};dailyLast='';dailyStreak=0;quest={date:'',list:[]};achClaimed=[];collClaimed=[];wheelDate='';
   save(); applyBg(); applySize(); applyLang(); closeSheets(); toast(t('reset_done'));
 };
 
@@ -1884,9 +1967,11 @@ $('bkPaste').onclick=()=>{
 
 // ---- звук и тактильный отклик на кнопки ----
 const hx=document.createElement('label'); hx.setAttribute('aria-hidden','true');
-hx.style.cssText='position:fixed;left:-200px;top:-200px;opacity:0;pointer-events:none;width:1px;height:1px;overflow:hidden';
+hx.style.cssText='position:fixed;left:0;bottom:0;width:40px;height:40px;opacity:.01;pointer-events:none;z-index:-1;overflow:hidden';
 hx.innerHTML='<input type="checkbox" switch tabindex="-1">'; document.body.appendChild(hx);
-function haptic(ms){ if(!vibe) return; try{ if(navigator.vibrate) navigator.vibrate(ms||10); else hx.click(); }catch(e){} }
+function haptic(ms,n){ if(!vibe) return; n=n||1;
+  try{ if(navigator.vibrate){ navigator.vibrate(n>1?[ms||10,40,ms||10]:(ms||10)); return; } }catch(e){}
+  try{ hx.click(); if(n>1) setTimeout(()=>{ try{ hx.click(); }catch(e){} },70); }catch(e){} }
 function tickSound(){
   if(muted||vol<=0) return;
   try{ const a=ac(), tm=a.currentTime, o=a.createOscillator(), g=a.createGain();
@@ -1911,7 +1996,7 @@ setInterval(()=>{ if(cur==='game'&&!document.hidden) updateTag(); },500);
   ['gesturestart','gesturechange','gestureend'].forEach(g=>document.addEventListener(g,e=>e.preventDefault()));
   document.addEventListener('dblclick',e=>e.preventDefault());
 })();
-applyBg(); applySize(); applyLang(); show('lobby');
+applyBg(); applySkin(); applySize(); applyLang(); show('lobby');
 if('serviceWorker' in navigator && location.protocol.indexOf('http')===0){ window.addEventListener('load',()=>{ try{ navigator.serviceWorker.register('sw.js').catch(()=>{}); }catch(e){} }); }
 </script>
 </body>
